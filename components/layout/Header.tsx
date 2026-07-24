@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { brand, site } from "@/lib/content";
-import { EASE } from "@/lib/motion";
+import { EASE, hoverTransition } from "@/lib/motion";
 import { LogoMark, PlusIcon, GridIcon } from "@/components/ui/Icons";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { MobileMenu } from "./MobileMenu";
@@ -21,26 +21,49 @@ export function Header() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <div className="pointer-events-auto flex items-center gap-3">
-          <a href="#top" className="flex items-center gap-2" data-cursor="Top">
-            <LogoMark className="h-6 w-6 text-ink" />
+          <motion.a
+            href="#top"
+            className="flex items-center gap-2"
+            data-cursor="Top"
+            whileHover="hover"
+            initial="rest"
+            animate="rest"
+          >
+            <motion.span
+              variants={{ rest: { rotate: 0 }, hover: { rotate: -20 } }}
+              transition={hoverTransition}
+            >
+              <LogoMark className="h-6 w-6 text-ink" />
+            </motion.span>
             <span className="hidden font-display text-xl leading-none tracking-[-0.03em] md:block">
               {site.name}
             </span>
-          </a>
+          </motion.a>
 
-          <button
+          <motion.button
             type="button"
             onClick={() => setOpen(true)}
             aria-expanded={open}
             aria-controls="mobile-menu"
             data-cursor="Open"
-            className="group flex items-center gap-2 rounded-full bg-ink py-1.5 pl-1.5 pr-4 text-paper transition-colors duration-200 hover:bg-blue"
+            className="flex items-center gap-2 rounded-full bg-ink py-1.5 pl-1.5 pr-4 text-paper"
+            initial="rest"
+            animate="rest"
+            whileHover="hover"
+            whileFocus="hover"
+            whileTap={{ scale: 0.97 }}
+            variants={{ rest: {}, hover: { backgroundColor: "#1B32FF" } }}
+            transition={hoverTransition}
           >
-            <span className="grid h-7 w-7 place-items-center rounded-full bg-paper text-ink transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 md:h-8 md:w-8">
+            <motion.span
+              className="grid h-7 w-7 place-items-center rounded-full bg-paper text-ink md:h-8 md:w-8"
+              variants={{ rest: { rotate: 0 }, hover: { rotate: 90 } }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
               <PlusIcon className="h-3 w-3" />
-            </span>
+            </motion.span>
             <span className="text-[11px]">{brand.menuLabel}</span>
-          </button>
+          </motion.button>
 
           <ul className="hidden items-center gap-3 rounded-full bg-fog px-4 py-2.5 md:flex">
             {brand.navTags.map((tag) => (
@@ -51,18 +74,33 @@ export function Header() {
           </ul>
         </div>
 
-        <a
+        <motion.a
           href="#contact"
           data-cursor="Say hi"
-          className="group pointer-events-auto flex items-center gap-2 rounded-full bg-fog py-1.5 pl-1.5 pr-1.5 transition-colors duration-200 hover:bg-ink md:pr-4"
+          className="pointer-events-auto flex items-center gap-2 rounded-full bg-fog py-1.5 pl-1.5 pr-1.5 md:pr-4"
+          initial="rest"
+          animate="rest"
+          whileHover="hover"
+          whileFocus="hover"
+          whileTap={{ scale: 0.97 }}
+          variants={{
+            rest: { backgroundColor: "#E8E8EA", color: "#0A0A0B" },
+            hover: { backgroundColor: "#0A0A0B", color: "#FFFFFF" },
+          }}
+          transition={hoverTransition}
         >
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-ink text-paper transition-colors duration-200 group-hover:bg-blue md:h-8 md:w-8">
-            <GridIcon className="h-3 w-3" />
-          </span>
-          <span className="hidden text-[11px] transition-colors duration-200 group-hover:text-paper md:block">
-            {brand.ctaLabel}
-          </span>
-        </a>
+          <motion.span
+            className="grid h-7 w-7 place-items-center rounded-full text-paper md:h-8 md:w-8"
+            variants={{
+              rest: { backgroundColor: "#0A0A0B", rotate: 0 },
+              hover: { backgroundColor: "#1B32FF", rotate: 45 },
+            }}
+            transition={hoverTransition}
+          >
+            <GridIcon className="h-3 w-3 text-paper" />
+          </motion.span>
+          <span className="hidden text-[11px] md:block">{brand.ctaLabel}</span>
+        </motion.a>
       </motion.header>
 
       <MobileMenu open={open} onClose={() => setOpen(false)} />

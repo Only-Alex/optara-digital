@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { EASE } from "@/lib/motion";
+import { EASE, hoverTransition } from "@/lib/motion";
 import { hero } from "@/lib/content";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -90,10 +90,15 @@ export function Hero() {
                   key={action.href}
                   href={action.href}
                   cursorLabel={action.primary ? "Work" : "Process"}
+                  hoverStyle={
+                    action.primary
+                      ? { backgroundColor: "#1B32FF" }
+                      : { borderColor: "#1B32FF", color: "#1B32FF" }
+                  }
                   className={
                     action.primary
-                      ? "rounded-full bg-ink px-6 py-3 text-[13px] text-paper transition-colors duration-200 hover:bg-blue"
-                      : "rounded-full border border-ink/35 px-6 py-3 text-[13px] transition-colors duration-200 hover:border-blue hover:text-blue"
+                      ? "rounded-full bg-ink px-6 py-3 text-[13px] text-paper"
+                      : "rounded-full border border-ink/35 px-6 py-3 text-[13px]"
                   }
                 >
                   {action.label}
@@ -104,12 +109,14 @@ export function Hero() {
 
           <motion.ul className="flex flex-wrap gap-2" {...anim(1.1)}>
             {hero.tags.map((tag) => (
-              <li
+              <motion.li
                 key={tag}
-                className="rounded-full border border-ink/12 bg-paper px-4 py-2 text-[11px] transition-colors duration-200 hover:border-blue hover:text-blue"
+                className="rounded-full border border-ink/12 bg-paper px-4 py-2 text-[11px]"
+                whileHover={{ borderColor: "#1B32FF", color: "#1B32FF", y: -3 }}
+                transition={hoverTransition}
               >
                 {tag}
-              </li>
+              </motion.li>
             ))}
           </motion.ul>
         </div>

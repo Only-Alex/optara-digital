@@ -13,9 +13,26 @@ export const revealTransition: Transition = {
   ease: EASE,
 };
 
-export const revealVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
+export const hoverTransition: Transition = {
+  duration: DURATION.micro,
+  ease: EASE,
 };
 
+export const revealVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: revealTransition },
+};
+
+export const itemVariants = revealVariants;
+
+export const groupVariants = (
+  staggerChildren = 0.09,
+  delayChildren = 0,
+): Variants => ({
+  hidden: {},
+  visible: { transition: { staggerChildren, delayChildren } },
+});
+
 export const VIEWPORT = { once: true, amount: 0.25 } as const;
+
+export const VIEWPORT_SOFT = { once: true, amount: 0.15 } as const;

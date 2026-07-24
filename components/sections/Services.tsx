@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { services } from "@/lib/content";
 import { EASE } from "@/lib/motion";
-import { RevealText } from "@/components/ui/RevealText";
+import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
 export function Services() {
@@ -18,13 +18,19 @@ export function Services() {
           <h2 className="t-mono text-[var(--muted)]">02 — Services</h2>
         </RevealText>
 
-        <ul className="mt-14 border-t border-[var(--hairline)]">
+        <RevealGroup
+          as="ul"
+          className="mt-14 border-t border-[var(--hairline)]"
+          stagger={0.08}
+          soft
+        >
           {services.map((service) => {
             const isOpen = active === service.index;
 
             return (
-              <li
+              <RevealItem
                 key={service.index}
+                as="li"
                 className="relative border-b border-[var(--hairline)]"
                 onMouseEnter={() => setActive(service.index)}
               >
@@ -76,10 +82,10 @@ export function Services() {
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </li>
+              </RevealItem>
             );
           })}
-        </ul>
+        </RevealGroup>
       </div>
     </section>
   );

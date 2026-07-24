@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  type TargetAndTransition,
+} from "motion/react";
+import { hoverTransition } from "@/lib/motion";
 import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
@@ -10,9 +16,16 @@ type Props = {
   children: React.ReactNode;
   className?: string;
   cursorLabel?: string;
+  hoverStyle?: TargetAndTransition;
 };
 
-export function MagneticButton({ href, children, className, cursorLabel }: Props) {
+export function MagneticButton({
+  href,
+  children,
+  className,
+  cursorLabel,
+  hoverStyle,
+}: Props) {
   const ref = useRef<HTMLAnchorElement>(null);
   const finePointer = useMediaQuery("(pointer: fine)");
   const reduced = useReducedMotion();
@@ -42,6 +55,10 @@ export function MagneticButton({ href, children, className, cursorLabel }: Props
       data-cursor={cursorLabel}
       className={className}
       style={enabled ? { x: springX, y: springY } : undefined}
+      whileHover={hoverStyle}
+      whileFocus={hoverStyle}
+      whileTap={{ scale: 0.97 }}
+      transition={hoverTransition}
       onMouseMove={onMove}
       onMouseLeave={reset}
       onBlur={reset}

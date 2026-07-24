@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { testimonials } from "@/lib/content";
-import { EASE } from "@/lib/motion";
+import { EASE, hoverTransition } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
 export function Testimonials() {
@@ -52,25 +52,35 @@ export function Testimonials() {
             </div>
 
             <div className="flex items-center gap-4">
-              <button
+              <motion.button
                 type="button"
                 onClick={() => go(-1)}
                 aria-label="Previous testimonial"
-                className="t-mono px-2 py-2 transition-colors duration-200 hover:text-blue"
+                data-cursor="Prev"
+                className="t-mono px-2 py-2"
+                whileHover={{ color: "#1B32FF", x: -4 }}
+                whileFocus={{ color: "#1B32FF", x: -4 }}
+                whileTap={{ scale: 0.9 }}
+                transition={hoverTransition}
               >
                 ←
-              </button>
+              </motion.button>
               <span className="t-mono text-[var(--muted)]">
                 {String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
               </span>
-              <button
+              <motion.button
                 type="button"
                 onClick={() => go(1)}
                 aria-label="Next testimonial"
-                className="t-mono px-2 py-2 transition-colors duration-200 hover:text-blue"
+                data-cursor="Next"
+                className="t-mono px-2 py-2"
+                whileHover={{ color: "#1B32FF", x: 4 }}
+                whileFocus={{ color: "#1B32FF", x: 4 }}
+                whileTap={{ scale: 0.9 }}
+                transition={hoverTransition}
               >
                 →
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>

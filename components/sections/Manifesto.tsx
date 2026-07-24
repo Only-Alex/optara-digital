@@ -1,5 +1,5 @@
 import { manifesto } from "@/lib/content";
-import { RevealText } from "@/components/ui/RevealText";
+import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
 
 export function Manifesto() {
   return (
@@ -30,17 +30,24 @@ export function Manifesto() {
             <h2 className="t-mono mt-16 text-[var(--muted)]">
               {manifesto.refusalsTitle}
             </h2>
-            <ul className="mt-6 border-t border-[var(--hairline)]">
-              {manifesto.refusals.map((item) => (
-                <li
-                  key={item}
-                  className="t-body-lg border-b border-[var(--hairline)] py-5"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
           </RevealText>
+
+          <RevealGroup
+            as="ul"
+            className="mt-6 border-t border-[var(--hairline)]"
+            stagger={0.08}
+            delayChildren={0.15}
+          >
+            {manifesto.refusals.map((item) => (
+              <RevealItem
+                key={item}
+                as="li"
+                className="t-body-lg border-b border-[var(--hairline)] py-5"
+              >
+                {item}
+              </RevealItem>
+            ))}
+          </RevealGroup>
         </div>
       </div>
     </section>

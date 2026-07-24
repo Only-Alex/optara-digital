@@ -2,8 +2,11 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { motion } from "motion/react";
 import { submitContact, type ContactState } from "@/app/actions/contact";
 import { contact } from "@/lib/content";
+import { EASE, hoverTransition } from "@/lib/motion";
+import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
 
 const initialState: ContactState = {
   status: "idle",
@@ -17,14 +20,17 @@ const fieldClass =
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
-    <button
+    <motion.button
       type="submit"
       disabled={pending}
       data-cursor="Send"
-      className="t-mono mt-12 bg-blue px-8 py-4 text-paper transition-colors duration-200 hover:bg-blue-deep disabled:opacity-60"
+      className="t-mono mt-12 rounded-full bg-blue px-8 py-4 text-paper disabled:opacity-60"
+      whileHover={pending ? undefined : { backgroundColor: "#0A1454", scale: 1.02 }}
+      whileTap={pending ? undefined : { scale: 0.98 }}
+      transition={hoverTransition}
     >
       {pending ? "Sending…" : "Send the brief"}
-    </button>
+    </motion.button>
   );
 }
 
@@ -62,7 +68,10 @@ export function Contact() {
     <section id="contact" data-theme="light" className="section">
       <div className="shell grid-12 gap-y-16">
         <div className="col-span-12 lg:col-span-5">
-          <p className="t-mono text-[var(--muted)]">{contact.eyebrow}</p>
+          <RevealText>
+            <p className="t-mono text-[var(--muted)]">{contact.eyebrow}</p>
+          </RevealText>
+          <RevealText delay={0.08}>
           <h2 className="t-display-lg mt-8">
             {contact.title.map((word, i) =>
               word.italic ? (
@@ -76,20 +85,31 @@ export function Contact() {
               ),
             )}
           </h2>
-          <p className="t-body-lg mt-10 max-w-[38ch] text-[var(--muted)]">
-            {contact.standfirst}
-          </p>
-          <a
+          </RevealText>
+          <RevealText delay={0.16}>
+            <p className="t-body-lg mt-10 max-w-[38ch] text-[var(--muted)]">
+              {contact.standfirst}
+            </p>
+          </RevealText>
+          <motion.a
             href={`mailto:${contact.email}`}
             data-cursor="Email"
-            className="group mt-12 inline-block t-body-lg"
+            className="t-body-lg mt-12 inline-block"
+            initial="rest"
+            whileHover="hover"
+            whileFocus="hover"
+            animate="rest"
           >
             <span className="relative inline-block pb-1">
               {contact.email}
               <span className="absolute inset-x-0 bottom-0 h-px bg-[var(--fg)]" />
-              <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-blue transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100" />
+              <motion.span
+                className="absolute inset-x-0 bottom-0 h-px origin-left bg-blue"
+                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                transition={{ duration: 0.35, ease: EASE }}
+              />
             </span>
-          </a>
+          </motion.a>
         </div>
 
         <div className="col-span-12 lg:col-span-6 lg:col-start-7">
@@ -98,6 +118,7 @@ export function Contact() {
               {state.message}
             </p>
           ) : (
+            <RevealGroup as="div" stagger={0.07} soft>
             <form action={formAction} noValidate className="flex flex-col gap-10">
               {state.status === "error" ? (
                 <p className="t-caption text-blue" role="alert">
@@ -105,7 +126,8 @@ export function Contact() {
                 </p>
               ) : null}
 
-              <Field label="Name" htmlFor="name" error={errors.name}>
+              <RevealItem>
+                <Field label="Name" htmlFor="name" error={errors.name}>
                 <input
                   id="name"
                   name="name"
@@ -115,9 +137,11 @@ export function Contact() {
                   aria-describedby={errors.name ? "name-error" : undefined}
                   className={fieldClass}
                 />
-              </Field>
+                </Field>
+              </RevealItem>
 
-              <Field label="Email" htmlFor="email" error={errors.email}>
+              <RevealItem>
+                <Field label="Email" htmlFor="email" error={errors.email}>
                 <input
                   id="email"
                   name="email"
@@ -127,9 +151,11 @@ export function Contact() {
                   aria-describedby={errors.email ? "email-error" : undefined}
                   className={fieldClass}
                 />
-              </Field>
+                </Field>
+              </RevealItem>
 
-              <Field label="Company" htmlFor="company" error={errors.company}>
+              <RevealItem>
+                <Field label="Company" htmlFor="company" error={errors.company}>
                 <input
                   id="company"
                   name="company"
@@ -139,9 +165,11 @@ export function Contact() {
                   aria-describedby={errors.company ? "company-error" : undefined}
                   className={fieldClass}
                 />
-              </Field>
+                </Field>
+              </RevealItem>
 
-              <Field label="Monthly media budget" htmlFor="budget" error={errors.budget}>
+              <RevealItem>
+                <Field label="Monthly media budget" htmlFor="budget" error={errors.budget}>
                 <select
                   id="budget"
                   name="budget"
@@ -159,9 +187,11 @@ export function Contact() {
                     </option>
                   ))}
                 </select>
-              </Field>
+                </Field>
+              </RevealItem>
 
-              <Field label="Project brief" htmlFor="brief" error={errors.brief}>
+              <RevealItem>
+                <Field label="Project brief" htmlFor="brief" error={errors.brief}>
                 <textarea
                   id="brief"
                   name="brief"
@@ -170,10 +200,14 @@ export function Contact() {
                   aria-describedby={errors.brief ? "brief-error" : undefined}
                   className={`${fieldClass} resize-none`}
                 />
-              </Field>
+                </Field>
+              </RevealItem>
 
-              <SubmitButton />
+              <RevealItem>
+                <SubmitButton />
+              </RevealItem>
             </form>
+            </RevealGroup>
           )}
         </div>
       </div>
