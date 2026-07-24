@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { nav, site } from "@/lib/content";
+import { CloseIcon, LogoMark } from "@/components/ui/Icons";
 
 type Props = {
   open: boolean;
@@ -69,15 +70,24 @@ export function MobileMenu({ open, onClose }: Props) {
           exit={{ clipPath: "inset(0 0 100% 0)" }}
           transition={{ duration: 0.6, ease: EASE }}
         >
-          <div className="shell flex items-center justify-between py-6">
-            <span className="font-display text-2xl">{site.name}</span>
+          <div className="flex items-center justify-between p-4 md:px-8 md:py-6">
+            <span className="flex items-center gap-2">
+              <LogoMark className="h-6 w-6 text-paper" />
+              <span className="font-display text-xl leading-none tracking-[-0.03em]">
+                {site.name}
+              </span>
+            </span>
             <button
               ref={closeRef}
               type="button"
               onClick={onClose}
-              className="t-mono py-2"
+              data-cursor="Close"
+              className="group flex items-center gap-2 rounded-full bg-paper py-1.5 pl-1.5 pr-4 text-ink transition-colors duration-200 hover:bg-blue hover:text-paper"
             >
-              Close
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-ink text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 md:h-8 md:w-8">
+                <CloseIcon className="h-3 w-3" />
+              </span>
+              <span className="text-[11px]">Close</span>
             </button>
           </div>
 
@@ -97,7 +107,8 @@ export function MobileMenu({ open, onClose }: Props) {
                   <a
                     href={item.href}
                     onClick={onClose}
-                    className="t-display-lg block"
+                    data-cursor="Go"
+                    className="t-display-lg inline-block transition-colors duration-200 hover:text-blue"
                   >
                     {item.label}
                   </a>

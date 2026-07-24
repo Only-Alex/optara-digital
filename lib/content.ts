@@ -62,14 +62,24 @@ export const hero = {
     [{ text: "impossible", italic: true }],
     [{ text: "to scroll past." }],
   ] as HeadingWord[][],
+  subtitle: `Independent since ${site.founded} — London and New York`,
   standfirst:
     "We run paid media, brand strategy and content as one system for DTC brands doing £5M to £50M, and we report on margin instead of impressions.",
-  meta: [
-    `Est. ${site.founded}`,
-    "London · New York",
-    "Performance · Brand · Content",
-    "Scroll ↓",
+  actions: [
+    { label: "See the work", href: "#work", primary: true },
+    { label: "How we work", href: "#services", primary: false },
   ],
+  tags: ["Performance media", "Brand strategy", "Lifecycle & CRM"],
+  video: {
+    src: "/media/hero.mp4",
+    label: "Abstract motion study running behind the headline",
+  },
+};
+
+export const brand = {
+  navTags: ["Performance · Brand", "Content · CRM"],
+  ctaLabel: "Start a project",
+  menuLabel: "Menu",
 };
 
 export const manifesto = {

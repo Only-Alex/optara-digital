@@ -20,7 +20,7 @@ export function InversionWipe() {
     <div ref={marker} aria-hidden="true" className="h-0">
       {!reduced && (
         <motion.div
-          className="pointer-events-none fixed inset-0 z-[55] bg-blue"
+          className="pointer-events-none fixed inset-0 z-40 bg-blue"
           style={{ scaleY, transformOrigin: origin, willChange: "transform" }}
         />
       )}
