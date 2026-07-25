@@ -1,33 +1,53 @@
-import { process } from "@/lib/content";
+import { phases } from "@/lib/content";
 import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
 
 export function Process() {
   return (
-    <section id="process" data-theme="ink" className="section">
+    <section id="process" data-theme="paper" className="section">
       <div className="shell">
         <RevealText>
-          <p className="t-mono text-[var(--muted)]">{process.eyebrow}</p>
-          <h2 className="t-display-lg mt-6 max-w-[24ch]">
-            {process.title.lead}{" "}
-            <span className="text-accent">{process.title.accent}</span>
+          <p className="t-mono text-[var(--muted)]">{phases.eyebrow}</p>
+          <h2 className="t-display-lg mt-6 max-w-[22ch]">
+            {phases.title.lead}{" "}
+            <span className="text-accent">{phases.title.accent}</span>
           </h2>
         </RevealText>
 
         <RevealGroup
           as="ol"
-          className="mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8"
-          stagger={0.1}
+          className="mt-16 border-t border-[var(--hairline)]"
+          stagger={0.08}
           soft
         >
-          {process.steps.map((step) => (
+          {phases.items.map((item) => (
             <RevealItem
-              key={step.index}
+              key={item.phase}
               as="li"
-              className="border-t border-[var(--hairline)] pt-6"
+              className="border-b border-[var(--hairline)] py-10"
             >
-              <span className="t-mono text-accent">{step.index}</span>
-              <h3 className="t-display-md mt-5">{step.name}</h3>
-              <p className="t-body mt-4 text-[var(--muted)]">{step.description}</p>
+              <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
+                <div className="lg:col-span-3">
+                  <p className="t-mono text-accent">{item.phase}</p>
+                  <h3 className="t-display-md mt-4">{item.name}</h3>
+                </div>
+
+                <div className="lg:col-span-3">
+                  <ul className="flex flex-wrap gap-2 lg:flex-col lg:items-start">
+                    {item.steps.map((step) => (
+                      <li
+                        key={step}
+                        className="t-mono rounded-full bg-bone px-3 py-1.5 text-[var(--muted)]"
+                      >
+                        {step}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="lg:col-span-6">
+                  <p className="t-body-lg text-[var(--muted)]">{item.body}</p>
+                </div>
+              </div>
             </RevealItem>
           ))}
         </RevealGroup>

@@ -24,12 +24,6 @@ export type Stat = {
   client: string;
 };
 
-export type ProcessStep = {
-  index: string;
-  name: string;
-  description: string;
-};
-
 export type Testimonial = {
   quote: string;
   name: string;
@@ -49,9 +43,11 @@ export const site = {
 } as const;
 
 export const nav: NavItem[] = [
+  { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Results", href: "#results" },
   { label: "Process", href: "#process" },
+  { label: "FAQs", href: "#faqs" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -215,40 +211,6 @@ export const work = {
   ] as CaseResult[],
 };
 
-export const process = {
-  eyebrow: "How we work",
-  title: {
-    lead: "Four steps,",
-    accent: "no mystery.",
-  },
-  steps: [
-    {
-      index: "01",
-      name: "Audit",
-      description:
-        "We review your website, search visibility, ad accounts and tracking, then show you exactly where budget is currently being wasted.",
-    },
-    {
-      index: "02",
-      name: "Strategy",
-      description:
-        "A written plan covering target keywords, channels, budget split and the lead volume each channel should realistically produce.",
-    },
-    {
-      index: "03",
-      name: "Build & launch",
-      description:
-        "Fixes shipped, pages written, campaigns restructured and tracking rebuilt so every enquiry can be attributed to a source.",
-    },
-    {
-      index: "04",
-      name: "Optimise & report",
-      description:
-        "Monthly reporting against cost per qualified lead, with a testing backlog that compounds results across the year.",
-    },
-  ] as ProcessStep[],
-};
-
 export const testimonials = {
   eyebrow: "What clients say",
   title: {
@@ -339,3 +301,218 @@ export const footer = {
     { label: "Terms", href: "#" },
   ] as NavItem[],
 };
+
+export const intro = {
+  eyebrow: "UK digital marketing agency",
+  wordmark: "Opti Reach.",
+  body: [
+    "We are Opti Reach, a UK digital marketing agency working with businesses that need enquiries rather than exposure. Our clients are construction firms, property groups, financial and professional services companies, and B2B specialists competing in crowded search results.",
+    "We break growth down into manageable phases and work closely with you at every stage. From technical SEO and content through to paid search, conversion rate optimisation and the website itself, we handle the detail so the channels reinforce each other instead of pulling apart.",
+    "Every engagement is measured against cost per qualified lead. If a channel cannot be shown to produce enquiries at a price that works for your business, we recommend stopping it.",
+  ],
+  cta: { label: "How we work", href: "#process" },
+};
+
+export const sectors = {
+  eyebrow: "Who we work with",
+  title: { lead: "Sectors where search", accent: "decides the shortlist." },
+  standfirst:
+    "We specialise in considered, high-value purchases, where a buyer researches for weeks and only ever contacts three or four suppliers.",
+  items: [
+    {
+      name: "Construction & trades",
+      body: "Commercial and domestic contractors competing for tenders and high-value private work.",
+    },
+    {
+      name: "Property & lettings",
+      body: "Developers, agents and property service firms where enquiry volume drives the pipeline.",
+    },
+    {
+      name: "Financial services",
+      body: "Advisers, brokers and finance providers who need compliant, high-intent lead generation.",
+    },
+    {
+      name: "Legal & professional",
+      body: "Solicitors, accountants and consultants bidding for competitive local and national terms.",
+    },
+    {
+      name: "B2B & industrial",
+      body: "Manufacturers, suppliers and specialists with long sales cycles and technical buyers.",
+    },
+    {
+      name: "Multi-site & franchise",
+      body: "Groups that need consistent national visibility alongside local performance per branch.",
+    },
+  ],
+};
+
+export const capabilities = {
+  eyebrow: "What we do best",
+  title: { lead: "Four disciplines,", accent: "run as one." },
+  groups: [
+    {
+      name: "Search engine optimisation",
+      body: [
+        "We start with the technical foundations, because content and links rarely perform on a site search engines struggle to crawl. Once the base is sound we build topical authority around the terms your buyers actually use at the point of enquiry.",
+        "Reporting covers rankings, but it leads on the enquiries those rankings produced and what each one cost.",
+      ],
+      features: [
+        "Technical audit & fixes",
+        "Keyword & intent mapping",
+        "Content strategy",
+        "Local & multi-location SEO",
+        "Link acquisition",
+        "Monthly rank & lead reporting",
+      ],
+    },
+    {
+      name: "Paid advertising",
+      body: [
+        "Search, shopping and paid social campaigns structured around what a qualified lead is worth to you, not around impression share. Wasted spend is cut in the first fortnight, which usually funds the rest of the work.",
+        "We manage Google Ads, Microsoft Ads, Meta and LinkedIn in house, with weekly optimisation against cost per lead.",
+      ],
+      features: [
+        "Google & Microsoft Ads",
+        "Paid social",
+        "Remarketing",
+        "Landing page testing",
+        "Bid & budget management",
+        "Call & form tracking",
+      ],
+    },
+    {
+      name: "Web design & development",
+      body: [
+        "Most sites lose more revenue in the gap between click and enquiry than they ever lose in the ad auction. We design and build fast, accessible sites that make the next step obvious.",
+        "Built to be edited by your team, measured properly from day one, and quick enough to pass Core Web Vitals on a mid-range phone.",
+      ],
+      features: [
+        "Bespoke design",
+        "Accessible build",
+        "CMS & content editing",
+        "Core Web Vitals",
+        "Ecommerce",
+        "Hosting & support",
+      ],
+    },
+    {
+      name: "Conversion & analytics",
+      body: [
+        "Before optimising anything we make the numbers trustworthy: analytics rebuilt, goals defined, calls and forms attributed to source. Without that, every other report is guesswork.",
+        "Then a continuous testing programme on the pages that carry the most commercial weight.",
+      ],
+      features: [
+        "GA4 & tracking rebuild",
+        "Call tracking",
+        "Conversion rate testing",
+        "Heatmaps & session review",
+        "Dashboard reporting",
+        "Lead quality scoring",
+      ],
+    },
+  ],
+};
+
+export const difference = {
+  eyebrow: "What makes us different",
+  title: { lead: "Four reasons clients", accent: "stay with us." },
+  items: [
+    {
+      title: "Measured on enquiries",
+      body: "Every report leads with qualified enquiries and cost per lead. Traffic and impressions are context, never the headline. If the enquiries are not there, we say so before you have to ask.",
+    },
+    {
+      title: "Senior people on your account",
+      body: "The person who audits your account is the person who runs it. There is no handover to a junior team once the contract is signed, and you always know who is doing the work.",
+    },
+    {
+      title: "Search, ads and site together",
+      body: "One team runs all three, so improvements compound. No arguing between an SEO agency, a PPC agency and a web developer about whose change broke the numbers.",
+    },
+    {
+      title: "No long lock-ins",
+      body: "We work to rolling agreements after the initial term. Staying should be your choice each month, based on results, rather than a clause in a contract.",
+    },
+  ],
+};
+
+export const phases = {
+  eyebrow: "Our process",
+  title: { lead: "Four phases,", accent: "no mystery." },
+  items: [
+    {
+      phase: "Phase 1 / 4",
+      name: "Discovery & audit",
+      steps: ["Data review", "Competitor analysis", "Technical audit"],
+      body: "We pull everything together first: analytics, search console, ad accounts, call records and your own view of which enquiries are actually worth having. Then a technical audit of the site and a competitor analysis of who is currently winning the terms you want. You receive the findings in writing, and they are yours whether or not you continue with us.",
+    },
+    {
+      phase: "Phase 2 / 4",
+      name: "Strategy & plan",
+      steps: ["Channel plan", "Forecasting", "Budget split"],
+      body: "A written plan setting out target keywords, channels, budget split and the enquiry volume each channel should realistically produce, with the assumptions behind every forecast made explicit. We walk you through it, you challenge it, and we adjust before any money is spent.",
+    },
+    {
+      phase: "Phase 3 / 4",
+      name: "Build & launch",
+      steps: ["Tracking", "Fixes & content", "Campaigns"],
+      body: "Tracking is rebuilt first so nothing that follows is guesswork. Then technical fixes ship, priority pages are written, and campaigns are restructured around the plan. Most accounts are live within thirty days of signing, with a clear record of what changed and when.",
+    },
+    {
+      phase: "Phase 4 / 4",
+      name: "Optimise & report",
+      steps: ["Weekly testing", "Monthly reporting", "Quarterly review"],
+      body: "Weekly optimisation against cost per qualified lead, monthly reporting in language you can take straight to a board, and a quarterly session where we re-cut the plan based on what the year has actually shown. The testing backlog is shared, so you can always see what is queued and why.",
+    },
+  ],
+};
+
+export const faqs = {
+  eyebrow: "Questions",
+  title: { lead: "Frequently asked", accent: "questions." },
+  items: [
+    {
+      question: "How long before we see results?",
+      answer:
+        "Paid advertising can produce enquiries in the first week, because you are buying visibility directly. SEO is slower: expect early technical gains within four to six weeks, meaningful ranking movement from three months, and compounding results from six months onwards. We set expectations per channel in the plan rather than promising a single blanket timescale.",
+    },
+    {
+      question: "Do you work with businesses outside your usual sectors?",
+      answer:
+        "Often, yes. The common thread in our work is a considered, high-value purchase where the buyer researches before making contact. If your sales cycle looks like that, the approach transfers. If you sell low-value products at high volume, we will tell you honestly that a specialist ecommerce agency is a better fit.",
+    },
+    {
+      question: "What do you need from us to get started?",
+      answer:
+        "Access to your analytics, search console and ad accounts, a conversation about which enquiries are genuinely valuable, and one person on your side who can approve content and sign off changes. Beyond that we try to keep the demands on your team light, because slow approvals are the most common cause of slow results.",
+    },
+    {
+      question: "Do we own the work you produce?",
+      answer:
+        "Yes. Content, campaign structures, tracking configuration and any website we build belong to you. Accounts are set up in your name wherever possible, so if we ever part company you keep the assets and the history rather than starting again.",
+    },
+    {
+      question: "How is reporting handled?",
+      answer:
+        "A monthly report covering qualified enquiries, cost per lead and channel performance, plus a live dashboard you can check whenever you want. Reports are written to be read by people who do not work in marketing, and we talk through them rather than emailing a PDF and disappearing.",
+    },
+    {
+      question: "What happens if it is not working?",
+      answer:
+        "We raise it before you do. If a channel is not producing enquiries at a viable cost we recommend reducing or stopping it, even when that means a smaller budget under our management. Rolling agreements after the initial term mean you are never locked into something that is not performing.",
+    },
+  ],
+  helpful: {
+    prompt: "Did this answer your question?",
+    yes: "Glad that helped.",
+    no: "No problem — ask us directly and we will answer properly.",
+    cta: { label: "Ask our team", href: "#contact" },
+  },
+};
+
+export const speakBubble = {
+  label: "Speak to us",
+  href: "#contact",
+};
+
+export const scrollCue = "Scroll down";

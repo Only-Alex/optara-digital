@@ -7,7 +7,7 @@ import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText"
 
 export function Work() {
   return (
-    <section id="results" data-theme="paper" className="section">
+    <section id="results" data-theme="bone" className="section">
       <div className="shell">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">{work.eyebrow}</p>
@@ -61,7 +61,7 @@ export function Work() {
                     {item.services.map((service) => (
                       <li
                         key={service}
-                        className="t-mono rounded-full bg-bone px-3 py-1.5 text-[var(--muted)]"
+                        className="t-mono rounded-full bg-paper px-3 py-1.5 text-[var(--muted)]"
                       >
                         {service}
                       </li>

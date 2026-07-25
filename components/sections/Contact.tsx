@@ -66,7 +66,7 @@ export function Contact() {
   const errors = state.fieldErrors;
 
   return (
-    <section id="contact" data-theme="paper" className="section">
+    <section id="contact" data-theme="bone" className="section">
       <div className="shell grid gap-14 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-5">
           <RevealText>
