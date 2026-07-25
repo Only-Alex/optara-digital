@@ -48,7 +48,7 @@ export function FluidCursor() {
         AUTO: false,
         SIM_RESOLUTION: 128,
         DYE_RESOLUTION: 1024,
-        DENSITY_DISSIPATION: 3.2,
+        DENSITY_DISSIPATION: 4.2,
         VELOCITY_DISSIPATION: 0.5,
         PRESSURE: 0.8,
         PRESSURE_ITERATIONS: 20,
@@ -59,7 +59,7 @@ export function FluidCursor() {
         // Rendered bright-on-black then CSS-inverted, so this is indigo's
         // complement. Because of the inversion, a DIM splat is FAINT ink:
         // black inverts to white paper. Keep these values low.
-        SPLAT_COLOR: { r: 0.15, g: 0.13, b: 0.0 },
+        SPLAT_COLOR: { r: 0.26, g: 0.3, b: 0.0 },
         SHADING: true,
         TRANSPARENT: false,
         BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -69,8 +69,8 @@ export function FluidCursor() {
         BLOOM_RESOLUTION: 256,
         // Kept low with a high threshold so only the densest core under the
         // pointer lights up, instead of washing the whole hero.
-        BLOOM_INTENSITY: 0.4,
-        BLOOM_THRESHOLD: 0.75,
+        BLOOM_INTENSITY: 0.45,
+        BLOOM_THRESHOLD: 0.82,
         BLOOM_SOFT_KNEE: 0.7,
         SUNRAYS: false,
       });
@@ -116,7 +116,7 @@ export function FluidCursor() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-60 [filter:invert(1)]"
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-65 [filter:invert(1)_saturate(1.45)]"
     />
   );
 }
