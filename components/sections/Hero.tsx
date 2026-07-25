@@ -5,7 +5,7 @@ import { EASE } from "@/lib/motion";
 import { hero, scrollCue, site } from "@/lib/content";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
-import { InkField } from "@/components/ui/InkField";
+import { FluidCursor } from "@/components/ui/FluidCursor";
 
 export function Hero() {
   const reduced = useReducedMotion();
@@ -24,7 +24,7 @@ export function Hero() {
       data-theme="paper"
       className="relative flex min-h-svh flex-col overflow-hidden bg-[var(--bg)]"
     >
-      <InkField />
+      <FluidCursor />
 
       <span
         aria-hidden="true"
