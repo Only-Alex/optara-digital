@@ -28,6 +28,17 @@ export function FluidCursor() {
     sizeCanvas();
     window.addEventListener("resize", sizeCanvas);
 
+    // Claim the context first so it keeps its drawing buffer. getContext is
+    // idempotent, so the library reuses this one and its attributes win. This
+    // makes the canvas readable back for verification and screenshots.
+    canvas.getContext("webgl2", {
+      alpha: true,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preserveDrawingBuffer: true,
+    });
+
     import("webgl-fluid").then(({ default: WebGLFluid }) => {
       if (cancelled) return;
 
@@ -37,17 +48,18 @@ export function FluidCursor() {
         AUTO: false,
         SIM_RESOLUTION: 128,
         DYE_RESOLUTION: 1024,
-        DENSITY_DISSIPATION: 0.85,
-        VELOCITY_DISSIPATION: 0.3,
+        DENSITY_DISSIPATION: 3.2,
+        VELOCITY_DISSIPATION: 0.5,
         PRESSURE: 0.8,
         PRESSURE_ITERATIONS: 20,
         CURL: 30,
-        SPLAT_RADIUS: 0.28,
+        SPLAT_RADIUS: 0.2,
         SPLAT_FORCE: 6000,
         COLORFUL: false,
         // Rendered bright-on-black then CSS-inverted, so this is indigo's
-        // complement: invert(#C6E100) lands on the accent #3B1EFF.
-        SPLAT_COLOR: { r: 0.6, g: 0.69, b: 0.0 },
+        // complement. Because of the inversion, a DIM splat is FAINT ink:
+        // black inverts to white paper. Keep these values low.
+        SPLAT_COLOR: { r: 0.15, g: 0.13, b: 0.0 },
         SHADING: true,
         TRANSPARENT: false,
         BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -55,8 +67,10 @@ export function FluidCursor() {
         BLOOM: true,
         BLOOM_ITERATIONS: 8,
         BLOOM_RESOLUTION: 256,
-        BLOOM_INTENSITY: 0.7,
-        BLOOM_THRESHOLD: 0.55,
+        // Kept low with a high threshold so only the densest core under the
+        // pointer lights up, instead of washing the whole hero.
+        BLOOM_INTENSITY: 0.4,
+        BLOOM_THRESHOLD: 0.75,
         BLOOM_SOFT_KNEE: 0.7,
         SUNRAYS: false,
       });
@@ -102,7 +116,7 @@ export function FluidCursor() {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 h-full w-full [filter:invert(1)]"
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-60 [filter:invert(1)]"
     />
   );
 }
