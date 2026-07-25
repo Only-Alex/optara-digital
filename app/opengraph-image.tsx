@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { site } from "@/lib/content";
+import { site, hero } from "@/lib/content";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -16,24 +16,36 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           background: "#FFFFFF",
-          color: "#0A0A0B",
+          color: "#12131A",
           padding: 72,
-          fontFamily: "Georgia, serif",
+          fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", fontSize: 26, letterSpacing: 4 }}>
-          {site.name.toUpperCase()}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div
+            style={{
+              display: "flex",
+              width: 36,
+              height: 36,
+              borderRadius: 999,
+              background: "#3B1EFF",
+            }}
+          />
+          <span style={{ fontSize: 30, fontWeight: 600 }}>{site.name}</span>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", fontSize: 92, lineHeight: 1 }}>
-          <span>We make brands</span>
-          <span style={{ fontStyle: "italic" }}>impossible</span>
-          <span>to scroll past.</span>
+        <div style={{ display: "flex", flexDirection: "column", fontSize: 76, lineHeight: 1.05 }}>
+          <span style={{ color: "#3B1EFF", fontWeight: 600 }}>
+            {hero.headline.accent}
+          </span>
+          <span style={{ fontWeight: 600 }}>{hero.headline.rest}</span>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 24, fontSize: 22 }}>
-          <div style={{ display: "flex", width: 120, height: 8, background: "#1B32FF" }} />
-          <span>Performance · Brand · Content</span>
+        <div style={{ display: "flex", gap: 40, fontSize: 24, color: "#5A5B63" }}>
+          <span>SEO</span>
+          <span>Paid advertising</span>
+          <span>Web design</span>
+          <span>Conversion</span>
         </div>
       </div>
     ),

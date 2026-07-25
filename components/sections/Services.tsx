@@ -1,90 +1,73 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { services } from "@/lib/content";
-import { EASE } from "@/lib/motion";
+import { hoverTransition } from "@/lib/motion";
 import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
-import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+import { ArrowIcon } from "@/components/ui/Icons";
 
 export function Services() {
-  const [active, setActive] = useState<string | null>(services[0].index);
-  const reduced = useReducedMotion();
-
   return (
-    <section id="services" data-theme="light" className="section">
+    <section id="services" data-theme="bone" className="section">
       <div className="shell">
         <RevealText>
-          <h2 className="t-mono text-[var(--muted)]">02 — Services</h2>
+          <p className="t-mono text-[var(--muted)]">What we do</p>
+          <h2 className="t-display-lg mt-6 max-w-[26ch]">
+            Four services,{" "}
+            <span className="text-accent">one revenue target.</span>
+          </h2>
         </RevealText>
 
         <RevealGroup
-          as="ul"
-          className="mt-14 border-t border-[var(--hairline)]"
-          stagger={0.08}
+          className="mt-16 grid gap-6 md:grid-cols-2"
+          stagger={0.09}
           soft
         >
-          {services.map((service) => {
-            const isOpen = active === service.index;
-
-            return (
-              <RevealItem
-                key={service.index}
-                as="li"
-                className="relative border-b border-[var(--hairline)]"
-                onMouseEnter={() => setActive(service.index)}
+          {services.map((service) => (
+            <RevealItem key={service.index}>
+              <motion.article
+                className="card flex h-full flex-col p-8 md:p-10"
+                initial="rest"
+                animate="rest"
+                whileHover="hover"
+                variants={{
+                  rest: { y: 0, borderColor: "rgba(18,19,26,0.12)" },
+                  hover: { y: -6, borderColor: "#3B1EFF" },
+                }}
+                transition={hoverTransition}
               >
-                <motion.span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-blue"
-                  style={{ transformOrigin: "left" }}
-                  initial={false}
-                  animate={{ scaleX: isOpen ? 1 : 0 }}
-                  transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
-                />
+                <div className="flex items-start justify-between gap-4">
+                  <span className="t-mono text-accent">{service.index}</span>
+                  <motion.span
+                    className="text-accent"
+                    variants={{
+                      rest: { opacity: 0, x: -6 },
+                      hover: { opacity: 1, x: 0 },
+                    }}
+                    transition={hoverTransition}
+                  >
+                    <ArrowIcon className="h-5 w-5" />
+                  </motion.span>
+                </div>
 
-                <button
-                  type="button"
-                  aria-expanded={isOpen}
-                  aria-controls={`service-panel-${service.index}`}
-                  onClick={() => setActive(isOpen ? null : service.index)}
-                  data-cursor={isOpen ? undefined : "Open"}
-                  className={`relative flex w-full items-baseline gap-6 py-8 text-left transition-colors duration-300 md:gap-12 ${
-                    isOpen ? "text-paper" : "text-[var(--fg)]"
-                  }`}
-                >
-                  <span className="t-mono shrink-0 opacity-70">{service.index}</span>
-                  <span className="t-display-md flex-1">{service.name}</span>
-                </button>
+                <h3 className="t-display-md mt-6">{service.name}</h3>
+                <p className="t-body mt-4 max-w-[38ch] text-[var(--muted)]">
+                  {service.description}
+                </p>
 
-                <AnimatePresence initial={false}>
-                  {isOpen && (
-                    <motion.div
-                      id={`service-panel-${service.index}`}
-                      className="relative overflow-hidden text-paper"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
+                <ul className="mt-8 flex flex-wrap gap-2">
+                  {service.tags.map((tag) => (
+                    <li
+                      key={tag}
+                      className="t-mono rounded-full border border-[var(--hairline)] px-3 py-1.5 text-[var(--muted)]"
                     >
-                      <div className="grid-12 pb-10">
-                        <p className="t-body-lg col-span-12 max-w-[52ch] md:col-span-6 md:col-start-3">
-                          {service.description}
-                        </p>
-                        <ul className="col-span-12 mt-6 flex flex-wrap gap-x-8 gap-y-3 md:col-span-3 md:col-start-10 md:mt-0 md:flex-col">
-                          {service.tags.map((tag) => (
-                            <li key={tag} className="t-mono opacity-80">
-                              {tag}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </RevealItem>
-            );
-          })}
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
+              </motion.article>
+            </RevealItem>
+          ))}
         </RevealGroup>
       </div>
     </section>

@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { nav, site } from "@/lib/content";
 import { CloseIcon, LogoMark } from "@/components/ui/Icons";
+import { Button } from "@/components/ui/Button";
 
 type Props = {
   open: boolean;
@@ -30,7 +31,7 @@ export function MobileMenu({ open, onClose }: Props) {
       if (event.key !== "Tab") return;
 
       const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled])',
+        "a[href], button:not([disabled])",
       );
       if (!focusables || focusables.length === 0) return;
 
@@ -59,21 +60,20 @@ export function MobileMenu({ open, onClose }: Props) {
       {open && (
         <motion.div
           ref={panelRef}
-          id="mobile-menu"
+          id="site-menu"
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
-          data-theme="dark"
-          className="fixed inset-0 z-[60] flex flex-col bg-void text-paper"
-          initial={{ clipPath: "inset(0 0 100% 0)" }}
-          animate={{ clipPath: "inset(0 0 0% 0)" }}
-          exit={{ clipPath: "inset(0 0 100% 0)" }}
-          transition={{ duration: 0.6, ease: EASE }}
+          className="fixed inset-0 z-[60] flex flex-col bg-paper"
+          initial={{ opacity: 0, y: -12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.35, ease: EASE }}
         >
-          <div className="flex items-center justify-between p-4 md:px-8 md:py-6">
-            <span className="flex items-center gap-2">
-              <LogoMark className="h-6 w-6 text-paper" />
-              <span className="font-display text-xl leading-none tracking-[-0.03em]">
+          <div className="shell flex items-center justify-between py-4">
+            <span className="flex items-center gap-2.5">
+              <LogoMark className="h-7 w-7 text-accent" />
+              <span className="text-lg font-semibold tracking-[-0.02em]">
                 {site.name}
               </span>
             </span>
@@ -81,34 +81,26 @@ export function MobileMenu({ open, onClose }: Props) {
               ref={closeRef}
               type="button"
               onClick={onClose}
-              data-cursor="Close"
-              className="group flex items-center gap-2 rounded-full bg-paper py-1.5 pl-1.5 pr-4 text-ink transition-colors duration-200 hover:bg-blue hover:text-paper"
+              aria-label="Close menu"
+              className="pill border border-[var(--hairline)] px-4"
             >
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-ink text-paper transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:rotate-90 md:h-8 md:w-8">
-                <CloseIcon className="h-3 w-3" />
-              </span>
-              <span className="text-[11px]">Close</span>
+              <CloseIcon className="h-5 w-5" />
             </button>
           </div>
 
-          <nav aria-label="Primary" className="shell flex flex-1 items-center">
-            <ul className="flex w-full flex-col gap-4">
+          <nav aria-label="Primary" className="shell flex flex-1 flex-col justify-center">
+            <ul className="flex flex-col gap-2">
               {nav.map((item, i) => (
                 <motion.li
                   key={item.href}
-                  initial={{ opacity: 0, y: 32 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    ease: EASE,
-                    delay: 0.15 + i * 0.06,
-                  }}
+                  transition={{ duration: 0.45, ease: EASE, delay: 0.08 + i * 0.06 }}
                 >
                   <a
                     href={item.href}
                     onClick={onClose}
-                    data-cursor="Go"
-                    className="t-display-lg inline-block transition-colors duration-200 hover:text-blue"
+                    className="t-display-md block border-b border-[var(--hairline)] py-5"
                   >
                     {item.label}
                   </a>
@@ -117,8 +109,14 @@ export function MobileMenu({ open, onClose }: Props) {
             </ul>
           </nav>
 
-          <div className="shell pb-10">
-            <a href={`mailto:${site.email}`} className="t-mono">
+          <div className="shell flex flex-col gap-4 pb-10">
+            <Button href="#contact" withArrow className="justify-center">
+              Book a call
+            </Button>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="t-body">
+              {site.phone}
+            </a>
+            <a href={`mailto:${site.email}`} className="t-body text-[var(--muted)]">
               {site.email}
             </a>
           </div>

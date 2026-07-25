@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { testimonials } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+import { RevealText } from "@/components/ui/RevealText";
+import { ArrowIcon } from "@/components/ui/Icons";
 
 export function Testimonials() {
   const [index, setIndex] = useState(0);
@@ -16,73 +18,81 @@ export function Testimonials() {
     setIndex((prev) => (prev + delta + items.length) % items.length);
 
   return (
-    <section data-theme="light" className="section">
-      <div className="shell grid-12 gap-y-12">
-        <div className="col-span-12 lg:col-span-3">
+    <section data-theme="bone" className="section">
+      <div className="shell">
+        <RevealText>
           <p className="t-mono text-[var(--muted)]">{testimonials.eyebrow}</p>
+          <h2 className="t-display-lg mt-6 max-w-[24ch]">
+            {testimonials.title.lead}{" "}
+            <span className="text-accent">{testimonials.title.accent}</span>
+          </h2>
+        </RevealText>
+
+        <div className="mt-16 grid gap-10 lg:grid-cols-12">
+          <div className="lg:col-span-9">
+            <div className="min-h-[15rem]" aria-live="polite">
+              <AnimatePresence mode="wait">
+                <motion.figure
+                  key={index}
+                  initial={reduced ? undefined : { opacity: 0, y: 14 }}
+                  animate={reduced ? undefined : { opacity: 1, y: 0 }}
+                  exit={reduced ? undefined : { opacity: 0, y: -14 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                >
+                  <blockquote className="t-display-md max-w-[34ch] font-normal">
+                    “{active.quote}”
+                  </blockquote>
+                  <figcaption className="mt-8">
+                    <span className="t-body block font-medium">{active.name}</span>
+                    <span className="t-caption text-[var(--muted)]">
+                      {active.role}
+                    </span>
+                  </figcaption>
+                </motion.figure>
+              </AnimatePresence>
+            </div>
+          </div>
+
+          <div className="flex items-end gap-3 lg:col-span-3 lg:justify-end">
+            <motion.button
+              type="button"
+              onClick={() => go(-1)}
+              aria-label="Previous testimonial"
+              className="pill border border-[var(--hairline)] px-5"
+              whileHover={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileFocus={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileTap={{ scale: 0.94 }}
+              transition={hoverTransition}
+            >
+              <ArrowIcon className="h-4 w-4 rotate-180" />
+            </motion.button>
+            <motion.button
+              type="button"
+              onClick={() => go(1)}
+              aria-label="Next testimonial"
+              className="pill border border-[var(--hairline)] px-5"
+              whileHover={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileFocus={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileTap={{ scale: 0.94 }}
+              transition={hoverTransition}
+            >
+              <ArrowIcon className="h-4 w-4" />
+            </motion.button>
+          </div>
         </div>
 
-        <div className="col-span-12 lg:col-span-8 lg:col-start-5">
-          <div className="min-h-[16rem]" aria-live="polite">
-            <AnimatePresence mode="wait">
-              <motion.figure
-                key={index}
-                initial={reduced ? undefined : { opacity: 0, y: 16 }}
-                animate={reduced ? undefined : { opacity: 1, y: 0 }}
-                exit={reduced ? undefined : { opacity: 0, y: -16 }}
-                transition={{ duration: 0.45, ease: EASE }}
-              >
-                <blockquote className="t-display-md max-w-[22ch]">
-                  “{active.quote}”
-                </blockquote>
-                <figcaption className="t-mono mt-10 text-[var(--muted)]">
-                  {active.name} — {active.role}
-                </figcaption>
-              </motion.figure>
-            </AnimatePresence>
+        <div className="mt-10 flex items-center gap-4">
+          <div className="relative h-px flex-1 bg-[var(--hairline)]">
+            <motion.span
+              className="absolute inset-y-0 left-0 bg-accent"
+              animate={{ width: `${((index + 1) / items.length) * 100}%` }}
+              transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
+            />
           </div>
-
-          <div className="mt-12 flex items-center gap-8">
-            <div className="relative h-px flex-1 bg-[var(--hairline)]">
-              <motion.span
-                className="absolute inset-y-0 left-0 bg-blue"
-                animate={{ width: `${((index + 1) / items.length) * 100}%` }}
-                transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
-              />
-            </div>
-
-            <div className="flex items-center gap-4">
-              <motion.button
-                type="button"
-                onClick={() => go(-1)}
-                aria-label="Previous testimonial"
-                data-cursor="Prev"
-                className="t-mono px-2 py-2"
-                whileHover={{ color: "#1B32FF", x: -4 }}
-                whileFocus={{ color: "#1B32FF", x: -4 }}
-                whileTap={{ scale: 0.9 }}
-                transition={hoverTransition}
-              >
-                ←
-              </motion.button>
-              <span className="t-mono text-[var(--muted)]">
-                {String(index + 1).padStart(2, "0")} / {String(items.length).padStart(2, "0")}
-              </span>
-              <motion.button
-                type="button"
-                onClick={() => go(1)}
-                aria-label="Next testimonial"
-                data-cursor="Next"
-                className="t-mono px-2 py-2"
-                whileHover={{ color: "#1B32FF", x: 4 }}
-                whileFocus={{ color: "#1B32FF", x: 4 }}
-                whileTap={{ scale: 0.9 }}
-                transition={hoverTransition}
-              >
-                →
-              </motion.button>
-            </div>
-          </div>
+          <span className="t-mono text-[var(--muted)]">
+            {String(index + 1).padStart(2, "0")} /{" "}
+            {String(items.length).padStart(2, "0")}
+          </span>
         </div>
       </div>
     </section>

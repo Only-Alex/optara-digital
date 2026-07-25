@@ -4,9 +4,10 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { motion } from "motion/react";
 import { submitContact, type ContactState } from "@/app/actions/contact";
-import { contact } from "@/lib/content";
-import { EASE, hoverTransition } from "@/lib/motion";
+import { contact, site } from "@/lib/content";
+import { hoverTransition } from "@/lib/motion";
 import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
+import { ArrowIcon, CheckIcon } from "@/components/ui/Icons";
 
 const initialState: ContactState = {
   status: "idle",
@@ -15,7 +16,7 @@ const initialState: ContactState = {
 };
 
 const fieldClass =
-  "w-full border-b border-[var(--hairline)] bg-transparent pb-3 pt-2 outline-none transition-[border-color,border-width] duration-200 focus:border-b-2 focus:border-blue";
+  "w-full rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-paper px-4 py-3.5 outline-none transition-colors duration-200 focus:border-accent";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -23,13 +24,13 @@ function SubmitButton() {
     <motion.button
       type="submit"
       disabled={pending}
-      data-cursor="Send"
-      className="t-mono mt-12 rounded-full bg-blue px-8 py-4 text-paper disabled:opacity-60"
-      whileHover={pending ? undefined : { backgroundColor: "#0A1454", scale: 1.02 }}
+      className="pill mt-2 justify-center bg-accent text-paper disabled:opacity-60"
+      whileHover={pending ? undefined : { backgroundColor: "#1B0FA8", y: -2 }}
       whileTap={pending ? undefined : { scale: 0.98 }}
       transition={hoverTransition}
     >
-      {pending ? "Sending…" : "Send the brief"}
+      {pending ? "Sending…" : "Send brief"}
+      {!pending && <ArrowIcon className="h-4 w-4" />}
     </motion.button>
   );
 }
@@ -52,7 +53,7 @@ function Field({
       </label>
       {children}
       {error ? (
-        <span id={`${htmlFor}-error`} className="t-caption text-blue">
+        <span id={`${htmlFor}-error`} className="t-caption text-accent">
           {error}
         </span>
       ) : null}
@@ -65,111 +66,135 @@ export function Contact() {
   const errors = state.fieldErrors;
 
   return (
-    <section id="contact" data-theme="light" className="section">
-      <div className="shell grid-12 gap-y-16">
-        <div className="col-span-12 lg:col-span-5">
+    <section id="contact" data-theme="paper" className="section">
+      <div className="shell grid gap-14 lg:grid-cols-12 lg:gap-10">
+        <div className="lg:col-span-5">
           <RevealText>
             <p className="t-mono text-[var(--muted)]">{contact.eyebrow}</p>
-          </RevealText>
-          <RevealText delay={0.08}>
-          <h2 className="t-display-lg mt-8">
-            {contact.title.map((word, i) =>
-              word.italic ? (
-                <em key={i} className="block italic">
-                  {word.text}
-                </em>
-              ) : (
-                <span key={i} className="block">
-                  {word.text}
-                </span>
-              ),
-            )}
-          </h2>
-          </RevealText>
-          <RevealText delay={0.16}>
-            <p className="t-body-lg mt-10 max-w-[38ch] text-[var(--muted)]">
+            <h2 className="t-display-lg mt-6">
+              {contact.title.lead}{" "}
+              <span className="text-accent">{contact.title.accent}</span>
+            </h2>
+            <p className="t-body-lg mt-7 max-w-[42ch] text-[var(--muted)]">
               {contact.standfirst}
             </p>
           </RevealText>
-          <motion.a
-            href={`mailto:${contact.email}`}
-            data-cursor="Email"
-            className="t-body-lg mt-12 inline-block"
-            initial="rest"
-            whileHover="hover"
-            whileFocus="hover"
-            animate="rest"
-          >
-            <span className="relative inline-block pb-1">
-              {contact.email}
-              <span className="absolute inset-x-0 bottom-0 h-px bg-[var(--fg)]" />
-              <motion.span
-                className="absolute inset-x-0 bottom-0 h-px origin-left bg-blue"
-                variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
-                transition={{ duration: 0.35, ease: EASE }}
-              />
-            </span>
-          </motion.a>
+
+          <RevealGroup as="ul" className="mt-10 flex flex-col gap-3" stagger={0.07}>
+            {contact.reassurances.map((item) => (
+              <RevealItem key={item} as="li" className="flex items-center gap-3">
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-accent text-paper">
+                  <CheckIcon className="h-3 w-3" />
+                </span>
+                <span className="t-body">{item}</span>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+
+          <RevealText delay={0.2}>
+            <div className="mt-12 flex flex-col gap-2 border-t border-[var(--hairline)] pt-8">
+              <a href={`mailto:${site.email}`} className="t-body-lg font-medium">
+                {site.email}
+              </a>
+              <a
+                href={`tel:${site.phone.replace(/\s/g, "")}`}
+                className="t-body text-[var(--muted)]"
+              >
+                {site.phone}
+              </a>
+            </div>
+          </RevealText>
         </div>
 
-        <div className="col-span-12 lg:col-span-6 lg:col-start-7">
+        <div className="lg:col-span-6 lg:col-start-7">
           {state.status === "success" ? (
-            <p className="t-body-lg max-w-[40ch]" role="status">
-              {state.message}
-            </p>
+            <div className="card p-10" role="status">
+              <span className="grid h-11 w-11 place-items-center rounded-full bg-accent text-paper">
+                <CheckIcon className="h-5 w-5" />
+              </span>
+              <p className="t-body-lg mt-6 max-w-[36ch]">{state.message}</p>
+            </div>
           ) : (
-            <RevealGroup as="div" stagger={0.07} soft>
-            <form action={formAction} noValidate className="flex flex-col gap-10">
+            <form
+              action={formAction}
+              noValidate
+              className="card flex flex-col gap-5 p-7 md:p-9"
+            >
               {state.status === "error" ? (
-                <p className="t-caption text-blue" role="alert">
+                <p className="t-caption text-accent" role="alert">
                   {state.message}
                 </p>
               ) : null}
 
-              <RevealItem>
+              <div className="grid gap-5 sm:grid-cols-2">
                 <Field label="Name" htmlFor="name" error={errors.name}>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  autoComplete="name"
-                  aria-invalid={Boolean(errors.name)}
-                  aria-describedby={errors.name ? "name-error" : undefined}
-                  className={fieldClass}
-                />
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    autoComplete="name"
+                    aria-invalid={Boolean(errors.name)}
+                    aria-describedby={errors.name ? "name-error" : undefined}
+                    className={fieldClass}
+                  />
                 </Field>
-              </RevealItem>
 
-              <RevealItem>
                 <Field label="Email" htmlFor="email" error={errors.email}>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  aria-invalid={Boolean(errors.email)}
-                  aria-describedby={errors.email ? "email-error" : undefined}
-                  className={fieldClass}
-                />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    aria-invalid={Boolean(errors.email)}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={fieldClass}
+                  />
                 </Field>
-              </RevealItem>
 
-              <RevealItem>
                 <Field label="Company" htmlFor="company" error={errors.company}>
-                <input
-                  id="company"
-                  name="company"
-                  type="text"
-                  autoComplete="organization"
-                  aria-invalid={Boolean(errors.company)}
-                  aria-describedby={errors.company ? "company-error" : undefined}
-                  className={fieldClass}
-                />
+                  <input
+                    id="company"
+                    name="company"
+                    type="text"
+                    autoComplete="organization"
+                    aria-invalid={Boolean(errors.company)}
+                    aria-describedby={errors.company ? "company-error" : undefined}
+                    className={fieldClass}
+                  />
                 </Field>
-              </RevealItem>
 
-              <RevealItem>
-                <Field label="Monthly media budget" htmlFor="budget" error={errors.budget}>
+                <Field label="Phone (optional)" htmlFor="phone">
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    className={fieldClass}
+                  />
+                </Field>
+              </div>
+
+              <Field label="Service needed" htmlFor="service" error={errors.service}>
+                <select
+                  id="service"
+                  name="service"
+                  defaultValue=""
+                  aria-invalid={Boolean(errors.service)}
+                  aria-describedby={errors.service ? "service-error" : undefined}
+                  className={fieldClass}
+                >
+                  <option value="" disabled>
+                    Select a service
+                  </option>
+                  {contact.services.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <Field label="Monthly budget" htmlFor="budget" error={errors.budget}>
                 <select
                   id="budget"
                   name="budget"
@@ -187,11 +212,9 @@ export function Contact() {
                     </option>
                   ))}
                 </select>
-                </Field>
-              </RevealItem>
+              </Field>
 
-              <RevealItem>
-                <Field label="Project brief" htmlFor="brief" error={errors.brief}>
+              <Field label="What do you need?" htmlFor="brief" error={errors.brief}>
                 <textarea
                   id="brief"
                   name="brief"
@@ -200,14 +223,10 @@ export function Contact() {
                   aria-describedby={errors.brief ? "brief-error" : undefined}
                   className={`${fieldClass} resize-none`}
                 />
-                </Field>
-              </RevealItem>
+              </Field>
 
-              <RevealItem>
-                <SubmitButton />
-              </RevealItem>
+              <SubmitButton />
             </form>
-            </RevealGroup>
           )}
         </div>
       </div>

@@ -1,125 +1,81 @@
 "use client";
 
 import { motion } from "motion/react";
-import { EASE, hoverTransition } from "@/lib/motion";
+import { EASE } from "@/lib/motion";
 import { hero } from "@/lib/content";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
-import { MagneticButton } from "@/components/ui/MagneticButton";
-
-const rise = (delay: number, distance = 16) => ({
-  initial: { opacity: 0, y: distance },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.8, ease: EASE, delay },
-});
+import { Button } from "@/components/ui/Button";
+import { Marquee } from "@/components/ui/Marquee";
 
 export function Hero() {
   const reduced = useReducedMotion();
-  const anim = (delay: number, distance?: number) =>
-    reduced ? {} : rise(delay, distance);
+  const rise = (delay: number) =>
+    reduced
+      ? {}
+      : {
+          initial: { opacity: 0, y: 18 },
+          animate: { opacity: 1, y: 0 },
+          transition: { duration: 0.8, ease: EASE, delay },
+        };
 
   return (
     <section
       id="top"
-      data-theme="light"
-      className="relative flex min-h-svh flex-col justify-between overflow-hidden bg-paper"
+      data-theme="paper"
+      className="relative overflow-hidden bg-[var(--bg)] pb-16 pt-32 md:pt-40"
     >
-      <div className="absolute inset-0 z-0 grid place-items-center">
-        <motion.div
-          className="relative h-[80%] w-[80%] overflow-hidden bg-fog md:h-full md:w-full"
-          initial={reduced ? undefined : { opacity: 0, scale: 1.05 }}
-          animate={reduced ? undefined : { opacity: 1, scale: 1 }}
-          transition={{ duration: 1.8, ease: EASE }}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 h-[38rem] w-[80rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,30,255,0.10),transparent_65%)]"
+      />
+
+      <div className="shell relative flex flex-col items-center text-center">
+        <motion.p
+          className="t-mono flex items-center gap-2 rounded-full border border-[var(--hairline)] px-4 py-2 text-[var(--muted)]"
+          {...rise(0.1)}
         >
-          {reduced ? (
-            <div className="h-full w-full bg-fog" />
-          ) : (
-            <video
-              className="h-full w-full object-cover grayscale contrast-[1.08]"
-              src={hero.video.src}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              aria-label={hero.video.label}
-            />
-          )}
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
+          {hero.eyebrow}
+        </motion.p>
+
+        <motion.h1
+          className="t-display-xl mt-8 max-w-[24ch] text-balance"
+          {...rise(0.2)}
+        >
+          <span className="text-accent">{hero.headline.accent}</span>{" "}
+          <span>{hero.headline.rest}</span>
+        </motion.h1>
+
+        <motion.p
+          className="t-body-lg mt-7 max-w-[58ch] text-[var(--muted)]"
+          {...rise(0.32)}
+        >
+          {hero.standfirst}
+        </motion.p>
+
+        <motion.div
+          className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+          {...rise(0.44)}
+        >
+          {hero.actions.map((action) => (
+            <Button
+              key={action.href}
+              href={action.href}
+              variant={action.primary ? "solid" : "outline"}
+              withArrow={action.primary}
+              className="justify-center"
+            >
+              {action.label}
+            </Button>
+          ))}
         </motion.div>
       </div>
 
-      <div aria-hidden="true" className="h-24" />
-
-      <motion.div
-        className="relative z-30 w-full bg-[linear-gradient(to_top,#ffffff_0%,rgba(255,255,255,0.82)_50%,transparent_100%)] pt-40"
-        initial={reduced ? undefined : { opacity: 0, y: 20 }}
-        animate={reduced ? undefined : { opacity: 1, y: 0 }}
-        transition={{ duration: 1, ease: EASE, delay: 0.5 }}
-      >
-        <div className="shell flex flex-col gap-12 pb-10 md:flex-row md:items-end md:justify-between md:gap-16">
-          <div className="max-w-[52rem]">
-            <motion.p
-              className="flex items-center gap-3 text-[13px] text-ink/55"
-              {...anim(0.6)}
-            >
-              <span
-                aria-hidden="true"
-                className="inline-block h-2 w-2 rounded-full bg-ink"
-              />
-              {hero.subtitle}
-            </motion.p>
-
-            <motion.h1 className="t-display-lg mt-6" {...anim(0.8, 20)}>
-              {hero.lines.map((line, lineIndex) => (
-                <span key={lineIndex} className="block">
-                  {line.map((word, wordIndex) =>
-                    word.italic ? (
-                      <em key={wordIndex} className="italic">
-                        {word.text}
-                      </em>
-                    ) : (
-                      <span key={wordIndex}>{word.text}</span>
-                    ),
-                  )}
-                </span>
-              ))}
-            </motion.h1>
-
-            <motion.div className="mt-10 flex flex-wrap gap-3" {...anim(1)}>
-              {hero.actions.map((action) => (
-                <MagneticButton
-                  key={action.href}
-                  href={action.href}
-                  cursorLabel={action.primary ? "Work" : "Process"}
-                  hoverStyle={
-                    action.primary
-                      ? { backgroundColor: "#1B32FF" }
-                      : { borderColor: "#1B32FF", color: "#1B32FF" }
-                  }
-                  className={
-                    action.primary
-                      ? "rounded-full bg-ink px-6 py-3 text-[13px] text-paper"
-                      : "rounded-full border border-ink/35 px-6 py-3 text-[13px]"
-                  }
-                >
-                  {action.label}
-                </MagneticButton>
-              ))}
-            </motion.div>
-          </div>
-
-          <motion.ul className="flex flex-wrap gap-2" {...anim(1.1)}>
-            {hero.tags.map((tag) => (
-              <motion.li
-                key={tag}
-                className="rounded-full border border-ink/12 bg-paper px-4 py-2 text-[11px]"
-                whileHover={{ borderColor: "#1B32FF", color: "#1B32FF", y: -3 }}
-                transition={hoverTransition}
-              >
-                {tag}
-              </motion.li>
-            ))}
-          </motion.ul>
-        </div>
+      <motion.div className="mt-20" {...rise(0.6)}>
+        <p className="t-mono mb-6 text-center text-[var(--muted)]">
+          {hero.clientsLabel}
+        </p>
+        <Marquee items={hero.clients} />
       </motion.div>
     </section>
   );

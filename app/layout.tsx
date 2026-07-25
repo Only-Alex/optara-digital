@@ -1,24 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Serif, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
-import { Cursor } from "@/components/layout/Cursor";
-import { Preloader } from "@/components/layout/Preloader";
 import { site } from "@/lib/content";
 
-const instrumentSerif = Instrument_Serif({
+const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+  weight: ["400", "500", "600"],
   display: "swap",
-  variable: "--font-instrument-serif",
-});
-
-const interTight = Inter_Tight({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-  variable: "--font-inter-tight",
+  variable: "--font-instrument-sans",
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -36,11 +26,11 @@ export const metadata: Metadata = {
   },
   description: site.description,
   keywords: [
-    "performance marketing agency",
-    "DTC growth agency",
-    "brand strategy",
-    "paid media",
-    "lifecycle marketing",
+    "digital marketing agency UK",
+    "SEO agency",
+    "PPC agency",
+    "lead generation",
+    "web design agency",
   ],
   authors: [{ name: site.name }],
   openGraph: {
@@ -56,9 +46,7 @@ export const metadata: Metadata = {
     title: `${site.name} — ${site.tagline}`,
     description: site.description,
   },
-  alternates: {
-    canonical: "/",
-  },
+  alternates: { canonical: "/" },
 };
 
 export const viewport: Viewport = {
@@ -71,12 +59,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
-      className={`${instrumentSerif.variable} ${interTight.variable} ${jetbrainsMono.variable}`}
+      lang="en-GB"
+      className={`${instrumentSans.variable} ${jetbrainsMono.variable}`}
     >
       <body>
-        <Preloader />
-        <Cursor />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>
