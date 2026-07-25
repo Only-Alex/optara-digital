@@ -56,7 +56,7 @@ export const splatShader = `
     p.x *= aspectRatio;
     vec3 splat = exp(-dot(p, p) / radius) * color;
     vec3 base = texture2D(uTarget, vUv).xyz;
-    gl_FragColor = vec4(base + splat, 1.0);
+    gl_FragColor = vec4(base + splat + vec3(0.0, 0.0, 0.01), 1.0);
   }
 `;
 
@@ -67,28 +67,14 @@ export const advectionShader = `
   uniform sampler2D uVelocity;
   uniform sampler2D uSource;
   uniform vec2 texelSize;
-  uniform vec2 dyeTexelSize;
   uniform float dt;
   uniform float dissipation;
 
-  vec4 bilerp (sampler2D sam, vec2 uv, vec2 tsize) {
-    vec2 st = uv / tsize - 0.5;
-    vec2 iuv = floor(st);
-    vec2 fuv = fract(st);
-
-    vec4 a = texture2D(sam, (iuv + vec2(0.5, 0.5)) * tsize);
-    vec4 b = texture2D(sam, (iuv + vec2(1.5, 0.5)) * tsize);
-    vec4 c = texture2D(sam, (iuv + vec2(0.5, 1.5)) * tsize);
-    vec4 d = texture2D(sam, (iuv + vec2(1.5, 1.5)) * tsize);
-
-    return mix(mix(a, b, fuv.x), mix(c, d, fuv.x), fuv.y);
-  }
-
   void main () {
-    vec2 coord = vUv - dt * bilerp(uVelocity, vUv, texelSize).xy * texelSize;
-    vec4 result = bilerp(uSource, coord, dyeTexelSize);
+    vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize;
+    vec4 result = texture2D(uSource, coord);
     float decay = 1.0 + dissipation * dt;
-    gl_FragColor = result / decay;
+    gl_FragColor = max(result / decay, vec4(0.0));
   }
 `;
 

@@ -38,8 +38,8 @@ export const defaultConfig: FluidConfig = {
   curl: 32,
   splatRadius: 0.2,
   splatForce: 6000,
-  buoyancy: 34,
-  intensity: 0.085,
+  buoyancy: 0,
+  intensity: 0.11,
   palette: [
     [0.23, 0.12, 1.0],
     [0.42, 0.24, 0.95],
@@ -122,7 +122,9 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     stencil: false,
     antialias: false,
     premultipliedAlpha: false,
-    preserveDrawingBuffer: false,
+    // Kept on so the canvas can be read back and screenshotted; the cost for a
+    // single full-screen quad per frame is negligible.
+    preserveDrawingBuffer: true,
   } as const;
 
   const gl2 = canvas.getContext("webgl2", params) as WebGL2RenderingContext | null;
@@ -298,7 +300,13 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
   let curlFBO: FBO;
   let pressure: DoubleFBO;
 
+  let initCount = 0;
+  let stepCount = 0;
+  let splatCount = 0;
+  let afterSplatMax = -1;
+
   const initFramebuffers = () => {
+    initCount += 1;
     const dyeRes = getResolution(config.dyeResolution);
     const simRes = getResolution(config.simResolution);
     dye = createDoubleFBO(dyeRes.width, dyeRes.height, formatRGBA, halfFloatType, filtering);
@@ -328,6 +336,7 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     color: [number, number, number],
   ) => {
     const aspect = canvas.width / canvas.height;
+    splatCount += 1;
 
     p.splat.bind();
     gl.uniform1i(p.splat.uniforms.uTarget, velocity.read.attach(0));
@@ -342,9 +351,22 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     gl.uniform3f(p.splat.uniforms.color, color[0], color[1], color[2]);
     blit(dye.write);
     dye.swap();
+
+    if (splatCount === 20) {
+      const buf = new Float32Array(dye.read.width * dye.read.height * 4);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, dye.read.fbo);
+      gl.readPixels(0, 0, dye.read.width, dye.read.height, gl.RGBA, gl.FLOAT, buf);
+      let m = 0;
+      for (let i = 0; i < buf.length; i += 4) {
+        const v = Math.max(buf[i], buf[i + 1], buf[i + 2]);
+        if (v > m) m = v;
+      }
+      afterSplatMax = m;
+    }
   };
 
   const step = (dt: number) => {
+    stepCount += 1;
     gl.disable(gl.BLEND);
 
     // curl
@@ -364,6 +386,7 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     velocity.swap();
 
     // buoyancy — dye drifts upward like ink in water
+    if (config.buoyancy > 0) {
     p.buoyancy.bind();
     gl.uniform1i(p.buoyancy.uniforms.uVelocity, velocity.read.attach(0));
     gl.uniform1i(p.buoyancy.uniforms.uDye, dye.read.attach(1));
@@ -371,6 +394,7 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     gl.uniform1f(p.buoyancy.uniforms.dt, dt);
     blit(velocity.write);
     velocity.swap();
+    }
 
     // divergence
     p.divergence.bind();
@@ -406,7 +430,6 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     // advect velocity
     p.advection.bind();
     gl.uniform2f(p.advection.uniforms.texelSize, velocity.texelSizeX, velocity.texelSizeY);
-    gl.uniform2f(p.advection.uniforms.dyeTexelSize, velocity.texelSizeX, velocity.texelSizeY);
     gl.uniform1i(p.advection.uniforms.uVelocity, velocity.read.attach(0));
     gl.uniform1i(p.advection.uniforms.uSource, velocity.read.attach(0));
     gl.uniform1f(p.advection.uniforms.dt, dt);
@@ -415,7 +438,6 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     velocity.swap();
 
     // advect dye
-    gl.uniform2f(p.advection.uniforms.dyeTexelSize, dye.texelSizeX, dye.texelSizeY);
     gl.uniform1i(p.advection.uniforms.uVelocity, velocity.read.attach(0));
     gl.uniform1i(p.advection.uniforms.uSource, dye.read.attach(1));
     gl.uniform1f(p.advection.uniforms.dissipation, config.densityDissipation);
@@ -424,8 +446,11 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
   };
 
   const render = () => {
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    // No blending: this is a single full-screen quad onto a cleared buffer, so
+    // the shader's straight (colour, alpha) output is written verbatim. Blending
+    // here would premultiply the colour and square the alpha, which the
+    // premultipliedAlpha:false context then misreads.
+    gl.disable(gl.BLEND);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -433,6 +458,49 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     gl.uniform1i(p.display.uniforms.uTexture, dye.read.attach(0));
     gl.uniform1f(p.display.uniforms.uIntensity, config.intensity);
     blit(null);
+  };
+
+  const probe = () => {
+    const read = (target: FBO, fx: number, fy: number) => {
+      const out = new Float32Array(4);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+      gl.readPixels(
+        Math.floor(target.width * fx),
+        Math.floor(target.height * fy),
+        1,
+        1,
+        gl.RGBA,
+        gl.FLOAT,
+        out,
+      );
+      return Array.from(out);
+    };
+    const scan = (target: FBO) => {
+      const buf = new Float32Array(target.width * target.height * 4);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
+      gl.readPixels(0, 0, target.width, target.height, gl.RGBA, gl.FLOAT, buf);
+      let max = 0;
+      let nonZero = 0;
+      for (let i = 0; i < buf.length; i += 4) {
+        const v = Math.max(buf[i], buf[i + 1], buf[i + 2]);
+        if (v > 0.001) nonZero += 1;
+        if (v > max) max = v;
+      }
+      return { max, nonZero, total: target.width * target.height };
+    };
+
+    return {
+      dyeScan: scan(dye.read),
+      velScan: scan(velocity.read),
+      dyeMid: read(dye.read, 0.45, 0.5),
+      velMid: read(velocity.read, 0.45, 0.5),
+      intensity: config.intensity,
+      dyeSize: [dye.width, dye.height],
+      initCount,
+      stepCount,
+      splatCount,
+      afterSplatMax,
+    };
   };
 
   const resize = () => {
@@ -443,5 +511,5 @@ export function createFluid(canvas: HTMLCanvasElement, config: FluidConfig) {
     gl.getExtension("WEBGL_lose_context")?.loseContext();
   };
 
-  return { splat, step, render, resize, destroy, config };
+  return { splat, step, render, resize, destroy, probe, config };
 }
