@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { nav, site } from "@/lib/content";
-import { CloseIcon, LogoMark } from "@/components/ui/Icons";
+import { CloseIcon, LogoMark, PlusIcon } from "@/components/ui/Icons";
 import { Button } from "@/components/ui/Button";
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
 export function MobileMenu({ open, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [expanded, setExpanded] = useState<string | null>("Services");
 
   useEffect(() => {
     if (!open) return;
@@ -64,7 +66,7 @@ export function MobileMenu({ open, onClose }: Props) {
           role="dialog"
           aria-modal="true"
           aria-label="Menu"
-          className="fixed inset-0 z-[60] flex flex-col bg-paper"
+          className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-paper"
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
@@ -88,29 +90,93 @@ export function MobileMenu({ open, onClose }: Props) {
             </button>
           </div>
 
-          <nav aria-label="Primary" className="shell flex flex-1 flex-col justify-center">
-            <ul className="flex flex-col gap-2">
-              {nav.map((item, i) => (
-                <motion.li
-                  key={item.href}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.45, ease: EASE, delay: 0.08 + i * 0.06 }}
-                >
-                  <a
-                    href={item.href}
-                    onClick={onClose}
-                    className="t-display-md block border-b border-[var(--hairline)] py-5"
+          <nav aria-label="Primary" className="shell flex-1 py-6">
+            <ul className="flex flex-col">
+              {nav.map((item) => {
+                if (!item.children) {
+                  return (
+                    <li
+                      key={item.href}
+                      className="border-b border-[var(--hairline)] first:border-t"
+                    >
+                      <Link
+                        href={item.href}
+                        onClick={onClose}
+                        className="t-display-md block py-5"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                }
+
+                const isOpen = expanded === item.label;
+
+                return (
+                  <li
+                    key={item.href}
+                    className="border-b border-[var(--hairline)] first:border-t"
                   >
-                    {item.label}
-                  </a>
-                </motion.li>
-              ))}
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls="menu-services"
+                      onClick={() => setExpanded(isOpen ? null : item.label)}
+                      className="flex w-full items-center justify-between gap-4 py-5 text-left"
+                    >
+                      <span className="t-display-md">{item.label}</span>
+                      <motion.span
+                        className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--hairline)]"
+                        animate={{ rotate: isOpen ? 45 : 0 }}
+                        transition={{ duration: 0.3, ease: EASE }}
+                      >
+                        <PlusIcon className="h-3 w-3" />
+                      </motion.span>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          id="menu-services"
+                          className="overflow-hidden"
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.35, ease: EASE }}
+                        >
+                          <ul className="flex flex-col gap-1 pb-5">
+                            <li>
+                              <Link
+                                href={item.href}
+                                onClick={onClose}
+                                className="t-body block py-2 font-medium text-accent"
+                              >
+                                All services
+                              </Link>
+                            </li>
+                            {item.children.map((child) => (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  onClick={onClose}
+                                  className="t-body block py-2 text-[var(--muted)]"
+                                >
+                                  {child.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
           <div className="shell flex flex-col gap-4 pb-10">
-            <Button href="#contact" withArrow className="justify-center">
+            <Button href="/contact" withArrow className="justify-center">
               Book a call
             </Button>
             <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="t-body">

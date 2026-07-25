@@ -1,5 +1,13 @@
 export type NavItem = { label: string; href: string };
 
+export type NavChild = { label: string; href: string; blurb: string };
+
+export type NavEntry = {
+  label: string;
+  href: string;
+  children?: NavChild[];
+};
+
 export type Service = {
   index: string;
   name: string;
@@ -42,13 +50,41 @@ export const site = {
   founded: "2016",
 } as const;
 
-export const nav: NavItem[] = [
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Results", href: "#results" },
-  { label: "Process", href: "#process" },
-  { label: "FAQs", href: "#faqs" },
-  { label: "Contact", href: "#contact" },
+export const serviceNav: NavChild[] = [
+  {
+    label: "Branding",
+    href: "/services/branding",
+    blurb: "Positioning, identity and messaging that hold up on a crowded shelf.",
+  },
+  {
+    label: "SEO & GEO",
+    href: "/services/seo-geo",
+    blurb: "Rank in Google and get cited by AI search at the same time.",
+  },
+  {
+    label: "Google Ads",
+    href: "/services/google-ads",
+    blurb: "Search, shopping and performance campaigns run against cost per lead.",
+  },
+  {
+    label: "Social Media",
+    href: "/services/social-media",
+    blurb: "Paid social and organic content that earns attention worth paying for.",
+  },
+  {
+    label: "Website Design & App Development",
+    href: "/services/website-design-app-development",
+    blurb: "Fast, accessible builds that convert the traffic you already buy.",
+  },
+];
+
+export const nav: NavEntry[] = [
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services", children: serviceNav },
+  { label: "Case Studies", href: "/case-studies" },
+  { label: "About", href: "/about" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const hero = {
@@ -60,8 +96,8 @@ export const hero = {
   standfirst:
     "We combine SEO, paid advertising and conversion-focused web design to generate qualified leads for businesses that need to see a return on every pound.",
   actions: [
-    { label: "See our results", href: "#results", primary: true },
-    { label: "Book a strategy call", href: "#contact", primary: false },
+    { label: "See our results", href: "/case-studies", primary: true },
+    { label: "Book a strategy call", href: "/contact", primary: false },
   ],
   clientsLabel: "Trusted by",
   clients: [
@@ -286,14 +322,16 @@ export const footer = {
   columns: [
     {
       title: "Services",
-      links: services.map((service) => ({
-        label: service.name,
-        href: "#services",
-      })),
+      links: serviceNav.map((item) => ({ label: item.label, href: item.href })),
     },
     {
       title: "Company",
-      links: nav,
+      links: [
+        { label: "Case Studies", href: "/case-studies" },
+        { label: "About", href: "/about" },
+        { label: "Blog", href: "/blog" },
+        { label: "Contact", href: "/contact" },
+      ] as NavItem[],
     },
   ],
   legal: [
@@ -310,7 +348,7 @@ export const intro = {
     "We break growth down into manageable phases and work closely with you at every stage. From technical SEO and content through to paid search, conversion rate optimisation and the website itself, we handle the detail so the channels reinforce each other instead of pulling apart.",
     "Every engagement is measured against cost per qualified lead. If a channel cannot be shown to produce enquiries at a price that works for your business, we recommend stopping it.",
   ],
-  cta: { label: "How we work", href: "#process" },
+  cta: { label: "How we work", href: "/about" },
 };
 
 export const sectors = {
@@ -506,13 +544,419 @@ export const faqs = {
     prompt: "Did this answer your question?",
     yes: "Glad that helped.",
     no: "No problem — ask us directly and we will answer properly.",
-    cta: { label: "Ask our team", href: "#contact" },
+    cta: { label: "Ask our team", href: "/contact" },
   },
 };
 
 export const speakBubble = {
   label: "Speak to us",
-  href: "#contact",
+  href: "/contact",
 };
 
 export const scrollCue = "Scroll down";
+
+export type ServicePage = {
+  slug: string;
+  label: string;
+  eyebrow: string;
+  title: { lead: string; accent: string };
+  standfirst: string;
+  intro: string[];
+  offerings: { title: string; body: string }[];
+  deliverables: string[];
+  proof: { value: string; label: string; client: string };
+  faqs: { question: string; answer: string }[];
+};
+
+export const servicePages: ServicePage[] = [
+  {
+    slug: "branding",
+    label: "Branding",
+    eyebrow: "Branding",
+    title: { lead: "A brand that survives", accent: "a sceptical buyer." },
+    standfirst:
+      "Positioning, identity and messaging built for businesses whose buyers compare three or four suppliers before they ever make contact.",
+    intro: [
+      "Most branding work fails commercially because it is judged on whether the founder likes it rather than on whether it makes a buyer shortlist you. We start from the opposite end: what your buyer is comparing, what they are worried about, and what would make choosing you feel like the safe decision.",
+      "The output is not a mood board. It is a written position, a messaging framework your sales team can actually repeat, and an identity system that works at the sizes your business really uses.",
+    ],
+    offerings: [
+      {
+        title: "Positioning",
+        body: "Where you sit against the competitors your buyers already shortlist, and the one thing you want to be known for.",
+      },
+      {
+        title: "Messaging framework",
+        body: "Core proposition, proof points and objection handling, written so the whole team says the same thing.",
+      },
+      {
+        title: "Visual identity",
+        body: "Logo, type, colour and layout rules, tested at the sizes you use most rather than only on a presentation slide.",
+      },
+      {
+        title: "Brand guidelines",
+        body: "A short, usable document. Rules people follow beat a 90-page PDF nobody opens.",
+      },
+    ],
+    deliverables: [
+      "Competitor and category audit",
+      "Positioning statement",
+      "Messaging framework",
+      "Logo and identity system",
+      "Type and colour system",
+      "Brand guidelines document",
+    ],
+    proof: {
+      value: "Page one",
+      label: "for their most competitive keywords after a rebrand and site rebuild",
+      client: "Morgan & Co Solicitors",
+    },
+    faqs: [
+      {
+        question: "Do we have to rebrand everything at once?",
+        answer:
+          "No. Most clients start with positioning and messaging, because those change what every page and every ad says. Visual identity can follow once the words are settled, and often costs less when it does.",
+      },
+      {
+        question: "Will this work if we already have a logo we like?",
+        answer:
+          "Often the logo is the part worth keeping. We will tell you if it is doing its job and focus the budget on the parts that are not, rather than redesigning something for the sake of it.",
+      },
+      {
+        question: "How long does it take?",
+        answer:
+          "Positioning and messaging typically take three to four weeks including your review time. A full identity system adds another four to six.",
+      },
+    ],
+  },
+  {
+    slug: "seo-geo",
+    label: "SEO & GEO",
+    eyebrow: "SEO & GEO",
+    title: { lead: "Found in Google,", accent: "cited by AI." },
+    standfirst:
+      "Traditional search optimisation and generative engine optimisation run together, so you appear in the blue links and in the answer the assistant reads out.",
+    intro: [
+      "Search has split in two. Some of your buyers still scan a results page; a growing number ask ChatGPT, Gemini or Google's AI overview and act on whatever it summarises. The technical foundations overlap, but the content that earns a citation is not always the content that ranks.",
+      "We work on both. Technical health and topical authority for classic SEO, plus the structure, sourcing and factual clarity that make a page quotable by a language model.",
+    ],
+    offerings: [
+      {
+        title: "Technical SEO",
+        body: "Crawlability, indexation, Core Web Vitals and the structural fixes that unblock everything else.",
+      },
+      {
+        title: "Content and topical authority",
+        body: "Pages built around what your buyers actually search at the point of enquiry, not vanity head terms.",
+      },
+      {
+        title: "Generative engine optimisation",
+        body: "Structured data, clear sourcing and answer-shaped content so AI search can quote you accurately.",
+      },
+      {
+        title: "Digital PR and links",
+        body: "Earned coverage that builds the authority both search engines and language models weigh.",
+      },
+    ],
+    deliverables: [
+      "Technical audit and fix list",
+      "Keyword and intent map",
+      "Content plan and briefs",
+      "Schema and structured data",
+      "AI citation tracking",
+      "Monthly rank and lead reporting",
+    ],
+    proof: {
+      value: "312%",
+      label: "organic traffic growth in year one",
+      client: "Elevate Financial",
+    },
+    faqs: [
+      {
+        question: "What is GEO and is it actually different from SEO?",
+        answer:
+          "Generative engine optimisation is about being the source an AI assistant quotes rather than the link a person clicks. It shares the technical foundations with SEO, but rewards clearly structured, well-sourced, factually specific writing far more than keyword density ever did.",
+      },
+      {
+        question: "How long until we see movement?",
+        answer:
+          "Technical gains often show within four to six weeks. Meaningful ranking movement usually starts around three months and compounds from six. Anyone promising page one in a fortnight is selling something else.",
+      },
+      {
+        question: "Can you work alongside our in-house content team?",
+        answer:
+          "Yes, and it is usually cheaper that way. We provide the strategy, briefs and technical work, your team writes to the brief, and we edit for search and citation before publishing.",
+      },
+    ],
+  },
+  {
+    slug: "google-ads",
+    label: "Google Ads",
+    eyebrow: "Google Ads",
+    title: { lead: "Spend measured in leads,", accent: "not clicks." },
+    standfirst:
+      "Search, shopping and performance campaigns structured around what a qualified enquiry is worth to your business.",
+    intro: [
+      "Most underperforming accounts are not badly optimised, they are badly measured. If the conversion being bid towards is a page view or an unqualified form fill, Google will faithfully buy you more of exactly the wrong thing.",
+      "We rebuild tracking first, define what a genuinely qualified lead looks like, then restructure campaigns around that. Wasted spend usually gets cut in the first fortnight, which tends to fund the rest of the work.",
+    ],
+    offerings: [
+      {
+        title: "Account restructure",
+        body: "Campaigns and match types rebuilt around commercial intent, with the search term waste cut out.",
+      },
+      {
+        title: "Conversion tracking",
+        body: "Calls, forms and offline outcomes attributed properly, so bidding optimises towards revenue.",
+      },
+      {
+        title: "Landing pages",
+        body: "Pages built for the ad that sent the click, tested continuously against cost per lead.",
+      },
+      {
+        title: "Shopping and Performance Max",
+        body: "Feed quality and campaign structure for ecommerce, with sensible guard rails on automation.",
+      },
+    ],
+    deliverables: [
+      "Account and competitor audit",
+      "Keyword and negative strategy",
+      "Conversion and call tracking",
+      "Ad copy testing programme",
+      "Landing page testing",
+      "Monthly cost per lead reporting",
+    ],
+    proof: {
+      value: "247%",
+      label: "more qualified leads within six months",
+      client: "Carter Construction Group",
+    },
+    faqs: [
+      {
+        question: "What is the minimum sensible ad budget?",
+        answer:
+          "Below roughly £2,000 a month in media there is rarely enough data to optimise against, and management fees eat too much of the total. If you are under that, we will usually suggest SEO or lifecycle work first and say so honestly.",
+      },
+      {
+        question: "Do you charge a percentage of ad spend?",
+        answer:
+          "We prefer a flat management fee. Charging a percentage of spend rewards us for spending more of your money, which is the wrong incentive when half the job is cutting waste.",
+      },
+      {
+        question: "Who owns the account?",
+        answer:
+          "You do. Accounts are set up in your name, and if we ever part company you keep the account, its history and the learning inside it.",
+      },
+    ],
+  },
+  {
+    slug: "social-media",
+    label: "Social Media",
+    eyebrow: "Social Media",
+    title: { lead: "Attention worth", accent: "paying for." },
+    standfirst:
+      "Paid social and organic content for businesses with a considered sale, where the job is to build familiarity long before anyone fills in a form.",
+    intro: [
+      "For a high-value purchase, social rarely closes the deal on the click. It does something more useful: it makes you familiar, so that when the buyer finally searches, yours is the name they already half trust.",
+      "That means measuring it honestly. We track assisted conversions and brand search lift alongside direct leads, rather than pretending a like is a business outcome.",
+    ],
+    offerings: [
+      {
+        title: "Paid social",
+        body: "Meta and LinkedIn campaigns for demand capture and demand creation, with audiences built from real customer data.",
+      },
+      {
+        title: "Organic content",
+        body: "A sustainable posting rhythm your team can maintain after we hand it over.",
+      },
+      {
+        title: "Creative production",
+        body: "Static, motion and short-form video produced in volume so campaigns never run out of fresh work to test.",
+      },
+      {
+        title: "Community and inbound",
+        body: "Response handling that turns comments and DMs into actual enquiries rather than dead threads.",
+      },
+    ],
+    deliverables: [
+      "Channel and audience strategy",
+      "Content calendar",
+      "Creative production",
+      "Paid campaign management",
+      "Community management guidance",
+      "Monthly performance reporting",
+    ],
+    proof: {
+      value: "173%",
+      label: "increase in conversions across a rebuilt digital strategy",
+      client: "Hughes Property Services",
+    },
+    faqs: [
+      {
+        question: "Which platforms should we actually be on?",
+        answer:
+          "Usually fewer than you think. We would rather do two channels properly than five badly, and which two depends entirely on where your buyers already are. That comes out of the audit.",
+      },
+      {
+        question: "Is organic social still worth it for B2B?",
+        answer:
+          "As a credibility layer, yes. As a primary lead source for most B2B firms, rarely. We are straight about which role it is playing so the budget matches the expectation.",
+      },
+      {
+        question: "Do you produce the creative or do we?",
+        answer:
+          "Either. We have in-house production, but if you have a capable team we will provide the direction and briefs and let them execute, which usually costs less.",
+      },
+    ],
+  },
+  {
+    slug: "website-design-app-development",
+    label: "Website Design & App Development",
+    eyebrow: "Website Design & App Development",
+    title: { lead: "Built to convert", accent: "the traffic you buy." },
+    standfirst:
+      "Fast, accessible websites and product interfaces designed around the enquiry, not around the homepage carousel.",
+    intro: [
+      "Most sites lose more revenue between the click and the enquiry than they ever lose in the ad auction. A half-second of load time and an unclear next step will quietly undo a well-run campaign.",
+      "We design and build for the commercial job: make the next step obvious, make the page fast on a mid-range phone, and make it something your team can edit without a developer.",
+    ],
+    offerings: [
+      {
+        title: "Website design",
+        body: "Bespoke design built around your funnel, with the conversion path decided before the visuals.",
+      },
+      {
+        title: "Development",
+        body: "Accessible, standards-based builds that pass Core Web Vitals rather than merely looking fast.",
+      },
+      {
+        title: "App and product interfaces",
+        body: "Interface design for products and portals, with the same attention to speed and clarity.",
+      },
+      {
+        title: "Hosting and support",
+        body: "Ongoing maintenance, monitoring and iteration once the site is live.",
+      },
+    ],
+    deliverables: [
+      "UX and conversion audit",
+      "Wireframes and prototypes",
+      "Bespoke visual design",
+      "Accessible front-end build",
+      "CMS and content editing",
+      "Hosting, support and iteration",
+    ],
+    proof: {
+      value: "189%",
+      label: "increase in online revenue after a rebuild and campaign overhaul",
+      client: "Urban Living Group",
+    },
+    faqs: [
+      {
+        question: "Do we own the code and design files?",
+        answer:
+          "Yes, on completion and full payment everything transfers to you. We do not retain ownership or lock you into hosting to keep your own site.",
+      },
+      {
+        question: "Can our team edit the site afterwards?",
+        answer:
+          "That is a design requirement, not an afterthought. Pages are built as editable blocks so your team can change content without needing us for every word.",
+      },
+      {
+        question: "How long does a build take?",
+        answer:
+          "A focused marketing site is typically six to eight weeks. Larger builds with ecommerce or custom functionality run longer, and we phase those so something useful goes live early.",
+      },
+    ],
+  },
+];
+
+export const servicesIndex = {
+  eyebrow: "Services",
+  title: { lead: "Five disciplines,", accent: "one revenue target." },
+  standfirst:
+    "Engaged individually or as one programme. Whichever you pick, the reporting leads on qualified enquiries and what each one cost.",
+};
+
+export const aboutPage = {
+  eyebrow: "About",
+  title: { lead: "An agency judged on", accent: "enquiries." },
+  standfirst:
+    "Opti Reach is a UK digital marketing agency working with businesses where a single new client is worth having, and where search decides the shortlist.",
+  body: [
+    "We started in 2016 doing one thing: making search work commercially for firms whose buyers research for weeks before making contact. That has not really changed, though the channels around it have.",
+    "The through line is measurement. We rebuild tracking before we touch a campaign, define what a qualified enquiry actually means for your business, and report against cost per lead in language you can take to a board.",
+    "We keep the client list deliberately short. Senior people run the accounts they audit, and there is no handover to a junior team once a contract is signed.",
+  ],
+  values: [
+    {
+      title: "Straight answers",
+      body: "If a channel is not producing enquiries at a viable cost, we say so before you have to ask, even when that shrinks the budget we manage.",
+    },
+    {
+      title: "Measured properly",
+      body: "Analytics and call tracking are rebuilt first. Without that, every number that follows is a guess dressed up as a report.",
+    },
+    {
+      title: "Senior attention",
+      body: "The person who audits your account is the person who runs it. You always know exactly who is doing the work.",
+    },
+    {
+      title: "No long lock-ins",
+      body: "Rolling agreements after the initial term. Staying should be a monthly decision based on results, not a clause.",
+    },
+  ],
+};
+
+export const caseStudiesPage = {
+  eyebrow: "Case studies",
+  title: { lead: "Five clients,", accent: "five numbers." },
+  standfirst:
+    "Every engagement is measured against qualified enquiries and what each one cost. These are the numbers those clients reported.",
+};
+
+export const blogPage = {
+  eyebrow: "Blog",
+  title: { lead: "Notes on search,", accent: "spend and growth." },
+  standfirst:
+    "Practical writing on SEO, generative search, paid media and the measurement that makes them accountable.",
+  posts: [
+    {
+      slug: "geo-vs-seo",
+      title: "GEO vs SEO: what changes when AI answers the question",
+      category: "SEO & GEO",
+      readingTime: "6 min read",
+      excerpt:
+        "Generative search rewards clear sourcing and answer-shaped structure far more than keyword density ever did. What that means for how you write pages.",
+    },
+    {
+      slug: "cost-per-qualified-lead",
+      title: "Why cost per qualified lead is the only number that matters",
+      category: "Paid media",
+      readingTime: "5 min read",
+      excerpt:
+        "Impressions and clicks always go up. Here is how to define a qualified lead for your business and build reporting that cannot flatter itself.",
+    },
+    {
+      slug: "tracking-you-can-trust",
+      title: "Rebuilding tracking before you spend another pound",
+      category: "Analytics",
+      readingTime: "7 min read",
+      excerpt:
+        "Most underperforming ad accounts are badly measured rather than badly optimised. A practical order of operations for fixing attribution first.",
+    },
+  ],
+};
+
+export const contactPage = {
+  eyebrow: "Contact",
+  title: { lead: "Tell us where you want to be", accent: "in twelve months." },
+  standfirst:
+    "Send a short brief and we will tell you honestly whether we can get you there, roughly what it would cost, and what we would do first.",
+};
+
+export const ctaBand = {
+  title: { lead: "Want the same", accent: "measured properly?" },
+  body: "We take on a small number of new clients each year. If the fit is wrong we will say so on the first call.",
+  action: { label: "Book a strategy call", href: "/contact" },
+};

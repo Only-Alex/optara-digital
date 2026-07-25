@@ -1,13 +1,27 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/content";
+import { servicePages, site } from "@/lib/content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: site.url,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 1,
-    },
+  const now = new Date();
+
+  const routes = [
+    { path: "", priority: 1 },
+    { path: "/services", priority: 0.9 },
+    { path: "/case-studies", priority: 0.8 },
+    { path: "/about", priority: 0.7 },
+    { path: "/blog", priority: 0.6 },
+    { path: "/contact", priority: 0.8 },
   ];
+
+  const serviceRoutes = servicePages.map((service) => ({
+    path: `/services/${service.slug}`,
+    priority: 0.8,
+  }));
+
+  return [...routes, ...serviceRoutes].map((route) => ({
+    url: `${site.url}${route.path}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: route.priority,
+  }));
 }
