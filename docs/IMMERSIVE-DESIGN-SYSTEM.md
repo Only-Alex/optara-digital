@@ -9,6 +9,9 @@ document.
 
 ## 1. Core creative vision
 
+Work on this project as a senior frontend engineer and art director. Never
+produce generic, template-looking AI output. Favour quality over speed.
+
 Opti Reach should be a premium, state-of-the-art agency website that
 *demonstrates* the creative, strategic and technical work the agency sells.
 The site is the portfolio piece.
@@ -100,8 +103,27 @@ page**, unless there is a strong creative reason. 3D supports content; it does
 not become the content.
 
 **Avoid:** generic floating spheres · meaningless blobs · overused glass
-objects · chrome shapes · AI-visual clichés · anything that delays access to
-important information · large scenes that exist only to look impressive.
+objects · chrome shapes · anything that delays access to important information ·
+large scenes that exist only to look impressive.
+
+Also avoid, named so they can actually be self-checked:
+
+- **Gradient ramps between the blue and the purple.** The identity colours are
+  correct; the ramp between them is the single most recognisable AI-design tell.
+  Use the accent flat. Where depth is needed, get it from layering, hairlines or
+  opacity rather than a hue ramp.
+- Glassmorphism panels, aurora and mesh-gradient grounds, floating blurred orbs.
+- Bento grids chosen as a default layout rather than because the content is
+  genuinely modular.
+- Decorative `01 / 02 / 03` numbering. Number real sequences only: a phased
+  process qualifies, a sector grid does not.
+- Counters on every figure on the page; logo marquees with no stated purpose;
+  text that scrambles or typewriters on entry.
+- The hero pattern of one big number, a small label, three supporting stats and
+  a gradient accent.
+
+If a proposed section would look at home on any other agency site, it is not
+finished. Say what changed and why.
 
 **Preferred style:** minimal, precise, editorial, technological,
 brand-relevant, smooth, highly polished.
@@ -135,6 +157,10 @@ Animation should feel smooth and controlled, not playful or cartoon-like.
 | **L1 — Micro-interactions** | Buttons, links, icons, cards, nav feedback | Everywhere |
 | **L2 — Section transitions** | Text reveals, images, mockups, diagrams | Per section |
 | **L3 — Signature experiences** | Major 3D scenes, interactive case studies, key storytelling | Sparingly |
+
+L3 is capped by the §4 budget: normally no more than one dominant immersive
+concept per page, 3D or not. A scroll-scrubbed SVG set-piece counts against it
+just as a WebGL scene does.
 
 Existing shared easing: `EASE = cubic-bezier(0.16, 1, 0.3, 1)` in
 `lib/motion.ts`. Reuse it. Typical durations: micro 200–300ms, reveals
@@ -255,19 +281,54 @@ Prefer the simplest suitable implementation. Never add a large animation
 library for a minor hover effect. Prefer CSS transitions for simple hover and
 colour changes; use `motion` for orchestrated or state-driven animation.
 
+**`motion` is the default for animation. Do not hand-roll
+`requestAnimationFrame` loops for work `motion` can orchestrate.** Refusing a
+new library is not a licence to write the loop by hand — that is how the
+preloader shipped a hang, because its RAF-driven completion never fired in a
+throttled background tab.
+
 Keep interactive and 3D components modular so they can be lazy-loaded and
 maintained independently. Do not place a large client-only boundary around a
 whole page when only one component needs client rendering.
+
+**All copy and navigation data lives in `lib/content.ts`**, so desktop, mobile,
+metadata and the sitemap read one source. Do not duplicate copy into components.
 
 ---
 
 ## 11. Performance requirements
 
-Premium design must not cost performance.
+Premium design must not cost performance. This is an SEO agency's own site, so
+its Core Web Vitals are a sales asset a prospect can check in ten seconds.
+
+### Budgets
+
+Throttled mid-tier mobile profile, production build, never dev.
+
+| Metric | Budget |
+|---|---|
+| LCP | ≤ 2.0s |
+| CLS | < 0.05 |
+| INP | < 200ms |
+| Initial route JS, gzipped, excluding lazy immersive chunks | ≤ 170KB |
+| Any single lazy immersive chunk, gzipped | ≤ 180KB |
+| Lighthouse mobile Performance | ≥ 90 |
+| Lighthouse Accessibility / SEO / Best Practices | 100 |
+
+- The LCP element is always HTML text or a preloaded image. Never a canvas.
+- Where §11 says limit device pixel ratio, the figure is `[1, 1.75]`.
+- Measure sustained FPS on mount for any WebGL scene. If it holds below ~45fps
+  for two seconds, unmount and show the static fallback silently.
+- Self-host fonts, `font-display: swap`, subset to Latin, preload the display
+  face only.
+- Record each sprint's numbers in `PERF_LOG.md`. A sprint that regresses a
+  budget is not done, and the regression is reported rather than absorbed.
+
+### Techniques
 
 - Lazy-load expensive experiences; dynamically import browser-only 3D.
 - Never block initial render.
-- Pause animation offscreen, and when the tab is hidden where practical.
+- Pause animation offscreen, and when the tab is hidden.
 - Limit device pixel ratio for expensive WebGL scenes.
 - Reduce particle counts on smaller or weaker devices.
 - Use compressed geometry and optimised textures.
@@ -284,8 +345,12 @@ fails. **Every complex visual needs a graceful static fallback.**
 
 ## 12. Accessibility and user control
 
-- Respect `prefers-reduced-motion` (`lib/hooks/useReducedMotion`), with reduced
-  or static alternatives to significant animation.
+- Respect `prefers-reduced-motion` **everywhere** (`lib/hooks/useReducedMotion`),
+  with a reduced or static alternative in every case. Not merely where an
+  animation seems significant: "significant" is a judgement call, and L1 is
+  specified as *everywhere*, so the aggregate is large even when each instance
+  reads as trivial on its own. §14's "reduced-motion path verified, not assumed"
+  is the check on this, not a substitute for it.
 - Maintain keyboard navigation and visible focus states.
 - Never rely on colour alone; maintain readable contrast.
 - Avoid flashing content and motion likely to cause discomfort.
@@ -294,6 +359,36 @@ fails. **Every complex visual needs a graceful static fallback.**
 - Keep all important links and CTAs available outside 3D scenes.
 
 Immersive design must improve the experience without excluding anyone.
+
+### Thresholds
+
+- Contrast: 4.5:1 body text, 3:1 large text and UI boundaries.
+- **Known trap, now solved — do not reintroduce.** Measured against the real
+  tokens: `--color-accent` (#3B1EFF) is **7.46:1 on paper** and **6.67:1 on
+  bone**, both fine, but only **2.48:1 on ink** (#12131A) — failing body text
+  *and* the 3:1 floor for large text and UI.
+
+  The fix is shipped: **`--accent-fg`** in `app/globals.css` resolves per theme —
+  the raw accent on paper and bone, **`#8E7BFF` (5.67:1)** on ink, `--color-paper`
+  on the accent ground, with a `:root` fallback for anything unthemed. Use
+  `text-[var(--accent-fg)]` in any component that can appear on more than one
+  ground. `text-accent` and literal `#3B1EFF` are for surfaces that are always
+  light, or for elements carrying their own background (a solid accent button is
+  white-on-indigo at 7.46:1 whatever sits behind it).
+- One `h1` per page; heading order unbroken.
+- Focus ring: 2px outline, 2px offset. Never `outline: none` without a
+  replacement.
+- Decorative canvas gets `aria-hidden="true"` alongside the §12 rule that
+  essential copy never lives inside it.
+
+### Forms
+
+- Persistent visible labels. Placeholder-only labelling fails.
+- Errors state what happened and how to fix it, in the interface's voice,
+  without apologising.
+- A control names its own outcome: "Send brief" produces "Brief sent."
+- Full keyboard operation of nav, mega-menu, accordions and carousels. Escape
+  closes; focus returns to the trigger.
 
 ---
 
@@ -327,11 +422,27 @@ Mobile performance and clarity take priority over parity.
 9. List the files to be modified.
 10. **Wait for approval when the task is primarily conceptual.**
 11. Implement only the approved scope.
-12. Test responsiveness, accessibility, lint, types and production build.
+12. Test responsiveness, accessibility, lint, types and production build. Fix
+    anything you caused.
 13. Confirm protected areas were not changed.
 14. Summarise the result.
 
 No broad, unrequested changes. Complete one sprint before starting the next.
+
+### Done
+
+A sprint is complete only when all of the following hold:
+
+- Types, lint and production build pass.
+- Lighthouse mobile run on every changed route, logged to `PERF_LOG.md`, with
+  no budget regression.
+- Accessibility thresholds in §12 met on changed routes.
+- Reduced-motion path verified, not assumed.
+- The page still reads and converts with JavaScript disabled.
+- `git diff` confirms no protected file changed.
+- Screenshots at 375 / 768 / 1440 reviewed and self-critiqued before presenting.
+
+Tag the commit at each sprint end so there is always a clean revert point.
 
 ### Sprint order
 
@@ -359,18 +470,58 @@ overview, `/blog`.
 
 **Beyond placeholder (approved exception):** `/case-studies`, `/about`.
 
+**Launch blockers.** The items marked below must be resolved with real client
+data before the site is made public, or before `NEXT_PUBLIC_SITE_INDEXABLE` is
+set on any environment. Placeholder contact details on an indexed page are a
+false representation of the business, and a public site without real Privacy
+and Terms pages is a legal exposure. Neither is a cosmetic gap.
+
 **Open items:**
 
 - Blog article template and real posts
-- Real contact details — `hello@optireach.co.uk` and `+44 20 7946 0412` are
-  placeholders (the number is in the Ofcom fictional range)
-- Privacy policy and Terms currently link to `#`
+- **Launch blocker** — real contact details. `hello@optireach.co.uk` and
+  `+44 20 7946 0412` are placeholders (the number is in the Ofcom fictional
+  range)
+- **Launch blocker** — Privacy policy and Terms currently link to `#`
 - No awards or review-score strip exists, and none may be created without real
   credentials from the client
 - Vercel Production Branch may not point at `redesign/creativeweb-direction`
 
-**Verification caveat:** the in-app preview pane is frame-throttled.
-`getComputedStyle` returns the *start* value of CSS transitions and Motion
-animations, and screenshots can be stale or captured mid-animation. Verify
-structure and layout there; state plainly when animated end-states are
-unverified.
+**Verification caveat:** the in-app preview pane is frame-throttled and will
+report animated end-states incorrectly. `CLAUDE.md` owns the environment
+gotchas, including this one — read it before trusting anything the preview
+tells you about a transition or a Motion animation.
+
+---
+
+## 16. Search, metadata and indexing
+
+The agency sells search visibility. Its own site is the first thing a prospect
+will inspect, and a technical SEO fault here costs more credibility than a
+design flaw would.
+
+- Every route sets a unique `title` and `meta description` through the App
+  Router metadata API. No inherited or duplicated pairs.
+- One `canonical` per route, pointing at the production domain. **Checked
+  2026-07-26: `optireach.co.uk` is not registered** — Nominet returns "This
+  domain name has not been registered", and DNS returns `NXDOMAIN`. Until it is
+  bought and pointed at Vercel, canonicals must not name it.
+- Canonical, OG URL and sitemap all derive from `siteOrigin` in
+  `lib/site-url.ts`, which reads `NEXT_PUBLIC_SITE_URL` and otherwise falls back
+  to the deployment's own hostname. `site.url` in `lib/content.ts` records the
+  intended domain only; never canonicalise to it directly.
+- Indexing is opt-in via `NEXT_PUBLIC_SITE_INDEXABLE=true`, set on the
+  production environment and nowhere else. Without it `robots.ts` returns
+  `disallow: /` and the root metadata sets `index: false`. This is the correct
+  state while the build still carries placeholder contact details and concept
+  case studies. Verify after any change to the Production Branch setting.
+- `sitemap.ts` and `robots.ts` generated from the route list, not hand-written.
+- JSON-LD: `Organization` and `WebSite` site-wide; `Service` on service pages;
+  `BreadcrumbList` where nesting exists; `Article` on blog posts. **No
+  `AggregateRating` or `Review` markup** until real, attributable reviews exist
+  — inventing it breaches both the §8 honesty rules and Google's guidelines.
+- Per-route OG images, 1200×630.
+- Alt text describes the image for someone who cannot see it. Never
+  keyword-stuffed — that fails accessibility and is a visible amateur tell on an
+  SEO agency's own site.
+- Headings express document structure, not keyword placement.
