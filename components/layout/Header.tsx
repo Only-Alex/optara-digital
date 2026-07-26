@@ -15,9 +15,10 @@ import { MobileMenu } from "./MobileMenu";
 const OPEN_DELAY = 90;
 const CLOSE_DELAY = 160;
 
-// Layered rather than one flat drop: tight contact, mid diffusion, wide ambient.
+// Tight contact shadow plus a short diffusion. Deliberately no wide ambient
+// pass, which is what made the panel read as a floating card.
 const PANEL_SHADOW =
-  "0 1px 2px rgba(18,19,26,0.04), 0 10px 28px rgba(18,19,26,0.06), 0 32px 72px rgba(18,19,26,0.10)";
+  "0 1px 2px rgba(18,19,26,0.05), 0 6px 16px rgba(18,19,26,0.06), 0 18px 36px rgba(18,19,26,0.07)";
 
 const EASE_CSS = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 
@@ -239,7 +240,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <a
               href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent xl:block"
+              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent 2xl:block"
             >
               {site.phone}
             </a>
@@ -269,7 +270,7 @@ export function Header() {
               <motion.div
                 ref={panelRef}
                 id="services-mega-menu"
-                className="absolute left-1/2 top-full hidden w-[min(64rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
+                className="absolute left-1/2 top-full hidden w-[min(58rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
                 initial={reduced ? undefined : { opacity: 0, y: 8, scale: 0.985 }}
                 animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
                 exit={reduced ? undefined : { opacity: 0, y: 6, scale: 0.99 }}
@@ -282,10 +283,10 @@ export function Header() {
                 onMouseLeave={scheduleClose}
               >
                 <div
-                  className="rounded-[22px] border border-[rgba(18,19,26,0.06)] bg-paper/95 p-3 backdrop-blur-xl md:p-4"
+                  className="rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
                   style={{ boxShadow: PANEL_SHADOW }}
                 >
-                  <ul className="grid gap-1.5 md:grid-cols-2">
+                  <ul className="grid gap-1 md:grid-cols-2">
                     {megaEntry.children?.map((child, index) => {
                       const current = pathname === child.href;
                       const isLast =
@@ -300,12 +301,14 @@ export function Header() {
                             href={child.href}
                             onClick={() => closeMenu()}
                             aria-current={current ? "page" : undefined}
-                            className={`group flex h-full items-start gap-4 rounded-[16px] p-5 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
-                              current ? "bg-accent/[0.045]" : ""
-                            }`}
+                            className={`group flex h-full gap-4 rounded-[16px] p-4 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
+                              isLast ? "items-center" : "items-start"
+                            } ${current ? "bg-accent/[0.045]" : ""}`}
                           >
                             <span
-                              className={`mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-[12px] text-accent transition-colors duration-[240ms] ${EASE_CSS} ${
+                              className={`grid h-11 w-11 shrink-0 place-items-center rounded-[13px] text-accent transition-colors duration-[240ms] ${EASE_CSS} ${
+                                isLast ? "" : "mt-0.5"
+                              } ${
                                 current
                                   ? "bg-accent/[0.14]"
                                   : "bg-accent/[0.07] group-hover:bg-accent/[0.14]"
@@ -313,26 +316,40 @@ export function Header() {
                             >
                               <ServiceIcon
                                 name={child.icon}
-                                className="h-[19px] w-[19px]"
+                                className="h-5 w-5"
                               />
                             </span>
 
-                            <span className="min-w-0 flex-1">
+                            {/* The fifth item spans both columns, so its title and
+                                description sit side by side to use that width. */}
+                            <span
+                              className={`min-w-0 flex-1 ${
+                                isLast ? "md:flex md:items-center md:gap-8" : ""
+                              }`}
+                            >
                               <span
                                 className={`block text-[0.9375rem] font-medium leading-tight transition-colors duration-[240ms] ${EASE_CSS} group-hover:text-accent ${
-                                  current ? "text-accent" : ""
-                                }`}
+                                  isLast ? "md:w-[17rem] md:shrink-0" : ""
+                                } ${current ? "text-accent" : ""}`}
                               >
                                 {child.label}
                               </span>
-                              <span className="mt-2 block max-w-[42ch] text-[0.8125rem] leading-[1.6] text-ink/50 transition-colors duration-[240ms] group-hover:text-ink/70">
+                              <span
+                                className={`block text-[0.8125rem] leading-[1.55] text-ink/60 transition-colors duration-[240ms] group-hover:text-ink/75 ${
+                                  isLast
+                                    ? "mt-1.5 md:mt-0 md:flex-1"
+                                    : "mt-1.5 max-w-[40ch]"
+                                }`}
+                              >
                                 {child.blurb}
                               </span>
                             </span>
 
                             <ArrowIcon
                               aria-hidden="true"
-                              className={`mt-1 h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100`}
+                              className={`h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100 ${
+                                isLast ? "" : "mt-1"
+                              }`}
                             />
                           </Link>
                         </li>
@@ -340,18 +357,18 @@ export function Header() {
                     })}
                   </ul>
 
-                  <div className="mt-2 border-t border-[rgba(18,19,26,0.06)]" />
+                  <div className="mx-4 mt-1.5 border-t border-[rgba(18,19,26,0.07)]" />
 
                   <Link
                     href={dropdownCta.href}
                     onClick={() => closeMenu()}
-                    className={`group flex flex-col gap-3 rounded-[16px] px-5 py-4 transition-colors duration-[240ms] ${EASE_CSS} hover:bg-bone/60 sm:flex-row sm:items-center sm:justify-between`}
+                    className={`group flex flex-col gap-2 rounded-[16px] px-4 py-3 transition-colors duration-[240ms] ${EASE_CSS} hover:bg-bone/60 sm:flex-row sm:items-center sm:justify-between sm:gap-6`}
                   >
                     <span className="block">
-                      <span className="block text-[0.875rem] font-medium">
+                      <span className="block text-[0.875rem] font-medium leading-tight">
                         {dropdownCta.prompt}
                       </span>
-                      <span className="mt-1 block text-[0.8125rem] text-ink/50">
+                      <span className="mt-1 block text-[0.8125rem] leading-[1.5] text-ink/60">
                         {dropdownCta.sub}
                       </span>
                     </span>
