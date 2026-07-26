@@ -232,16 +232,16 @@ export function MobileMenu({ open, onClose }: Props) {
                               );
                             })}
 
-                            <li className="mt-1 border-t border-[var(--hairline)] pt-3">
+                            <li className="mt-1 border-t border-[var(--hairline)] pt-4">
                               <Link
                                 href={dropdownCta.href}
                                 onClick={onClose}
-                                className="flex items-center justify-between gap-4 px-3"
+                                className="flex flex-col gap-2 px-3"
                               >
-                                <span className="text-[0.8125rem] text-ink/50">
+                                <span className="text-[0.875rem] font-medium">
                                   {dropdownCta.prompt}
                                 </span>
-                                <span className="flex shrink-0 items-center gap-1.5 text-[0.8125rem] font-medium text-accent">
+                                <span className="flex items-center gap-1.5 text-[0.8125rem] font-medium text-accent">
                                   {dropdownCta.label}
                                   <ArrowIcon className="h-3.5 w-3.5" />
                                 </span>

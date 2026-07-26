@@ -15,10 +15,11 @@ import { MobileMenu } from "./MobileMenu";
 const OPEN_DELAY = 90;
 const CLOSE_DELAY = 160;
 
-// Layered rather than a single drop: a tight contact shadow, a mid diffusion
-// and a wide ambient pass. Reads as depth instead of a grey blur.
+// Layered rather than one flat drop: tight contact, mid diffusion, wide ambient.
 const PANEL_SHADOW =
-  "0 1px 2px rgba(18,19,26,0.04), 0 8px 24px rgba(18,19,26,0.06), 0 28px 64px rgba(18,19,26,0.10)";
+  "0 1px 2px rgba(18,19,26,0.04), 0 10px 28px rgba(18,19,26,0.06), 0 32px 72px rgba(18,19,26,0.10)";
+
+const EASE_CSS = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -46,7 +47,6 @@ export function Header() {
 
   useEffect(() => clearTimers, [clearTimers]);
 
-  // Close on route change so the panel never survives a navigation.
   useEffect(() => {
     setOpenMenu(null);
   }, [pathname]);
@@ -67,7 +67,6 @@ export function Header() {
       if (event.key === "Escape") closeMenu(openMenu);
     };
 
-    // Click-outside: pointerdown so it fires before focus moves.
     const onPointerDown = (event: PointerEvent) => {
       const target = event.target as Node;
       if (panelRef.current?.contains(target)) return;
@@ -96,6 +95,9 @@ export function Header() {
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
+  const megaEntry = nav.find((item) => item.children);
+  const megaOpen = Boolean(megaEntry && openMenu === megaEntry.label);
+
   return (
     <>
       <motion.header
@@ -105,24 +107,27 @@ export function Header() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <motion.div
-          className="shell flex items-center justify-between gap-8 py-4"
+          className="shell relative flex items-center justify-between gap-8 py-4"
           animate={{
-            backgroundColor: lifted
-              ? "rgba(255,255,255,0.72)"
-              : "rgba(255,255,255,0)",
-            borderBottomColor: lifted
-              ? "rgba(18,19,26,0.07)"
-              : "rgba(18,19,26,0)",
-            boxShadow: lifted
-              ? "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(18,19,26,0.05)"
-              : "0 0 0 rgba(18,19,26,0)",
+            backgroundColor:
+              lifted || megaOpen
+                ? "rgba(255,255,255,0.72)"
+                : "rgba(255,255,255,0)",
+            borderBottomColor:
+              lifted || megaOpen ? "rgba(18,19,26,0.07)" : "rgba(18,19,26,0)",
+            boxShadow:
+              lifted || megaOpen
+                ? "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(18,19,26,0.05)"
+                : "0 0 0 rgba(18,19,26,0)",
           }}
           transition={{ duration: 0.4, ease: EASE }}
           style={{
             borderBottomWidth: 1,
             borderBottomStyle: "solid",
-            backdropFilter: lifted ? "blur(14px) saturate(1.6)" : "none",
-            WebkitBackdropFilter: lifted ? "blur(14px) saturate(1.6)" : "none",
+            backdropFilter:
+              lifted || megaOpen ? "blur(14px) saturate(1.6)" : "none",
+            WebkitBackdropFilter:
+              lifted || megaOpen ? "blur(14px) saturate(1.6)" : "none",
           }}
         >
           <Link
@@ -136,10 +141,7 @@ export function Header() {
             </span>
           </Link>
 
-          <nav
-            aria-label="Primary"
-            className="hidden items-center gap-1 lg:flex"
-          >
+          <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
             {nav.map((item) => {
               const active = isActive(item.href);
 
@@ -149,10 +151,8 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      active
-                        ? "text-accent"
-                        : "text-[var(--fg)] hover:text-accent"
+                    className={`relative rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ${EASE_CSS} ${
+                      active ? "text-accent" : "text-[var(--fg)] hover:text-accent"
                     }`}
                   >
                     {item.label}
@@ -171,17 +171,25 @@ export function Header() {
               return (
                 <div
                   key={item.href}
-                  className="relative"
                   onMouseEnter={() => scheduleOpen(item.label)}
                   onMouseLeave={scheduleClose}
                 >
-                  <button
+                  <motion.button
                     ref={(node) => {
                       triggerRefs.current[item.label] = node;
                     }}
                     type="button"
+                    style={{
+                      backgroundColor: expanded
+                        ? "rgba(244,242,237,0.9)"
+                        : "transparent",
+                      color:
+                        expanded || active ? "rgb(59,30,255)" : "rgb(18,19,26)",
+                      transition:
+                        "background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1)",
+                    }}
                     aria-expanded={expanded}
-                    aria-controls="services-panel"
+                    aria-controls="services-mega-menu"
                     onClick={() =>
                       expanded ? closeMenu(item.label) : setOpenMenu(item.label)
                     }
@@ -199,11 +207,7 @@ export function Header() {
                         );
                       }
                     }}
-                    className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                      active || expanded
-                        ? "text-accent"
-                        : "text-[var(--fg)] hover:text-accent"
-                    }`}
+                    className="relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.9375rem]"
                   >
                     {item.label}
                     <motion.svg
@@ -220,100 +224,13 @@ export function Header() {
                     >
                       <path d="M6 9l6 6 6-6" />
                     </motion.svg>
-                    {active && (
+                    {active && !expanded && (
                       <span
                         aria-hidden="true"
                         className="absolute inset-x-0 -bottom-0.5 mx-auto h-[3px] w-[3px] rounded-full bg-accent"
                       />
                     )}
-                  </button>
-
-                  <AnimatePresence>
-                    {expanded && (
-                      <motion.div
-                        ref={panelRef}
-                        id="services-panel"
-                        className="absolute left-1/2 top-full z-50 w-[41rem] -translate-x-1/2 pt-3.5"
-                        initial={
-                          reduced ? undefined : { opacity: 0, y: 8, scale: 0.98 }
-                        }
-                        animate={
-                          reduced ? undefined : { opacity: 1, y: 0, scale: 1 }
-                        }
-                        exit={
-                          reduced ? undefined : { opacity: 0, y: 6, scale: 0.985 }
-                        }
-                        transition={{ duration: 0.26, ease: EASE }}
-                        style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
-                        onMouseEnter={clearTimers}
-                        onMouseLeave={scheduleClose}
-                      >
-                        <div
-                          className="rounded-[24px] border border-[rgba(18,19,26,0.06)] bg-paper p-3"
-                          style={{ boxShadow: PANEL_SHADOW }}
-                        >
-                          <ul className="grid grid-cols-2 gap-1">
-                            {item.children.map((child, index) => {
-                              const current = pathname === child.href;
-                              const isLast =
-                                index === (item.children?.length ?? 0) - 1;
-
-                              return (
-                                <li
-                                  key={child.href}
-                                  className={isLast ? "col-span-2" : undefined}
-                                >
-                                  <Link
-                                    href={child.href}
-                                    onClick={() => closeMenu()}
-                                    aria-current={current ? "page" : undefined}
-                                    className={`group flex h-full items-start gap-3.5 rounded-[16px] p-4 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform hover:-translate-y-[3px] hover:bg-bone/70 ${
-                                      current ? "bg-bone/70" : ""
-                                    }`}
-                                  >
-                                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[11px] bg-accent/[0.07] text-accent transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110">
-                                      <ServiceIcon
-                                        name={child.icon}
-                                        className="h-[18px] w-[18px]"
-                                      />
-                                    </span>
-                                    <span className="min-w-0">
-                                      <span
-                                        className={`block text-[0.9375rem] font-medium leading-tight transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-accent ${
-                                          current ? "text-accent" : ""
-                                        }`}
-                                      >
-                                        {child.label}
-                                      </span>
-                                      <span className="mt-1.5 block text-[0.8125rem] leading-[1.55] text-ink/50 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-ink/70">
-                                        {child.blurb}
-                                      </span>
-                                    </span>
-                                  </Link>
-                                </li>
-                              );
-                            })}
-                          </ul>
-
-                          <div className="mx-4 mt-2 border-t border-[rgba(18,19,26,0.06)]" />
-
-                          <Link
-                            href={dropdownCta.href}
-                            onClick={() => closeMenu()}
-                            className="group flex items-center justify-between gap-4 rounded-[16px] px-4 py-3.5 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-bone/70"
-                          >
-                            <span className="text-[0.8125rem] text-ink/50">
-                              {dropdownCta.prompt}
-                            </span>
-                            <span className="flex shrink-0 items-center gap-1.5 text-[0.8125rem] font-medium text-accent">
-                              {dropdownCta.label}
-                              <ArrowIcon className="h-3.5 w-3.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1" />
-                            </span>
-                          </Link>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  </motion.button>
                 </div>
               );
             })}
@@ -344,6 +261,112 @@ export function Header() {
               <MenuIcon className="h-5 w-5" />
             </button>
           </div>
+
+          {/* Anchored to the header shell rather than the trigger, so the panel
+              stays centred and can never overflow the viewport on laptops. */}
+          <AnimatePresence>
+            {megaEntry && megaOpen && (
+              <motion.div
+                ref={panelRef}
+                id="services-mega-menu"
+                className="absolute left-1/2 top-full hidden w-[min(64rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
+                initial={reduced ? undefined : { opacity: 0, y: 8, scale: 0.985 }}
+                animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                exit={reduced ? undefined : { opacity: 0, y: 6, scale: 0.99 }}
+                transition={{ duration: 0.24, ease: EASE }}
+                style={{
+                  transformOrigin: "top center",
+                  willChange: "transform, opacity",
+                }}
+                onMouseEnter={clearTimers}
+                onMouseLeave={scheduleClose}
+              >
+                <div
+                  className="rounded-[22px] border border-[rgba(18,19,26,0.06)] bg-paper/95 p-3 backdrop-blur-xl md:p-4"
+                  style={{ boxShadow: PANEL_SHADOW }}
+                >
+                  <ul className="grid gap-1.5 md:grid-cols-2">
+                    {megaEntry.children?.map((child, index) => {
+                      const current = pathname === child.href;
+                      const isLast =
+                        index === (megaEntry.children?.length ?? 0) - 1;
+
+                      return (
+                        <li
+                          key={child.href}
+                          className={isLast ? "md:col-span-2" : undefined}
+                        >
+                          <Link
+                            href={child.href}
+                            onClick={() => closeMenu()}
+                            aria-current={current ? "page" : undefined}
+                            className={`group flex h-full items-start gap-4 rounded-[16px] p-5 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
+                              current ? "bg-accent/[0.045]" : ""
+                            }`}
+                          >
+                            <span
+                              className={`mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-[12px] text-accent transition-colors duration-[240ms] ${EASE_CSS} ${
+                                current
+                                  ? "bg-accent/[0.14]"
+                                  : "bg-accent/[0.07] group-hover:bg-accent/[0.14]"
+                              }`}
+                            >
+                              <ServiceIcon
+                                name={child.icon}
+                                className="h-[19px] w-[19px]"
+                              />
+                            </span>
+
+                            <span className="min-w-0 flex-1">
+                              <span
+                                className={`block text-[0.9375rem] font-medium leading-tight transition-colors duration-[240ms] ${EASE_CSS} group-hover:text-accent ${
+                                  current ? "text-accent" : ""
+                                }`}
+                              >
+                                {child.label}
+                              </span>
+                              <span className="mt-2 block max-w-[42ch] text-[0.8125rem] leading-[1.6] text-ink/50 transition-colors duration-[240ms] group-hover:text-ink/70">
+                                {child.blurb}
+                              </span>
+                            </span>
+
+                            <ArrowIcon
+                              aria-hidden="true"
+                              className={`mt-1 h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100`}
+                            />
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  <div className="mt-2 border-t border-[rgba(18,19,26,0.06)]" />
+
+                  <Link
+                    href={dropdownCta.href}
+                    onClick={() => closeMenu()}
+                    className={`group flex flex-col gap-3 rounded-[16px] px-5 py-4 transition-colors duration-[240ms] ${EASE_CSS} hover:bg-bone/60 sm:flex-row sm:items-center sm:justify-between`}
+                  >
+                    <span className="block">
+                      <span className="block text-[0.875rem] font-medium">
+                        {dropdownCta.prompt}
+                      </span>
+                      <span className="mt-1 block text-[0.8125rem] text-ink/50">
+                        {dropdownCta.sub}
+                      </span>
+                    </span>
+                    <span className="flex shrink-0 items-center gap-1.5 text-[0.875rem] font-medium text-accent">
+                      {dropdownCta.label}
+                      <ArrowIcon
+                        aria-hidden="true"
+                        className={`h-4 w-4 transition-transform duration-[240ms] ${EASE_CSS} group-hover:translate-x-1`}
+                      />
+                    </span>
+                  </Link>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </motion.header>
 
