@@ -7,7 +7,7 @@ import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText"
 
 export function Sectors() {
   return (
-    <section id="sectors" data-theme="bone" className="section">
+    <section id="sectors" data-theme="paper" className="section">
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-12">
           <div className="lg:col-span-6">

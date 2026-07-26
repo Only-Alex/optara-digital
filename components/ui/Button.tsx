@@ -22,7 +22,11 @@ const styles = {
 
 const hover = {
   solid: { backgroundColor: "#1B0FA8", y: -2 },
-  outline: { borderColor: "#3B1EFF", color: "#3B1EFF", y: -2 },
+  outline: {
+    borderColor: "var(--accent-fg)",
+    color: "var(--accent-fg)",
+    y: -2,
+  },
   light: { y: -2 },
 } as const;
 

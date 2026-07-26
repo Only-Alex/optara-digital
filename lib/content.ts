@@ -27,11 +27,18 @@ export type Service = {
   tags: string[];
 };
 
-export type CaseResult = {
-  client: string;
+/**
+ * Illustrative work. These are demonstrations of approach, not delivered
+ * engagements — every one carries a visible `label` saying so, and none may
+ * carry a performance figure until a real, attributable result exists.
+ */
+export type ConceptProject = {
+  label: string;
+  title: string;
   sector: string;
-  headline: string;
-  detail: string;
+  challenge: string;
+  strategy: string;
+  solution: string;
   services: string[];
 };
 
@@ -41,7 +48,6 @@ export type Stat = {
   suffix?: string;
   decimals?: number;
   label: string;
-  client: string;
 };
 
 export type Testimonial = {
@@ -59,7 +65,6 @@ export const site = {
   url: "https://optireach.co.uk",
   email: "hello@optireach.co.uk",
   phone: "+44 20 7946 0412",
-  founded: "2016",
 } as const;
 
 export const serviceNav: NavChild[] = [
@@ -118,44 +123,22 @@ export const hero = {
   standfirst:
     "We combine SEO, paid advertising and conversion-focused web design to generate qualified leads for businesses that need to see a return on every pound.",
   actions: [
-    { label: "See our results", href: "/case-studies", primary: true },
+    { label: "See our work", href: "/case-studies", primary: true },
     { label: "Book a strategy call", href: "/contact", primary: false },
-  ],
-  clientsLabel: "Trusted by",
-  clients: [
-    "Carter Construction Group",
-    "Urban Living Group",
-    "Elevate Financial",
-    "Morgan & Co Solicitors",
-    "Hughes Property Services",
   ],
 };
 
+/**
+ * Not rendered anywhere. The shape of the stats band is kept so it can be
+ * dropped back in once genuine, attributable figures exist; the values are
+ * zeroed so nothing unverified can reach a page by accident. Populate only
+ * from real reporting, with the timeframe and scope stated alongside.
+ */
 export const stats: Stat[] = [
-  {
-    value: 247,
-    suffix: "%",
-    label: "More qualified leads in six months",
-    client: "Carter Construction Group",
-  },
-  {
-    value: 312,
-    suffix: "%",
-    label: "Organic traffic growth in year one",
-    client: "Elevate Financial",
-  },
-  {
-    value: 189,
-    suffix: "%",
-    label: "Increase in online revenue",
-    client: "Urban Living Group",
-  },
-  {
-    value: 173,
-    suffix: "%",
-    label: "Increase in conversions",
-    client: "Hughes Property Services",
-  },
+  { value: 0, suffix: "%", label: "Awaiting verified figure" },
+  { value: 0, suffix: "%", label: "Awaiting verified figure" },
+  { value: 0, suffix: "%", label: "Awaiting verified figure" },
+  { value: 0, suffix: "%", label: "Awaiting verified figure" },
 ];
 
 export const approach = {
@@ -220,93 +203,67 @@ export const services: Service[] = [
 ];
 
 export const work = {
-  eyebrow: "Selected results",
+  eyebrow: "Illustrative work",
   title: {
-    lead: "Five clients,",
-    accent: "five numbers.",
+    lead: "Three situations,",
+    accent: "worked through.",
   },
+  standfirst:
+    "These are concept projects, not delivered engagements. They show how we read a commercial problem and what we would build in response. Published client work will replace them as it clears approval.",
   cases: [
     {
-      client: "Carter Construction Group",
+      label: "Concept project",
+      title: "The contractor who was invisible before the tender",
       sector: "Construction",
-      headline: "247% more qualified leads",
-      detail:
-        "A complete SEO overhaul and paid advertising strategy delivered a 247% increase in qualified leads within six months.",
-      services: ["SEO", "Paid advertising"],
+      challenge:
+        "Regional contractors are usually shortlisted long before an enquiry form is filled in. A buyer researches for weeks, forms a view, then contacts two or three firms. A contractor whose evidence lives in a PDF capability statement never enters that shortlist.",
+      strategy:
+        "Treat the research phase as the real sales funnel. Identify the questions a procurement lead asks between deciding to tender and choosing who to invite, then own the answers.",
+      solution:
+        "A rebuilt identity that reads as commercially serious rather than trade-generic, sector and accreditation pages written to be found and cited, and a project record structured so each completed job earns visibility for the next one.",
+      services: ["Branding", "SEO & GEO", "Website Design & App Development"],
     },
     {
-      client: "Elevate Financial",
-      sector: "Financial services",
-      headline: "312% organic traffic growth",
-      detail:
-        "Within the first year organic traffic grew 312%, generating consistent, high-value enquiries from businesses across the UK.",
-      services: ["SEO", "Content"],
+      label: "Concept project",
+      title: "The professional firm running entirely on referral",
+      sector: "Professional services",
+      challenge:
+        "A practice built on word of mouth has no way to grow beyond the reach of its existing network, and no way to influence which work comes in. Referral volume is stable until it suddenly is not.",
+      strategy:
+        "Build a second channel alongside referral rather than replacing it. Buy visibility on the terms that signal genuine intent, earn it on the terms that signal research, and make the difference measurable.",
+      solution:
+        "Paid search scoped tightly to high-intent enquiries so budget is not spent on browsers, service pages written for the questions asked before instructing a firm, and enquiry tracking rebuilt so referral and search can finally be told apart.",
+      services: ["Google Ads", "SEO & GEO", "Website Design & App Development"],
     },
     {
-      client: "Urban Living Group",
-      sector: "Property",
-      headline: "189% more online revenue",
-      detail:
-        "A data-driven strategy and continuous campaign optimisation increased online revenue by 189%.",
-      services: ["Paid advertising", "Analytics"],
+      label: "Concept project",
+      title: "The specialist supplier nobody could describe",
+      sector: "B2B and manufacturing",
+      challenge:
+        "Technical businesses often sell something genuinely differentiated and describe it in language only their own engineers use. Buyers cannot search for it, and cannot repeat it internally when justifying the purchase.",
+      strategy:
+        "Fix the language first. Establish how buyers actually name the problem, then rebuild the positioning, the site and the content around those words instead of internal terminology.",
+      solution:
+        "A messaging framework that survives being repeated second-hand, a site architecture organised by application rather than product code, and a content programme that gives specifiers something worth sending to a colleague.",
+      services: ["Branding", "Social Media", "Website Design & App Development"],
     },
-    {
-      client: "Morgan & Co Solicitors",
-      sector: "Legal",
-      headline: "Page one for competitive terms",
-      detail:
-        "A website redesign and SEO campaign reached the first page of Google for their most competitive keywords.",
-      services: ["Web design", "SEO"],
-    },
-    {
-      client: "Hughes Property Services",
-      sector: "Property services",
-      headline: "173% more conversions",
-      detail:
-        "A rebuilt digital strategy delivered a 173% increase in conversions and measurable return month after month.",
-      services: ["CRO", "Paid advertising"],
-    },
-  ] as CaseResult[],
+  ] as ConceptProject[],
 };
 
+/**
+ * Deliberately empty. The previous quotes were attributed to companies and
+ * people that cannot be verified, so they have been removed rather than
+ * anonymised — an unattributed quote is still a fabricated endorsement.
+ * The section unmounts itself while this list is empty. Add entries only
+ * with the client's written permission to be named.
+ */
 export const testimonials = {
   eyebrow: "What clients say",
   title: {
     lead: "In their",
     accent: "own words.",
   },
-  items: [
-    {
-      quote:
-        "A complete SEO overhaul and paid advertising strategy resulted in a 247% increase in qualified leads within six months.",
-      name: "Daniel Carter",
-      role: "Managing Director · Carter Construction Group",
-    },
-    {
-      quote:
-        "Our online revenue increased by 189% thanks to a data-driven marketing strategy and continuous campaign optimisation.",
-      name: "James Richardson",
-      role: "Director · Urban Living Group",
-    },
-    {
-      quote:
-        "Within the first year, organic traffic grew by 312%, generating consistent, high-value enquiries from businesses across the UK.",
-      name: "Sarah Bennett",
-      role: "Marketing Director · Elevate Financial",
-    },
-    {
-      quote:
-        "The website redesign and SEO campaign elevated us to the first page of Google for our most competitive keywords, dramatically increasing new business.",
-      name: "Charlotte Morgan",
-      role: "Director · Morgan & Co Solicitors",
-    },
-    {
-      quote:
-        "Their team completely transformed our digital strategy, delivering a 173% increase in conversions and measurable ROI month after month.",
-      name: "Oliver Hughes",
-      role: "Managing Director · Hughes Property Services",
-    },
-  ] as Testimonial[],
+  items: [] as Testimonial[],
 };
 
 export const contact = {
@@ -366,7 +323,7 @@ export const intro = {
   eyebrow: "UK digital marketing agency",
   wordmark: "Opti Reach.",
   body: [
-    "We are Opti Reach, a UK digital marketing agency working with businesses that need enquiries rather than exposure. Our clients are construction firms, property groups, financial and professional services companies, and B2B specialists competing in crowded search results.",
+    "We are Opti Reach, a UK digital marketing agency built for businesses that need enquiries rather than exposure: construction firms, property groups, financial and professional services companies, and B2B specialists competing in crowded search results.",
     "We break growth down into manageable phases and work closely with you at every stage. From technical SEO and content through to paid search, conversion rate optimisation and the website itself, we handle the detail so the channels reinforce each other instead of pulling apart.",
     "Every engagement is measured against cost per qualified lead. If a channel cannot be shown to produce enquiries at a price that works for your business, we recommend stopping it.",
   ],
@@ -590,9 +547,9 @@ export const aboutPage = {
   standfirst:
     "Opti Reach is a UK digital marketing agency working with businesses where a single new client is worth having, and where search decides the shortlist.",
   body: [
-    "We started in 2016 doing one thing: making search work commercially for firms whose buyers research for weeks before making contact. That has not really changed, though the channels around it have.",
+    "Opti Reach exists to do one thing: make search work commercially for firms whose buyers research for weeks before making contact. The channels around that keep changing. The problem does not.",
     "The through line is measurement. We rebuild tracking before we touch a campaign, define what a qualified enquiry actually means for your business, and report against cost per lead in language you can take to a board.",
-    "We keep the client list deliberately short. Senior people run the accounts they audit, and there is no handover to a junior team once a contract is signed.",
+    "We keep the client list deliberately short, so the senior person who audits an account is the person who runs it.",
   ],
   values: [
     {
@@ -615,10 +572,10 @@ export const aboutPage = {
 };
 
 export const caseStudiesPage = {
-  eyebrow: "Case studies",
-  title: { lead: "Five clients,", accent: "five numbers." },
+  eyebrow: "Illustrative work",
+  title: { lead: "How we think,", accent: "worked through." },
   standfirst:
-    "Every engagement is measured against qualified enquiries and what each one cost. These are the numbers those clients reported.",
+    "The projects below are concepts. They are written to show how we read a commercial problem and what we would build in response, and they carry no performance figures because none has been earned yet. Client work will be published here as it clears approval.",
 };
 
 export const blogPage = {
@@ -662,8 +619,8 @@ export const contactPage = {
 };
 
 export const ctaBand = {
-  title: { lead: "Want the same", accent: "measured properly?" },
-  body: "We take on a small number of new clients each year. If the fit is wrong we will say so on the first call.",
+  title: { lead: "Want this approach", accent: "applied to yours?" },
+  body: "We would rather turn work down than take on a poor fit. If that is the case, we will say so on the first call.",
   action: { label: "Book a strategy call", href: "/contact" },
 };
 
@@ -710,6 +667,26 @@ export const growthSystem = {
         "Use content, insight and continuous improvement to strengthen performance across the entire system.",
     },
   ] as GrowthStage[],
+};
+
+export const connectedSystem = {
+  eyebrow: "The problem with channels",
+  heading: {
+    lead: "Most businesses do not need more marketing.",
+    accent: "They need it connected.",
+  },
+  body: "Agencies are usually hired one channel at a time. A brand agency, then an SEO specialist, then someone for the ads. Each does their part, nobody owns the result, and the handovers are where the budget quietly disappears.",
+  secondary:
+    "We run all five as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
+  caption: "One system",
+  // Ordered as the system cycles, not as a price list.
+  modules: [
+    { short: "Branding", full: "Branding" },
+    { short: "SEO & GEO", full: "Search and generative engine optimisation" },
+    { short: "Google Ads", full: "Google Ads and paid search" },
+    { short: "Website & App", full: "Website Design & App Development" },
+    { short: "Social Media", full: "Social Media" },
+  ],
 };
 
 export const primaryCta = { label: "Get Started", href: "/contact" };

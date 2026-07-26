@@ -17,14 +17,19 @@ export function Faq() {
   const reduced = useReducedMotion();
 
   return (
-    <section id="faqs" data-theme="paper" className="section">
+    // Ink is on loan. It holds the third dark beat while Testimonials has no
+    // verified quotes to render; when that section returns this goes back to
+    // paper, so the page keeps three evenly spaced dark moments either way.
+    <section id="faqs" data-theme="ink" className="section">
       <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">
           <RevealText>
             <p className="t-mono text-[var(--muted)]">{faqs.eyebrow}</p>
             <h2 className="t-display-lg mt-6 max-w-[16ch]">
               {faqs.title.lead}{" "}
-              <span className="text-accent">{faqs.title.accent}</span>
+              <span className="text-[var(--accent-fg)]">
+                {faqs.title.accent}
+              </span>
             </h2>
           </RevealText>
         </div>
@@ -51,7 +56,7 @@ export function Faq() {
                   aria-controls={`faq-panel-${i}`}
                   onClick={() => setOpen(isOpen ? null : i)}
                   className="flex w-full items-center justify-between gap-6 py-6 text-left"
-                  whileHover={{ color: "#3B1EFF" }}
+                  whileHover={{ color: "var(--accent-fg)" }}
                   transition={hoverTransition}
                 >
                   <span className="t-body-lg font-medium">{item.question}</span>
@@ -88,7 +93,7 @@ export function Faq() {
                                 onClick={() =>
                                   setVotes((prev) => ({ ...prev, [i]: "yes" }))
                                 }
-                                className="t-mono rounded-full border border-[var(--hairline)] px-4 py-2 transition-colors duration-200 hover:border-accent hover:text-accent"
+                                className="t-mono rounded-full border border-[var(--hairline)] px-4 py-2 transition-colors duration-200 hover:border-[var(--accent-fg)] hover:text-[var(--accent-fg)]"
                               >
                                 Yes
                               </button>
@@ -97,7 +102,7 @@ export function Faq() {
                                 onClick={() =>
                                   setVotes((prev) => ({ ...prev, [i]: "no" }))
                                 }
-                                className="t-mono rounded-full border border-[var(--hairline)] px-4 py-2 transition-colors duration-200 hover:border-accent hover:text-accent"
+                                className="t-mono rounded-full border border-[var(--hairline)] px-4 py-2 transition-colors duration-200 hover:border-[var(--accent-fg)] hover:text-[var(--accent-fg)]"
                               >
                                 No
                               </button>

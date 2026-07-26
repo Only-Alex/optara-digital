@@ -3,7 +3,7 @@ import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText"
 
 export function Difference() {
   return (
-    <section data-theme="ink" className="section">
+    <section data-theme="paper" className="section">
       <div className="shell">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">{difference.eyebrow}</p>

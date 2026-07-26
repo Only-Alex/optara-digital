@@ -27,13 +27,19 @@
   --fg: var(--color-ink);
   --hairline: var(--color-line);
   --muted: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  --accent-fg: var(--color-accent);
 }
 
+/* --accent-fg is the accent as *text*. The brand indigo only reaches 2.5:1
+   against the ink ground, so dark sections substitute a lighter tint that
+   clears AA. Use text-[var(--accent-fg)] in any section that can sit on more
+   than one ground; keep text-accent for surfaces that are always light. */
 [data-theme="paper"] {
   --bg: var(--color-paper);
   --fg: var(--color-ink);
   --hairline: var(--color-line);
   --muted: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  --accent-fg: var(--color-accent);
 }
 
 [data-theme="bone"] {
@@ -41,6 +47,7 @@
   --fg: var(--color-ink);
   --hairline: color-mix(in srgb, var(--color-ink) 12%, transparent);
   --muted: color-mix(in srgb, var(--color-ink) 58%, transparent);
+  --accent-fg: var(--color-accent);
 }
 
 [data-theme="ink"] {
@@ -48,6 +55,7 @@
   --fg: var(--color-paper);
   --hairline: rgba(255, 255, 255, 0.16);
   --muted: rgba(255, 255, 255, 0.66);
+  --accent-fg: #8e7bff;
 }
 
 [data-theme="accent"] {
@@ -55,6 +63,7 @@
   --fg: var(--color-paper);
   --hairline: rgba(255, 255, 255, 0.3);
   --muted: rgba(255, 255, 255, 0.78);
+  --accent-fg: var(--color-paper);
 }
 
 @layer base {

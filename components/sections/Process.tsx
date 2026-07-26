@@ -3,7 +3,7 @@ import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText"
 
 export function Process() {
   return (
-    <section id="process" data-theme="paper" className="section">
+    <section id="process" data-theme="bone" className="section">
       <div className="shell">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">{phases.eyebrow}</p>
@@ -36,7 +36,7 @@ export function Process() {
                     {item.steps.map((step) => (
                       <li
                         key={step}
-                        className="t-mono rounded-full bg-bone px-3 py-1.5 text-[var(--muted)]"
+                        className="t-mono rounded-full border border-[var(--hairline)] px-3 py-1.5 text-[var(--muted)]"
                       >
                         {step}
                       </li>

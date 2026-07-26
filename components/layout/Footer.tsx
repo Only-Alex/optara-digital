@@ -6,15 +6,15 @@ import { hoverTransition } from "@/lib/motion";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealText";
 import { LogoMark } from "@/components/ui/Icons";
 
-const linkHover = { color: "#3B1EFF", x: 3 };
+const linkHover = { color: "var(--accent-fg)", x: 3 };
 
 export function Footer() {
   return (
-    <footer data-theme="bone" className="bg-[var(--bg)] pt-[var(--section-y)] text-[var(--fg)]">
+    <footer data-theme="ink" className="bg-[var(--bg)] pt-[var(--section-y)] text-[var(--fg)]">
       <RevealGroup className="shell grid gap-12 lg:grid-cols-12" stagger={0.08} soft>
         <RevealItem className="lg:col-span-5">
           <span className="flex items-center gap-2.5">
-            <LogoMark className="h-7 w-7 text-accent" />
+            <LogoMark className="h-7 w-7 text-[var(--accent-fg)]" />
             <span className="text-lg font-semibold tracking-[-0.02em]">
               {site.name}
             </span>
@@ -84,8 +84,8 @@ export function Footer() {
               <motion.a
                 href={item.href}
                 className="t-mono text-[var(--muted)]"
-                whileHover={{ color: "#3B1EFF" }}
-                whileFocus={{ color: "#3B1EFF" }}
+                whileHover={{ color: "var(--accent-fg)" }}
+                whileFocus={{ color: "var(--accent-fg)" }}
                 transition={hoverTransition}
               >
                 {item.label}

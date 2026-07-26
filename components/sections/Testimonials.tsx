@@ -12,19 +12,26 @@ export function Testimonials() {
   const [index, setIndex] = useState(0);
   const reduced = useReducedMotion();
   const items = testimonials.items;
+
+  // No verified, nameable testimonials exist yet. Render nothing rather than
+  // an empty carousel, and keep the component ready for when they do.
+  if (items.length === 0) return null;
+
   const active = items[index];
 
   const go = (delta: number) =>
     setIndex((prev) => (prev + delta + items.length) % items.length);
 
   return (
-    <section data-theme="bone" className="section">
+    <section data-theme="ink" className="section">
       <div className="shell">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">{testimonials.eyebrow}</p>
           <h2 className="t-display-lg mt-6 max-w-[24ch]">
             {testimonials.title.lead}{" "}
-            <span className="text-accent">{testimonials.title.accent}</span>
+            <span className="text-[var(--accent-fg)]">
+              {testimonials.title.accent}
+            </span>
           </h2>
         </RevealText>
 
@@ -59,8 +66,14 @@ export function Testimonials() {
               onClick={() => go(-1)}
               aria-label="Previous testimonial"
               className="pill border border-[var(--hairline)] px-5"
-              whileHover={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
-              whileFocus={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileHover={{
+                borderColor: "var(--accent-fg)",
+                color: "var(--accent-fg)",
+              }}
+              whileFocus={{
+                borderColor: "var(--accent-fg)",
+                color: "var(--accent-fg)",
+              }}
               whileTap={{ scale: 0.94 }}
               transition={hoverTransition}
             >
@@ -71,8 +84,14 @@ export function Testimonials() {
               onClick={() => go(1)}
               aria-label="Next testimonial"
               className="pill border border-[var(--hairline)] px-5"
-              whileHover={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
-              whileFocus={{ borderColor: "#3B1EFF", color: "#3B1EFF" }}
+              whileHover={{
+                borderColor: "var(--accent-fg)",
+                color: "var(--accent-fg)",
+              }}
+              whileFocus={{
+                borderColor: "var(--accent-fg)",
+                color: "var(--accent-fg)",
+              }}
               whileTap={{ scale: 0.94 }}
               transition={hoverTransition}
             >
@@ -84,7 +103,7 @@ export function Testimonials() {
         <div className="mt-10 flex items-center gap-4">
           <div className="relative h-px flex-1 bg-[var(--hairline)]">
             <motion.span
-              className="absolute inset-y-0 left-0 bg-accent"
+              className="absolute inset-y-0 left-0 bg-[var(--accent-fg)]"
               animate={{ width: `${((index + 1) / items.length) * 100}%` }}
               transition={{ duration: reduced ? 0 : 0.45, ease: EASE }}
             />

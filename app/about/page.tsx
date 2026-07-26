@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { aboutPage, phases, site, stats } from "@/lib/content";
+import { aboutPage, phases, site } from "@/lib/content";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageHero } from "@/components/layout/PageHero";
 import { CtaBand } from "@/components/layout/CtaBand";
-import { CountUp } from "@/components/ui/CountUp";
 import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
 
 export const metadata: Metadata = {
@@ -75,32 +74,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section data-theme="accent" className="section">
-          <div className="shell">
-            <RevealGroup
-              className="grid grid-cols-1 gap-y-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-8"
-              stagger={0.1}
-            >
-              {stats.map((stat) => (
-                <RevealItem
-                  key={stat.client}
-                  className="border-t border-[var(--hairline)] pt-6"
-                >
-                  <p className="t-display-lg">
-                    <CountUp
-                      value={stat.value}
-                      prefix={stat.prefix}
-                      suffix={stat.suffix}
-                      decimals={stat.decimals}
-                    />
-                  </p>
-                  <p className="t-body mt-4 max-w-[22ch]">{stat.label}</p>
-                  <p className="t-mono mt-3 text-[var(--muted)]">{stat.client}</p>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </div>
-        </section>
+        {/* Results band removed: the figures behind it were never verified.
+            It returns when real, attributable numbers exist. */}
 
         <section data-theme="paper" className="section">
           <div className="shell">
