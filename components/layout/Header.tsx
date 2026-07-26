@@ -1,16 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { nav, primaryCta, site } from "@/lib/content";
+import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
-import { LogoMark, MenuIcon } from "@/components/ui/Icons";
+import { ArrowIcon, LogoMark, MenuIcon } from "@/components/ui/Icons";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
+
+const OPEN_DELAY = 90;
+const CLOSE_DELAY = 160;
+
+// Layered rather than a single drop: a tight contact shadow, a mid diffusion
+// and a wide ambient pass. Reads as depth instead of a grey blur.
+const PANEL_SHADOW =
+  "0 1px 2px rgba(18,19,26,0.04), 0 8px 24px rgba(18,19,26,0.06), 0 28px 64px rgba(18,19,26,0.10)";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -18,31 +26,72 @@ export function Header() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const reduced = useReducedMotion();
   const pathname = usePathname();
+
+  const openTimer = useRef<number | undefined>(undefined);
   const closeTimer = useRef<number | undefined>(undefined);
+  const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setLifted(window.scrollY > 24);
+    const onScroll = () => setLifted(window.scrollY > 16);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpenMenu(null);
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+  const clearTimers = useCallback(() => {
+    window.clearTimeout(openTimer.current);
+    window.clearTimeout(closeTimer.current);
   }, []);
 
-  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+  useEffect(() => clearTimers, [clearTimers]);
 
-  const scheduleClose = () => {
-    window.clearTimeout(closeTimer.current);
-    closeTimer.current = window.setTimeout(() => setOpenMenu(null), 140);
+  // Close on route change so the panel never survives a navigation.
+  useEffect(() => {
+    setOpenMenu(null);
+  }, [pathname]);
+
+  const closeMenu = useCallback(
+    (returnFocusTo?: string) => {
+      clearTimers();
+      setOpenMenu(null);
+      if (returnFocusTo) triggerRefs.current[returnFocusTo]?.focus();
+    },
+    [clearTimers],
+  );
+
+  useEffect(() => {
+    if (!openMenu) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu(openMenu);
+    };
+
+    // Click-outside: pointerdown so it fires before focus moves.
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (panelRef.current?.contains(target)) return;
+      if (triggerRefs.current[openMenu]?.contains(target)) return;
+      closeMenu();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [openMenu, closeMenu]);
+
+  const scheduleOpen = (label: string) => {
+    clearTimers();
+    openTimer.current = window.setTimeout(() => setOpenMenu(label), OPEN_DELAY);
   };
 
-  const cancelClose = () => window.clearTimeout(closeTimer.current);
+  const scheduleClose = () => {
+    clearTimers();
+    closeTimer.current = window.setTimeout(() => setOpenMenu(null), CLOSE_DELAY);
+  };
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -56,50 +105,64 @@ export function Header() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <motion.div
-          className="shell flex items-center justify-between gap-6 py-4"
+          className="shell flex items-center justify-between gap-8 py-4"
           animate={{
-            backgroundColor: lifted ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0)",
+            backgroundColor: lifted
+              ? "rgba(255,255,255,0.72)"
+              : "rgba(255,255,255,0)",
             borderBottomColor: lifted
-              ? "rgba(18,19,26,0.08)"
+              ? "rgba(18,19,26,0.07)"
               : "rgba(18,19,26,0)",
+            boxShadow: lifted
+              ? "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(18,19,26,0.05)"
+              : "0 0 0 rgba(18,19,26,0)",
           }}
-          transition={hoverTransition}
+          transition={{ duration: 0.4, ease: EASE }}
           style={{
             borderBottomWidth: 1,
             borderBottomStyle: "solid",
-            backdropFilter: lifted ? "blur(12px)" : "none",
+            backdropFilter: lifted ? "blur(14px) saturate(1.6)" : "none",
+            WebkitBackdropFilter: lifted ? "blur(14px) saturate(1.6)" : "none",
           }}
         >
-          <Link href="/" className="flex items-center gap-2.5">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5"
+            aria-label={`${site.name} — home`}
+          >
             <LogoMark className="h-7 w-7 text-accent" />
             <span className="text-lg font-semibold tracking-[-0.02em]">
               {site.name}
             </span>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-8 lg:flex">
+          <nav
+            aria-label="Primary"
+            className="hidden items-center gap-1 lg:flex"
+          >
             {nav.map((item) => {
+              const active = isActive(item.href);
+
               if (!item.children) {
                 return (
-                  <motion.span key={item.href} initial="rest" whileHover="hover">
-                    <Link
-                      href={item.href}
-                      aria-current={isActive(item.href) ? "page" : undefined}
-                      className={`t-body relative inline-block text-[0.9375rem] ${
-                        isActive(item.href) ? "text-accent" : ""
-                      }`}
-                    >
-                      {item.label}
-                      <motion.span
-                        className="absolute -bottom-1 left-0 h-px w-full origin-left bg-accent"
-                        variants={{
-                          rest: { scaleX: isActive(item.href) ? 1 : 0 },
-                          hover: { scaleX: 1 },
-                        }}
-                        transition={hoverTransition}
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`relative rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      active
+                        ? "text-accent"
+                        : "text-[var(--fg)] hover:text-accent"
+                    }`}
+                  >
+                    {item.label}
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 -bottom-0.5 mx-auto h-[3px] w-[3px] rounded-full bg-accent"
                       />
-                    </Link>
-                  </motion.span>
+                    )}
+                  </Link>
                 );
               }
 
@@ -109,26 +172,43 @@ export function Header() {
                 <div
                   key={item.href}
                   className="relative"
-                  onMouseEnter={() => {
-                    cancelClose();
-                    setOpenMenu(item.label);
-                  }}
+                  onMouseEnter={() => scheduleOpen(item.label)}
                   onMouseLeave={scheduleClose}
                 >
                   <button
+                    ref={(node) => {
+                      triggerRefs.current[item.label] = node;
+                    }}
                     type="button"
                     aria-expanded={expanded}
-                    aria-haspopup="true"
-                    onClick={() => setOpenMenu(expanded ? null : item.label)}
+                    aria-controls="services-panel"
+                    onClick={() =>
+                      expanded ? closeMenu(item.label) : setOpenMenu(item.label)
+                    }
                     onFocus={() => setOpenMenu(item.label)}
-                    className={`t-body flex items-center gap-1.5 text-[0.9375rem] ${
-                      isActive(item.href) ? "text-accent" : ""
+                    onKeyDown={(event) => {
+                      if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        setOpenMenu(item.label);
+                        window.setTimeout(
+                          () =>
+                            panelRef.current
+                              ?.querySelector<HTMLAnchorElement>("a[href]")
+                              ?.focus(),
+                          40,
+                        );
+                      }
+                    }}
+                    className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                      active || expanded
+                        ? "text-accent"
+                        : "text-[var(--fg)] hover:text-accent"
                     }`}
                   >
                     {item.label}
                     <motion.svg
                       viewBox="0 0 24 24"
-                      className="h-3.5 w-3.5"
+                      className="h-3.5 w-3.5 opacity-60"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -140,48 +220,97 @@ export function Header() {
                     >
                       <path d="M6 9l6 6 6-6" />
                     </motion.svg>
+                    {active && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-0 -bottom-0.5 mx-auto h-[3px] w-[3px] rounded-full bg-accent"
+                      />
+                    )}
                   </button>
 
                   <AnimatePresence>
                     {expanded && (
                       <motion.div
-                        className="absolute left-1/2 top-full z-50 w-[24rem] -translate-x-1/2 pt-4"
-                        initial={reduced ? undefined : { opacity: 0, y: -8 }}
-                        animate={reduced ? undefined : { opacity: 1, y: 0 }}
-                        exit={reduced ? undefined : { opacity: 0, y: -8 }}
-                        transition={{ duration: 0.22, ease: EASE }}
+                        ref={panelRef}
+                        id="services-panel"
+                        className="absolute left-1/2 top-full z-50 w-[41rem] -translate-x-1/2 pt-3.5"
+                        initial={
+                          reduced ? undefined : { opacity: 0, y: 8, scale: 0.98 }
+                        }
+                        animate={
+                          reduced ? undefined : { opacity: 1, y: 0, scale: 1 }
+                        }
+                        exit={
+                          reduced ? undefined : { opacity: 0, y: 6, scale: 0.985 }
+                        }
+                        transition={{ duration: 0.26, ease: EASE }}
+                        style={{ transformOrigin: "top center", willChange: "transform, opacity" }}
+                        onMouseEnter={clearTimers}
+                        onMouseLeave={scheduleClose}
                       >
-                        <ul className="card overflow-hidden p-2 shadow-[0_18px_50px_rgba(18,19,26,0.12)]">
-                          {item.children.map((child) => (
-                            <li key={child.href}>
-                              <Link
-                                href={child.href}
-                                onClick={() => setOpenMenu(null)}
-                                aria-current={
-                                  pathname === child.href ? "page" : undefined
-                                }
-                                className={`flex items-start gap-3 rounded-[var(--radius-sm)] px-4 py-3 transition-colors duration-200 hover:bg-bone ${
-                                  pathname === child.href ? "bg-bone" : ""
-                                }`}
-                              >
-                                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
-                                  <ServiceIcon
-                                    name={child.icon}
-                                    className="h-4 w-4"
-                                  />
-                                </span>
-                                <span className="block">
-                                  <span className="t-body block font-medium">
-                                    {child.label}
-                                  </span>
-                                  <span className="t-caption mt-1 block text-[var(--muted)]">
-                                    {child.blurb}
-                                  </span>
-                                </span>
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
+                        <div
+                          className="rounded-[24px] border border-[rgba(18,19,26,0.06)] bg-paper p-3"
+                          style={{ boxShadow: PANEL_SHADOW }}
+                        >
+                          <ul className="grid grid-cols-2 gap-1">
+                            {item.children.map((child, index) => {
+                              const current = pathname === child.href;
+                              const isLast =
+                                index === (item.children?.length ?? 0) - 1;
+
+                              return (
+                                <li
+                                  key={child.href}
+                                  className={isLast ? "col-span-2" : undefined}
+                                >
+                                  <Link
+                                    href={child.href}
+                                    onClick={() => closeMenu()}
+                                    aria-current={current ? "page" : undefined}
+                                    className={`group flex h-full items-start gap-3.5 rounded-[16px] p-4 transition-[background-color,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform hover:-translate-y-[3px] hover:bg-bone/70 ${
+                                      current ? "bg-bone/70" : ""
+                                    }`}
+                                  >
+                                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[11px] bg-accent/[0.07] text-accent transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-110">
+                                      <ServiceIcon
+                                        name={child.icon}
+                                        className="h-[18px] w-[18px]"
+                                      />
+                                    </span>
+                                    <span className="min-w-0">
+                                      <span
+                                        className={`block text-[0.9375rem] font-medium leading-tight transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-accent ${
+                                          current ? "text-accent" : ""
+                                        }`}
+                                      >
+                                        {child.label}
+                                      </span>
+                                      <span className="mt-1.5 block text-[0.8125rem] leading-[1.55] text-ink/50 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-ink/70">
+                                        {child.blurb}
+                                      </span>
+                                    </span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+
+                          <div className="mx-4 mt-2 border-t border-[rgba(18,19,26,0.06)]" />
+
+                          <Link
+                            href={dropdownCta.href}
+                            onClick={() => closeMenu()}
+                            className="group flex items-center justify-between gap-4 rounded-[16px] px-4 py-3.5 transition-colors duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-bone/70"
+                          >
+                            <span className="text-[0.8125rem] text-ink/50">
+                              {dropdownCta.prompt}
+                            </span>
+                            <span className="flex shrink-0 items-center gap-1.5 text-[0.8125rem] font-medium text-accent">
+                              {dropdownCta.label}
+                              <ArrowIcon className="h-3.5 w-3.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1" />
+                            </span>
+                          </Link>
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -193,7 +322,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <a
               href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="t-body hidden text-[0.9375rem] xl:block"
+              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent xl:block"
             >
               {site.phone}
             </a>

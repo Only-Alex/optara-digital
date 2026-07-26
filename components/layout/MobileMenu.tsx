@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
-import { nav, primaryCta, site } from "@/lib/content";
-import { CloseIcon, LogoMark, PlusIcon } from "@/components/ui/Icons";
+import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
+import { ArrowIcon, CloseIcon, LogoMark, PlusIcon } from "@/components/ui/Icons";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
+import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
 
 type Props = {
@@ -18,11 +19,20 @@ type Props = {
 export function MobileMenu({ open, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const [expanded, setExpanded] = useState<string | null>("Services");
   const pathname = usePathname();
+  const reduced = useReducedMotion();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  // Open the group you are already inside; otherwise start collapsed.
+  const [expanded, setExpanded] = useState<string | null>(() =>
+    pathname.startsWith("/services") ? "Services" : null,
+  );
+
+  useEffect(() => {
+    if (open && pathname.startsWith("/services")) setExpanded("Services");
+  }, [open, pathname]);
 
   useEffect(() => {
     if (!open) return;
@@ -63,6 +73,15 @@ export function MobileMenu({ open, onClose }: Props) {
     };
   }, [open, onClose]);
 
+  const overlayMotion = reduced
+    ? {}
+    : {
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        exit: { opacity: 0 },
+        transition: { duration: 0.28, ease: EASE },
+      };
+
   return (
     <AnimatePresence>
       {open && (
@@ -73,10 +92,7 @@ export function MobileMenu({ open, onClose }: Props) {
           aria-modal="true"
           aria-label="Menu"
           className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-paper"
-          initial={{ opacity: 0, y: -12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.35, ease: EASE }}
+          {...overlayMotion}
         >
           <div className="shell flex items-center justify-between py-4">
             <span className="flex items-center gap-2.5">
@@ -96,35 +112,56 @@ export function MobileMenu({ open, onClose }: Props) {
             </button>
           </div>
 
-          <nav aria-label="Primary" className="shell flex-1 py-6">
+          <nav aria-label="Primary" className="shell flex-1 py-4">
             <ul className="flex flex-col">
-              {nav.map((item) => {
+              {nav.map((item, index) => {
+                const active = isActive(item.href);
+                const itemMotion = reduced
+                  ? {}
+                  : {
+                      initial: { opacity: 0, y: 10 },
+                      animate: { opacity: 1, y: 0 },
+                      transition: {
+                        duration: 0.4,
+                        ease: EASE,
+                        delay: 0.06 + index * 0.04,
+                      },
+                    };
+
                 if (!item.children) {
                   return (
-                    <li
+                    <motion.li
                       key={item.href}
                       className="border-b border-[var(--hairline)] first:border-t"
+                      {...itemMotion}
                     >
                       <Link
                         href={item.href}
                         onClick={onClose}
-                        aria-current={isActive(item.href) ? "page" : undefined}
-                        className={`t-display-md block py-5 ${
-                          isActive(item.href) ? "text-accent" : ""
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center justify-between py-5 text-[1.75rem] tracking-[-0.02em] transition-colors duration-200 ${
+                          active ? "text-accent" : ""
                         }`}
                       >
                         {item.label}
+                        {active && (
+                          <span
+                            aria-hidden="true"
+                            className="h-1.5 w-1.5 rounded-full bg-accent"
+                          />
+                        )}
                       </Link>
-                    </li>
+                    </motion.li>
                   );
                 }
 
                 const isOpen = expanded === item.label;
 
                 return (
-                  <li
+                  <motion.li
                     key={item.href}
                     className="border-b border-[var(--hairline)] first:border-t"
+                    {...itemMotion}
                   >
                     <button
                       type="button"
@@ -134,8 +171,8 @@ export function MobileMenu({ open, onClose }: Props) {
                       className="flex w-full items-center justify-between gap-4 py-5 text-left"
                     >
                       <span
-                        className={`t-display-md ${
-                          isActive(item.href) ? "text-accent" : ""
+                        className={`text-[1.75rem] tracking-[-0.02em] transition-colors duration-200 ${
+                          active ? "text-accent" : ""
                         }`}
                       >
                         {item.label}
@@ -143,7 +180,7 @@ export function MobileMenu({ open, onClose }: Props) {
                       <motion.span
                         className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--hairline)]"
                         animate={{ rotate: isOpen ? 45 : 0 }}
-                        transition={{ duration: 0.3, ease: EASE }}
+                        transition={{ duration: reduced ? 0 : 0.3, ease: EASE }}
                       >
                         <PlusIcon className="h-3 w-3" />
                       </motion.span>
@@ -157,54 +194,64 @@ export function MobileMenu({ open, onClose }: Props) {
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.35, ease: EASE }}
+                          transition={{ duration: reduced ? 0 : 0.36, ease: EASE }}
                         >
                           <ul className="flex flex-col gap-1 pb-5">
-                            <li>
+                            {item.children.map((child) => {
+                              const current = pathname === child.href;
+                              return (
+                                <li key={child.href}>
+                                  <Link
+                                    href={child.href}
+                                    onClick={onClose}
+                                    aria-current={current ? "page" : undefined}
+                                    className={`flex items-start gap-3.5 rounded-[16px] p-3 transition-colors duration-200 ${
+                                      current ? "bg-bone/70" : ""
+                                    }`}
+                                  >
+                                    <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-[11px] bg-accent/[0.07] text-accent">
+                                      <ServiceIcon
+                                        name={child.icon}
+                                        className="h-[18px] w-[18px]"
+                                      />
+                                    </span>
+                                    <span className="min-w-0">
+                                      <span
+                                        className={`block text-[0.9375rem] font-medium leading-tight ${
+                                          current ? "text-accent" : ""
+                                        }`}
+                                      >
+                                        {child.label}
+                                      </span>
+                                      <span className="mt-1.5 block text-[0.8125rem] leading-[1.55] text-ink/50">
+                                        {child.blurb}
+                                      </span>
+                                    </span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
+
+                            <li className="mt-1 border-t border-[var(--hairline)] pt-3">
                               <Link
-                                href={item.href}
+                                href={dropdownCta.href}
                                 onClick={onClose}
-                                className="t-body block py-2 font-medium text-accent"
+                                className="flex items-center justify-between gap-4 px-3"
                               >
-                                All services
+                                <span className="text-[0.8125rem] text-ink/50">
+                                  {dropdownCta.prompt}
+                                </span>
+                                <span className="flex shrink-0 items-center gap-1.5 text-[0.8125rem] font-medium text-accent">
+                                  {dropdownCta.label}
+                                  <ArrowIcon className="h-3.5 w-3.5" />
+                                </span>
                               </Link>
                             </li>
-                            {item.children.map((child) => (
-                              <li key={child.href}>
-                                <Link
-                                  href={child.href}
-                                  onClick={onClose}
-                                  aria-current={
-                                    pathname === child.href ? "page" : undefined
-                                  }
-                                  className={`flex items-start gap-3 py-2.5 ${
-                                    pathname === child.href
-                                      ? "text-accent"
-                                      : "text-[var(--muted)]"
-                                  }`}
-                                >
-                                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
-                                    <ServiceIcon
-                                      name={child.icon}
-                                      className="h-4 w-4"
-                                    />
-                                  </span>
-                                  <span>
-                                    <span className="t-body block font-medium text-[var(--fg)]">
-                                      {child.label}
-                                    </span>
-                                    <span className="t-caption block text-[var(--muted)]">
-                                      {child.blurb}
-                                    </span>
-                                  </span>
-                                </Link>
-                              </li>
-                            ))}
                           </ul>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </li>
+                  </motion.li>
                 );
               })}
             </ul>
@@ -218,10 +265,13 @@ export function MobileMenu({ open, onClose }: Props) {
             >
               {primaryCta.label}
             </Button>
-            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="t-body">
+            <a
+              href={`tel:${site.phone.replace(/\s/g, "")}`}
+              className="t-body text-ink/70"
+            >
               {site.phone}
             </a>
-            <a href={`mailto:${site.email}`} className="t-body text-[var(--muted)]">
+            <a href={`mailto:${site.email}`} className="t-body text-ink/50">
               {site.email}
             </a>
           </div>

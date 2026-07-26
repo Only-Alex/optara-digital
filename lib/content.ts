@@ -66,32 +66,35 @@ export const serviceNav: NavChild[] = [
   {
     label: "Branding",
     href: "/services/branding",
-    blurb: "Build a memorable identity that earns trust.",
+    blurb: "Build an identity that earns trust before the first conversation.",
     icon: "branding",
   },
   {
     label: "SEO & GEO",
     href: "/services/seo-geo",
     blurb:
-      "Improve visibility across search engines and AI-powered discovery.",
+      "Increase your visibility across Google and AI-powered search experiences.",
     icon: "seo",
   },
   {
     label: "Google Ads",
     href: "/services/google-ads",
-    blurb: "Generate qualified leads through high-performing paid campaigns.",
+    blurb:
+      "Generate qualified leads through intelligent paid advertising campaigns.",
     icon: "ads",
   },
   {
     label: "Social Media",
     href: "/services/social-media",
-    blurb: "Build awareness and engagement through strategic social content.",
+    blurb:
+      "Grow awareness and engagement with content your audience actually wants.",
     icon: "social",
   },
   {
     label: "Website Design & App Development",
     href: "/services/website-design-app-development",
-    blurb: "Create fast, polished websites and scalable digital products.",
+    blurb:
+      "Launch fast, polished digital products that turn visitors into enquiries.",
     icon: "web",
   },
 ];
@@ -664,5 +667,11 @@ export const ctaBand = {
 };
 
 export const primaryCta = { label: "Get Started", href: "/contact" };
+
+export const dropdownCta = {
+  prompt: "Not sure which service is right for you?",
+  label: "Book a free strategy call",
+  href: "/contact",
+};
 
 export const placeholderNotice = "Page in development";
