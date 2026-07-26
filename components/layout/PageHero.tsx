@@ -2,7 +2,7 @@ import { RevealText } from "@/components/ui/RevealText";
 
 type Props = {
   eyebrow: string;
-  title: { lead: string; accent: string };
+  title: { lead: string; accent?: string };
   standfirst?: string;
 };
 
@@ -17,7 +17,10 @@ export function PageHero({ eyebrow, title, standfirst }: Props) {
         <RevealText>
           <p className="t-mono text-[var(--muted)]">{eyebrow}</p>
           <h1 className="t-display-xl mt-6 max-w-[18ch]">
-            {title.lead} <span className="text-accent">{title.accent}</span>
+            {title.lead}
+            {title.accent ? (
+              <> <span className="text-accent">{title.accent}</span></>
+            ) : null}
           </h1>
         </RevealText>
         {standfirst ? (

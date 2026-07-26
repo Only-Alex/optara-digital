@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { nav, site } from "@/lib/content";
+import { nav, primaryCta, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { LogoMark, MenuIcon } from "@/components/ui/Icons";
+import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
@@ -15,6 +17,7 @@ export function Header() {
   const [lifted, setLifted] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const reduced = useReducedMotion();
+  const pathname = usePathname();
   const closeTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -41,6 +44,9 @@ export function Header() {
 
   const cancelClose = () => window.clearTimeout(closeTimer.current);
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
     <>
       <motion.header
@@ -53,9 +59,16 @@ export function Header() {
           className="shell flex items-center justify-between gap-6 py-4"
           animate={{
             backgroundColor: lifted ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0)",
+            borderBottomColor: lifted
+              ? "rgba(18,19,26,0.08)"
+              : "rgba(18,19,26,0)",
           }}
           transition={hoverTransition}
-          style={{ backdropFilter: lifted ? "blur(12px)" : "none" }}
+          style={{
+            borderBottomWidth: 1,
+            borderBottomStyle: "solid",
+            backdropFilter: lifted ? "blur(12px)" : "none",
+          }}
         >
           <Link href="/" className="flex items-center gap-2.5">
             <LogoMark className="h-7 w-7 text-accent" />
@@ -71,12 +84,18 @@ export function Header() {
                   <motion.span key={item.href} initial="rest" whileHover="hover">
                     <Link
                       href={item.href}
-                      className="t-body relative inline-block text-[0.9375rem]"
+                      aria-current={isActive(item.href) ? "page" : undefined}
+                      className={`t-body relative inline-block text-[0.9375rem] ${
+                        isActive(item.href) ? "text-accent" : ""
+                      }`}
                     >
                       {item.label}
                       <motion.span
                         className="absolute -bottom-1 left-0 h-px w-full origin-left bg-accent"
-                        variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                        variants={{
+                          rest: { scaleX: isActive(item.href) ? 1 : 0 },
+                          hover: { scaleX: 1 },
+                        }}
                         transition={hoverTransition}
                       />
                     </Link>
@@ -102,7 +121,9 @@ export function Header() {
                     aria-haspopup="true"
                     onClick={() => setOpenMenu(expanded ? null : item.label)}
                     onFocus={() => setOpenMenu(item.label)}
-                    className="t-body flex items-center gap-1.5 text-[0.9375rem]"
+                    className={`t-body flex items-center gap-1.5 text-[0.9375rem] ${
+                      isActive(item.href) ? "text-accent" : ""
+                    }`}
                   >
                     {item.label}
                     <motion.svg
@@ -124,7 +145,7 @@ export function Header() {
                   <AnimatePresence>
                     {expanded && (
                       <motion.div
-                        className="absolute left-1/2 top-full z-50 w-[22rem] -translate-x-1/2 pt-4"
+                        className="absolute left-1/2 top-full z-50 w-[24rem] -translate-x-1/2 pt-4"
                         initial={reduced ? undefined : { opacity: 0, y: -8 }}
                         animate={reduced ? undefined : { opacity: 1, y: 0 }}
                         exit={reduced ? undefined : { opacity: 0, y: -8 }}
@@ -136,13 +157,26 @@ export function Header() {
                               <Link
                                 href={child.href}
                                 onClick={() => setOpenMenu(null)}
-                                className="block rounded-[var(--radius-sm)] px-4 py-3 transition-colors duration-200 hover:bg-bone"
+                                aria-current={
+                                  pathname === child.href ? "page" : undefined
+                                }
+                                className={`flex items-start gap-3 rounded-[var(--radius-sm)] px-4 py-3 transition-colors duration-200 hover:bg-bone ${
+                                  pathname === child.href ? "bg-bone" : ""
+                                }`}
                               >
-                                <span className="t-body block font-medium">
-                                  {child.label}
+                                <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+                                  <ServiceIcon
+                                    name={child.icon}
+                                    className="h-4 w-4"
+                                  />
                                 </span>
-                                <span className="t-caption mt-1 block text-[var(--muted)]">
-                                  {child.blurb}
+                                <span className="block">
+                                  <span className="t-body block font-medium">
+                                    {child.label}
+                                  </span>
+                                  <span className="t-caption mt-1 block text-[var(--muted)]">
+                                    {child.blurb}
+                                  </span>
                                 </span>
                               </Link>
                             </li>
@@ -163,8 +197,12 @@ export function Header() {
             >
               {site.phone}
             </a>
-            <Button href="/contact" className="hidden lg:inline-flex" withArrow>
-              Book a call
+            <Button
+              href={primaryCta.href}
+              className="hidden lg:inline-flex"
+              withArrow
+            >
+              {primaryCta.label}
             </Button>
             <button
               type="button"

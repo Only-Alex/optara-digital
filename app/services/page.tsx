@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { servicePages, servicesIndex, site } from "@/lib/content";
+import { serviceNav, servicesIndex, site } from "@/lib/content";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PageHero } from "@/components/layout/PageHero";
-import { CtaBand } from "@/components/layout/CtaBand";
+import { PagePlaceholder } from "@/components/layout/PagePlaceholder";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealText";
 import { ArrowIcon } from "@/components/ui/Icons";
+import { ServiceIcon } from "@/components/ui/ServiceIcon";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -32,29 +33,30 @@ export default function ServicesPage() {
 
         <section data-theme="paper" className="section pt-0">
           <div className="shell">
-            <RevealGroup as="ul" className="border-t border-[var(--hairline)]" stagger={0.07} soft>
-              {servicePages.map((service, i) => (
-                <RevealItem
-                  key={service.slug}
-                  as="li"
-                  className="border-b border-[var(--hairline)]"
-                >
+            <RevealGroup
+              as="ul"
+              className="grid gap-5 md:grid-cols-2"
+              stagger={0.07}
+              soft
+            >
+              {serviceNav.map((service) => (
+                <RevealItem key={service.href} as="li">
                   <Link
-                    href={`/services/${service.slug}`}
-                    className="group grid gap-4 py-10 md:grid-cols-12 md:items-baseline md:gap-6"
+                    href={service.href}
+                    className="card group flex h-full items-start gap-4 p-8 transition-colors duration-200 hover:border-accent"
                   >
-                    <span className="t-mono text-accent md:col-span-1">
-                      {String(i + 1).padStart(2, "0")}
+                    <span className="mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+                      <ServiceIcon name={service.icon} className="h-5 w-5" />
                     </span>
-                    <h2 className="t-display-md transition-colors duration-200 group-hover:text-accent md:col-span-4">
-                      {service.label}
-                    </h2>
-                    <p className="t-body max-w-[52ch] text-[var(--muted)] md:col-span-6">
-                      {service.standfirst}
-                    </p>
-                    <span className="flex justify-start text-accent md:col-span-1 md:justify-end">
-                      <ArrowIcon className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+                    <span className="flex-1">
+                      <span className="t-display-md block transition-colors duration-200 group-hover:text-accent">
+                        {service.label}
+                      </span>
+                      <span className="t-body mt-3 block max-w-[38ch] text-[var(--muted)]">
+                        {service.blurb}
+                      </span>
                     </span>
+                    <ArrowIcon className="mt-1 h-5 w-5 shrink-0 text-accent transition-transform duration-200 group-hover:translate-x-1" />
                   </Link>
                 </RevealItem>
               ))}
@@ -62,7 +64,7 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        <CtaBand />
+        <PagePlaceholder intro="Detailed service pages are in development. Each one will cover what the work involves, what you receive and how results are measured." />
       </main>
       <Footer />
     </>

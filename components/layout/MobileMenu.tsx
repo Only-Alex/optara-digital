@@ -2,10 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
-import { nav, site } from "@/lib/content";
+import { nav, primaryCta, site } from "@/lib/content";
 import { CloseIcon, LogoMark, PlusIcon } from "@/components/ui/Icons";
+import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { Button } from "@/components/ui/Button";
 
 type Props = {
@@ -17,6 +19,10 @@ export function MobileMenu({ open, onClose }: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState<string | null>("Services");
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   useEffect(() => {
     if (!open) return;
@@ -102,7 +108,10 @@ export function MobileMenu({ open, onClose }: Props) {
                       <Link
                         href={item.href}
                         onClick={onClose}
-                        className="t-display-md block py-5"
+                        aria-current={isActive(item.href) ? "page" : undefined}
+                        className={`t-display-md block py-5 ${
+                          isActive(item.href) ? "text-accent" : ""
+                        }`}
                       >
                         {item.label}
                       </Link>
@@ -124,7 +133,13 @@ export function MobileMenu({ open, onClose }: Props) {
                       onClick={() => setExpanded(isOpen ? null : item.label)}
                       className="flex w-full items-center justify-between gap-4 py-5 text-left"
                     >
-                      <span className="t-display-md">{item.label}</span>
+                      <span
+                        className={`t-display-md ${
+                          isActive(item.href) ? "text-accent" : ""
+                        }`}
+                      >
+                        {item.label}
+                      </span>
                       <motion.span
                         className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--hairline)]"
                         animate={{ rotate: isOpen ? 45 : 0 }}
@@ -159,9 +174,29 @@ export function MobileMenu({ open, onClose }: Props) {
                                 <Link
                                   href={child.href}
                                   onClick={onClose}
-                                  className="t-body block py-2 text-[var(--muted)]"
+                                  aria-current={
+                                    pathname === child.href ? "page" : undefined
+                                  }
+                                  className={`flex items-start gap-3 py-2.5 ${
+                                    pathname === child.href
+                                      ? "text-accent"
+                                      : "text-[var(--muted)]"
+                                  }`}
                                 >
-                                  {child.label}
+                                  <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+                                    <ServiceIcon
+                                      name={child.icon}
+                                      className="h-4 w-4"
+                                    />
+                                  </span>
+                                  <span>
+                                    <span className="t-body block font-medium text-[var(--fg)]">
+                                      {child.label}
+                                    </span>
+                                    <span className="t-caption block text-[var(--muted)]">
+                                      {child.blurb}
+                                    </span>
+                                  </span>
                                 </Link>
                               </li>
                             ))}
@@ -176,8 +211,12 @@ export function MobileMenu({ open, onClose }: Props) {
           </nav>
 
           <div className="shell flex flex-col gap-4 pb-10">
-            <Button href="/contact" withArrow className="justify-center">
-              Book a call
+            <Button
+              href={primaryCta.href}
+              withArrow
+              className="justify-center"
+            >
+              {primaryCta.label}
             </Button>
             <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="t-body">
               {site.phone}

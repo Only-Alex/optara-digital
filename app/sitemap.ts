@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { servicePages, site } from "@/lib/content";
+import { serviceNav, site } from "@/lib/content";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -13,8 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/contact", priority: 0.8 },
   ];
 
-  const serviceRoutes = servicePages.map((service) => ({
-    path: `/services/${service.slug}`,
+  const serviceRoutes = serviceNav.map((service) => ({
+    path: service.href,
     priority: 0.8,
   }));
 
