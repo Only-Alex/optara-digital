@@ -667,6 +667,51 @@ export const ctaBand = {
   action: { label: "Book a strategy call", href: "/contact" },
 };
 
+export type GrowthStage = {
+  number: string;
+  title: string;
+  services: string[];
+  description: string;
+};
+
+export const growthSystem = {
+  eyebrow: "How growth compounds",
+  heading: "Four stages.",
+  accentText: "One connected growth system.",
+  supportingParagraph:
+    "Growth works best when brand, demand, conversion and optimisation reinforce one another. Opti Reach connects every stage, so each decision builds momentum instead of operating in isolation.",
+  stages: [
+    {
+      number: "01",
+      title: "Build recognition",
+      services: ["Branding"],
+      description:
+        "Create a distinctive identity that earns attention, trust and recall before the buying decision begins.",
+    },
+    {
+      number: "02",
+      title: "Capture demand",
+      services: ["SEO & GEO", "Google Ads"],
+      description:
+        "Be visible when intent peaks—across Google, AI-powered discovery and strategically managed paid campaigns.",
+    },
+    {
+      number: "03",
+      title: "Convert attention",
+      services: ["Website Design & App Development"],
+      description:
+        "Turn interest into action with fast, intuitive digital experiences built around clear conversion paths.",
+    },
+    {
+      number: "04",
+      title: "Scale growth",
+      services: ["Social Media", "Continuous optimisation"],
+      description:
+        "Use content, insight and continuous improvement to strengthen performance across the entire system.",
+    },
+  ] as GrowthStage[],
+};
+
 export const primaryCta = { label: "Get Started", href: "/contact" };
 
 export const dropdownCta = {

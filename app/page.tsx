@@ -2,7 +2,10 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
 import { Hero } from "@/components/sections/Hero";
-import { Results } from "@/components/sections/Results";
+// Results is intentionally not rendered for now: its metrics and client names
+// are unverified. The component and its data are kept for the Case Studies
+// sprint, where they will be substantiated before going back on the page.
+import { GrowthSystem } from "@/components/sections/GrowthSystem";
 import { Intro } from "@/components/sections/Intro";
 import { Sectors } from "@/components/sections/Sectors";
 import { Capabilities } from "@/components/sections/Capabilities";
@@ -21,7 +24,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <Results />
+        <GrowthSystem />
         <Intro />
         <Sectors />
         <Capabilities />
