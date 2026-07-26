@@ -86,22 +86,6 @@ export function Hero() {
         </div>
       </div>
 
-      <motion.div className="relative" {...rise(0.62)}>
-        <div className="shell">
-          <ul className="grid grid-cols-2 divide-x divide-y divide-[var(--hairline)] border-t border-[var(--hairline)] sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
-            {hero.clients.map((client) => (
-              <li
-                key={client}
-                className="flex min-h-[5.5rem] items-center justify-center px-4 py-5 text-center"
-              >
-                <span className="t-caption font-medium text-[var(--muted)]">
-                  {client}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </motion.div>
     </section>
   );
 }
