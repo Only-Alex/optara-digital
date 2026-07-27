@@ -3,6 +3,7 @@ import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { site } from "@/lib/content";
+import { isIndexable, siteOrigin } from "@/lib/site-url";
 
 const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
@@ -19,7 +20,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  // Derived from the serving origin, not from site.url: the intended domain is
+  // not registered yet, so a hardcoded base would canonicalise every route to a
+  // hostname that does not resolve. See lib/site-url.ts.
+  metadataBase: new URL(siteOrigin),
+  robots: isIndexable
+    ? undefined
+    : { index: false, follow: false, googleBot: { index: false, follow: false } },
   title: {
     default: `${site.name} — ${site.tagline}`,
     template: `%s — ${site.name}`,
@@ -35,7 +42,7 @@ export const metadata: Metadata = {
   authors: [{ name: site.name }],
   openGraph: {
     type: "website",
-    url: site.url,
+    url: siteOrigin,
     siteName: site.name,
     title: `${site.name} — ${site.tagline}`,
     description: site.description,

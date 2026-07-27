@@ -1,4 +1,4 @@
-# Opti Reach — Project Rules
+# Optara Digital — Project Rules
 
 **Read `docs/IMMERSIVE-DESIGN-SYSTEM.md` before planning or implementing any
 significant visual, motion, 3D, video or interaction work.** That document owns
@@ -16,7 +16,7 @@ This file holds only what is needed in every session regardless of task.
 
 ## Stack
 
-Premium marketing site for **Opti Reach**, a UK B2B digital marketing agency
+Premium marketing site for **Optara Digital**, a UK B2B digital marketing agency
 (SEO, paid advertising, branding, social, web/app).
 
 Next.js 15 App Router · TypeScript strict · Tailwind CSS v4 (CSS-first `@theme`

@@ -56,14 +56,22 @@ export type Testimonial = {
   role: string;
 };
 
+// `name` drives the header lockup, the oversized hero background wordmark and
+// every metadata title, so renaming the business starts and ends here — no
+// component hardcodes it, and the protected hero picks it up untouched.
 export const site = {
-  name: "Opti Reach",
-  shortName: "optireach",
+  name: "Optara Digital",
+  shortName: "optaradigital",
   tagline: "UK digital marketing agency",
   description:
-    "Opti Reach is a UK digital marketing agency combining SEO, paid advertising and conversion-focused web design to generate qualified leads for ambitious businesses.",
-  url: "https://optireach.co.uk",
-  email: "hello@optireach.co.uk",
+    "Optara Digital is a UK digital marketing agency combining SEO, paid advertising and conversion-focused web design to generate qualified leads for ambitious businesses.",
+  // Registered and owned, but not yet pointed at a deployment. Metadata,
+  // sitemap and robots still read `siteOrigin` from lib/site-url.ts rather than
+  // this value, so a build served from anywhere else canonicalises to itself.
+  url: "https://optaradigital.com",
+  // No mailbox behind this yet — mail routing is not set up, so anything sent
+  // here bounces. Launch blocker until it receives.
+  email: "hello@optaradigital.com",
   phone: "+44 20 7946 0412",
 } as const;
 
@@ -321,9 +329,9 @@ export const footer = {
 
 export const intro = {
   eyebrow: "UK digital marketing agency",
-  wordmark: "Opti Reach.",
+  wordmark: "Optara Digital.",
   body: [
-    "We are Opti Reach, a UK digital marketing agency built for businesses that need enquiries rather than exposure: construction firms, property groups, financial and professional services companies, and B2B specialists competing in crowded search results.",
+    "We are Optara Digital, a UK digital marketing agency built for businesses that need enquiries rather than exposure: construction firms, property groups, financial and professional services companies, and B2B specialists competing in crowded search results.",
     "We break growth down into manageable phases and work closely with you at every stage. From technical SEO and content through to paid search, conversion rate optimisation and the website itself, we handle the detail so the channels reinforce each other instead of pulling apart.",
     "Every engagement is measured against cost per qualified lead. If a channel cannot be shown to produce enquiries at a price that works for your business, we recommend stopping it.",
   ],
@@ -545,9 +553,9 @@ export const aboutPage = {
   eyebrow: "About",
   title: { lead: "An agency judged on", accent: "enquiries." },
   standfirst:
-    "Opti Reach is a UK digital marketing agency working with businesses where a single new client is worth having, and where search decides the shortlist.",
+    "Optara Digital is a UK digital marketing agency working with businesses where a single new client is worth having, and where search decides the shortlist.",
   body: [
-    "Opti Reach exists to do one thing: make search work commercially for firms whose buyers research for weeks before making contact. The channels around that keep changing. The problem does not.",
+    "Optara Digital exists to do one thing: make search work commercially for firms whose buyers research for weeks before making contact. The channels around that keep changing. The problem does not.",
     "The through line is measurement. We rebuild tracking before we touch a campaign, define what a qualified enquiry actually means for your business, and report against cost per lead in language you can take to a board.",
     "We keep the client list deliberately short, so the senior person who audits an account is the person who runs it.",
   ],
@@ -636,7 +644,7 @@ export const growthSystem = {
   heading: "Four stages.",
   accentText: "One connected growth system.",
   supportingParagraph:
-    "Growth works best when brand, demand, conversion and optimisation reinforce one another. Opti Reach connects every stage, so each decision builds momentum instead of operating in isolation.",
+    "Growth works best when brand, demand, conversion and optimisation reinforce one another. Optara Digital connects every stage, so each decision builds momentum instead of operating in isolation.",
   stages: [
     {
       number: "01",

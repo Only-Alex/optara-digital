@@ -1,6 +1,6 @@
-# Opti Reach — Immersive Design System
+# Optara Digital — Immersive Design System
 
-The permanent creative and technical direction for the Opti Reach website.
+The permanent creative and technical direction for the Optara Digital website.
 Read this before planning or implementing any significant visual, motion, 3D,
 video or interaction work. `CLAUDE.md` is the short form and defers to this
 document.
@@ -12,7 +12,7 @@ document.
 Work on this project as a senior frontend engineer and art director. Never
 produce generic, template-looking AI output. Favour quality over speed.
 
-Opti Reach should be a premium, state-of-the-art agency website that
+Optara Digital should be a premium, state-of-the-art agency website that
 *demonstrates* the creative, strategic and technical work the agency sells.
 The site is the portfolio piece.
 
@@ -21,7 +21,7 @@ distinctive · premium and carefully art-directed · conversion-focused · fast
 and accessible · original rather than templated · confident without being
 excessive or gimmicky.
 
-It should communicate that Opti Reach combines brand strategy, creative
+It should communicate that Optara Digital combines brand strategy, creative
 direction, performance marketing, search visibility, conversion-focused
 design, modern development and data-led growth.
 
@@ -51,7 +51,8 @@ substantially modify:
 - Hero layout, copy, typography, buttons, spacing, background
 - The cursor smoke effect (`components/ui/FluidCursor.tsx`)
 - Existing hero animations
-- The oversized background "opti reach" typography
+- The oversized background wordmark (renders `site.name`, so a rename flows
+  through it without editing the hero)
 - The overall hero composition
 
 Change it only on explicit request.
@@ -191,7 +192,7 @@ unrelated cards and generic marketing blocks.
 
 Each section should answer a real visitor question:
 
-- Who is Opti Reach?
+- Who is Optara Digital?
 - What business problem do you solve?
 - How do the services work together?
 - Why should a company trust you?
@@ -234,7 +235,7 @@ Burst Digital, Apple, Stripe, Linear, Vercel, Framer and Awwwards sites are
 references for **principles and standards only**. Never copy their text,
 graphics, layouts, animations, illustrations, case studies, client work,
 branded assets or distinctive visual identity. Extract the underlying idea and
-build an original Opti Reach interpretation — more refined, more technological
+build an original Optara Digital interpretation — more refined, more technological
 and more strategically focused than the source.
 
 ---
@@ -414,7 +415,7 @@ Mobile performance and clarity take priority over parity.
 1. Inspect the existing implementation.
 2. Define the commercial purpose.
 3. Define the content hierarchy.
-4. Propose original Opti Reach copy.
+4. Propose original Optara Digital copy.
 5. Propose the visual concept.
 6. Decide whether imagery, video, motion, interaction or 3D adds genuine value.
 7. Explain performance and mobile considerations.
@@ -458,6 +459,11 @@ Tag the commit at each sprint end so there is always a clean revert point.
 Plan 3D and interactive ideas throughout the earlier sprints rather than
 adding them randomly in sprint 6.
 
+**Growth System:** the homepage treatment is L2 — a scroll-scrubbed SVG
+connecting four stage nodes, no WebGL and no new dependency, so it cannot
+compete with the hero's smoke cursor; a full L3 version is deferred to
+`/services` in sprint 3, where nothing competes with it.
+
 ---
 
 ## 15. Current state and open items
@@ -479,9 +485,12 @@ and Terms pages is a legal exposure. Neither is a cosmetic gap.
 **Open items:**
 
 - Blog article template and real posts
-- **Launch blocker** — real contact details. `hello@optireach.co.uk` and
-  `+44 20 7946 0412` are placeholders (the number is in the Ofcom fictional
-  range)
+- **Launch blocker** — working contact details. `hello@optaradigital.com` has
+  no mailbox behind it until mail routing is set up, and `+44 20 7946 0412` is
+  a placeholder in the Ofcom fictional range
+- **Launch blocker** — the contact form delivers nothing. `submitContact` in
+  `app/actions/contact.ts` validates, logs to the server console and returns a
+  success message. Every enquiry is silently lost
 - **Launch blocker** — Privacy policy and Terms currently link to `#`
 - No awards or review-score strip exists, and none may be created without real
   credentials from the client
@@ -502,10 +511,10 @@ design flaw would.
 
 - Every route sets a unique `title` and `meta description` through the App
   Router metadata API. No inherited or duplicated pairs.
-- One `canonical` per route, pointing at the production domain. **Checked
-  2026-07-26: `optireach.co.uk` is not registered** — Nominet returns "This
-  domain name has not been registered", and DNS returns `NXDOMAIN`. Until it is
-  bought and pointed at Vercel, canonicals must not name it.
+- One `canonical` per route, pointing at the production domain. The domain is
+  **`optaradigital.com`**, registered with Cloudflare on 2026-07-27. It does not
+  resolve yet, because no DNS records point it at a deployment — so canonicals
+  must not name it until it serves the site.
 - Canonical, OG URL and sitemap all derive from `siteOrigin` in
   `lib/site-url.ts`, which reads `NEXT_PUBLIC_SITE_URL` and otherwise falls back
   to the deployment's own hostname. `site.url` in `lib/content.ts` records the
