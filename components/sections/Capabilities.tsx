@@ -7,6 +7,7 @@ import { EASE, hoverTransition } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { RevealText } from "@/components/ui/RevealText";
 import { CheckIcon } from "@/components/ui/Icons";
+import { ServiceMockup } from "@/components/ui/ServiceMockup";
 
 export function Capabilities() {
   const [active, setActive] = useState(0);
@@ -82,6 +83,14 @@ export function Capabilities() {
                 exit={reduced ? undefined : { opacity: 0, y: -16 }}
                 transition={{ duration: 0.4, ease: EASE }}
               >
+                {/* First point on the page that shows a screen rather than
+                    describing one. Decorative, so the copy below still carries
+                    the whole meaning if it fails to paint. */}
+                <ServiceMockup
+                  index={active}
+                  className="mb-9 aspect-[4/3] w-full max-w-[30rem] rounded-[13px] bg-[color-mix(in_srgb,var(--fg)_3%,transparent)] p-4 sm:p-5"
+                />
+
                 {group.body.map((paragraph, i) => (
                   <p
                     key={paragraph}
