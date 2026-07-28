@@ -27,13 +27,17 @@ export function Hero() {
     >
       <FluidCursor />
       {/* Sanctioned addition to the protected hero (explicit request,
-          2026-07-28): feeds the fluid sim above with a constant corner plume.
-          Renders nothing itself; FluidCursor is untouched. */}
+          2026-07-28): a corner-scoped instance of the same fluid engine,
+          rising as a constant plume. FluidCursor itself is untouched. */}
       <AmbientPlume />
 
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-center font-semibold leading-none tracking-[-0.04em] text-ink/[0.045] text-[clamp(6rem,19vw,20rem)]"
+        // Sized so the full wordmark always fits. "optara digital" measures
+        // 5.7em of glyphs at this tracking, so the font caps at ~17.5% of
+        // the viewport width; 16.5vw keeps a margin at every breakpoint. The
+        // old 19vw was set for the shorter previous name and clipped it.
+        className="pointer-events-none absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-center font-semibold leading-none tracking-[-0.04em] text-ink/[0.045] text-[clamp(3rem,16.5vw,16rem)]"
       >
         {site.name.toLowerCase()}
       </span>

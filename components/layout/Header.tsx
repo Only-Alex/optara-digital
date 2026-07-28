@@ -4,14 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
+import { dropdownCta, nav, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { ArrowIcon, LogoMark, MenuIcon } from "@/components/ui/Icons";
 import { MenuParticles } from "@/components/ui/MenuParticles";
 import { MenuVapour } from "@/components/ui/MenuVapour";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
-import { Button } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
 
 const OPEN_DELAY = 90;
@@ -245,19 +244,14 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
+            {/* Get Started removed on request (2026-07-28). The phone number
+                steps up from 2xl to lg so the right side is not empty. */}
             <a
               href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent 2xl:block"
+              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent lg:block"
             >
               {site.phone}
             </a>
-            <Button
-              href={primaryCta.href}
-              className="hidden lg:inline-flex"
-              withArrow
-            >
-              {primaryCta.label}
-            </Button>
             <button
               type="button"
               onClick={() => setOpen(true)}

@@ -1,113 +1,197 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useMediaQuery } from "@/lib/hooks/useMediaQuery";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
 /**
- * A constant plume rising from the hero's bottom-right corner, up the right
- * edge — requested 2026-07-28, from a capture of the site's own cursor smoke
- * held in that corner.
+ * Constant smoke rising from the hero's bottom-right corner — the SAME fluid
+ * smoke as the cursor effect, by explicit request: a second, corner-scoped
+ * instance of the same webgl-fluid engine with FluidCursor's exact colour
+ * pipeline (bright-on-black, CSS-inverted), at lower sim resolution.
  *
- * Renders nothing. It drives the EXISTING FluidCursor simulation by walking a
- * synthetic pointer up the right edge, so the plume is made of exactly the
- * same smoke as the cursor and costs no second render loop, no new context —
- * the sim is already running. Strokes alternate pointer ids so each respawn
- * starts with zero velocity (no teleport splat), and the ids never collide
- * with the user's real pointer.
+ * Why a second instance rather than feeding the hero's sim: the library
+ * tracks ONE mouse pointer per canvas, so a synthetic stream on the hero
+ * canvas interleaves with the visitor's real cursor and streaks between the
+ * two positions; and desktop Chrome has no Touch constructor, so the
+ * multi-pointer touch path dies for most visitors. A private instance gives
+ * the emitter its own pointer. The visitor's cursor never reaches this
+ * canvas, and the one-loop rule in §11 is knowingly set aside here — the
+ * client asked for exactly this, twice.
  *
- * Stops emitting when the tab is hidden or the hero has scrolled away; the
- * smoke then simply dissipates. Reduced motion emits nothing.
+ * Streams: three virtual strokes share the one pointer by re-anchoring with
+ * a synthetic mousedown before each move (mousedown resets the pointer's
+ * position without splatting), so every splat's velocity is its own stroke's
+ * small step — never a jump between streams or respawns.
  */
 
-const RISE_PER_FRAME = 2.1;
-const WANDER_PX = 26;
-const EDGE_INSET = 0.07; // fraction of width in from the right edge
-const TOP_LIMIT = 0.22; // stop rising at 22% of hero height
-const IDS = [9001, 9002];
+const TOP_LIMIT = 0.05;
+
+type Stream = {
+  fx: number; // base x, fraction of the plume canvas width
+  amp: number;
+  speed: number; // rise in px per frame
+  phase: number;
+  y: number; // fraction of canvas height, 1 = bottom
+  px: number; // previous client coords, for re-anchoring
+  py: number;
+};
 
 export function AmbientPlume() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const finePointer = useMediaQuery("(pointer: fine)");
   const reduced = useReducedMotion();
+  const enabled = finePointer && !reduced;
 
   useEffect(() => {
-    if (reduced) return;
-
+    if (!enabled) return;
+    const canvas = canvasRef.current;
     const hero = document.getElementById("top");
-    const canvas = hero?.querySelector("canvas");
-    if (!hero || !canvas) return;
+    if (!canvas || !hero) return;
 
+    let cancelled = false;
     let raf = 0;
-    let running = true;
     let visible = true;
-    let y = 1; // fraction of hero height, 1 = bottom
-    let t = 0;
-    let idFlip = 0;
+
+    const sizeCanvas = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+    };
+    sizeCanvas();
+    window.addEventListener("resize", sizeCanvas);
+
+    // Same context-claiming trick as FluidCursor: makes the buffer readable
+    // for verification and keeps attribute control here.
+    canvas.getContext("webgl2", {
+      alpha: true,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preserveDrawingBuffer: true,
+    });
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         visible = entry.isIntersecting;
       },
-      { threshold: 0.05 },
+      { threshold: 0.02 },
     );
     observer.observe(hero);
 
-    const onVisibility = () => {
-      running = document.visibilityState === "visible";
-      if (running) {
-        raf = requestAnimationFrame(tick);
+    import("webgl-fluid").then(({ default: WebGLFluid }) => {
+      if (cancelled) return;
+
+      WebGLFluid(canvas, {
+        TRIGGER: "hover",
+        IMMEDIATE: false,
+        AUTO: false,
+        // Half the hero sim's resolution: the plume is a corner garnish, not
+        // the signature, and two full-res sims would be gluttony.
+        SIM_RESOLUTION: 96,
+        DYE_RESOLUTION: 512,
+        // Slightly slower fade than the cursor so the column holds together
+        // from corner to top.
+        DENSITY_DISSIPATION: 3.2,
+        VELOCITY_DISSIPATION: 0.5,
+        PRESSURE: 0.8,
+        PRESSURE_ITERATIONS: 20,
+        CURL: 30,
+        SPLAT_RADIUS: 0.24,
+        SPLAT_FORCE: 6000,
+        COLORFUL: false,
+        // FluidCursor's exact colour pipeline: indigo's complement, rendered
+        // bright-on-black and CSS-inverted by the class below.
+        SPLAT_COLOR: { r: 0.26, g: 0.3, b: 0.0 },
+        SHADING: true,
+        TRANSPARENT: false,
+        BACK_COLOR: { r: 0, g: 0, b: 0 },
+        BLOOM: true,
+        BLOOM_ITERATIONS: 8,
+        BLOOM_RESOLUTION: 256,
+        BLOOM_INTENSITY: 0.45,
+        BLOOM_THRESHOLD: 0.82,
+        BLOOM_SOFT_KNEE: 0.7,
+        SUNRAYS: false,
+      });
+
+      const streams: Stream[] = [
+        { fx: 0.82, amp: 30, speed: 2.4, phase: 0.0, y: 0.98, px: 0, py: 0 },
+        { fx: 0.66, amp: 20, speed: 3.1, phase: 2.1, y: 0.62, px: 0, py: 0 },
+        { fx: 0.9, amp: 13, speed: 3.9, phase: 4.4, y: 0.3, px: 0, py: 0 },
+      ];
+      let t = 0;
+
+      const emit = (type: "mousedown" | "mousemove", x: number, y: number) => {
+        canvas.dispatchEvent(
+          new MouseEvent(type, { clientX: x, clientY: y, bubbles: false }),
+        );
+      };
+
+      const posOf = (s: Stream, rect: DOMRect) => {
+        const x =
+          rect.left +
+          rect.width * s.fx +
+          Math.sin(s.y * 7 + t * 1.4 + s.phase) * s.amp +
+          Math.sin(s.y * 23 + t * 0.7 + s.phase) * s.amp * 0.35;
+        const y = rect.top + rect.height * s.y;
+        return { x, y };
+      };
+
+      // Initialise anchors so the first frame has zero-velocity splats.
+      const rect0 = canvas.getBoundingClientRect();
+      for (const s of streams) {
+        const p = posOf(s, rect0);
+        s.px = p.x;
+        s.py = p.y;
       }
-    };
-    document.addEventListener("visibilitychange", onVisibility);
 
-    function emit() {
-      const rect = canvas!.getBoundingClientRect();
-      if (rect.height === 0) return;
-      const px =
-        rect.right -
-        rect.width * EDGE_INSET +
-        Math.sin(y * 9 + t * 1.3) * WANDER_PX;
-      const py = rect.top + rect.height * y;
+      const tick = () => {
+        if (cancelled) return;
+        t += 0.016;
 
-      canvas!.dispatchEvent(
-        new PointerEvent("pointermove", {
-          clientX: px,
-          clientY: py,
-          pointerId: IDS[idFlip],
-          pointerType: "mouse",
-          bubbles: true,
-        }),
-      );
-    }
-
-    function tick() {
-      if (!running) return;
-      t += 0.016;
-
-      if (visible) {
-        const rect = canvas!.getBoundingClientRect();
-        if (rect.height > 0) {
-          y -= RISE_PER_FRAME / rect.height;
-          if (y < TOP_LIMIT) {
-            // Respawn at the bottom on the other id, so the first move of the
-            // new stroke has no velocity and cannot streak.
-            y = 1 - Math.random() * 0.04;
-            idFlip = 1 - idFlip;
+        const rect = canvas.getBoundingClientRect();
+        if (visible && document.visibilityState === "visible" && rect.height > 0) {
+          for (const s of streams) {
+            s.y -= s.speed / rect.height;
+            if (s.y < TOP_LIMIT) {
+              s.y = 1 - Math.random() * 0.04;
+              const p = posOf(s, rect);
+              s.px = p.x;
+              s.py = p.y;
+              // Re-anchor only: next frame's move starts from here.
+              emit("mousedown", p.x, p.y);
+              continue;
+            }
+            // Re-anchor to this stream's own previous position, then step.
+            emit("mousedown", s.px, s.py);
+            const p = posOf(s, rect);
+            emit("mousemove", p.x, p.y);
+            s.px = p.x;
+            s.py = p.y;
           }
-          emit();
         }
-      }
-
+        raf = requestAnimationFrame(tick);
+      };
       raf = requestAnimationFrame(tick);
-    }
-
-    raf = requestAnimationFrame(tick);
+    });
 
     return () => {
-      running = false;
+      cancelled = true;
       cancelAnimationFrame(raf);
       observer.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("resize", sizeCanvas);
     };
-  }, [reduced]);
+  }, [enabled]);
 
-  return null;
+  if (!enabled) return null;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden="true"
+      className="pointer-events-none absolute bottom-0 right-0 top-0 w-[46%] opacity-65 [filter:invert(1)_saturate(1.45)]"
+    />
+  );
 }
