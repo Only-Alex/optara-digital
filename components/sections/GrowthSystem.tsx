@@ -35,7 +35,7 @@ export function GrowthSystem() {
   // on any screen.
   const inView = useInView(trackRef, {
     once: true,
-    margin: "0px 0px -30% 0px",
+    margin: "0px 0px -18% 0px",
   });
 
   useEffect(() => {
@@ -45,17 +45,17 @@ export function GrowthSystem() {
     }
     if (!inView) return;
 
-    // Six seconds, deliberately unhurried: this is the page's one moment of
-    // watching rather than reading, and at 2.7s it was over before the reader
-    // had settled. A stage now lights roughly every 1.5s.
+    // Unhurried but not slow: this is the page's one moment of watching
+    // rather than reading. 2.7s was over before the reader had settled, 6s
+    // outstayed its welcome — a stage lights roughly every 0.9s here.
     //
     // Even pacing, not the shared EASE: that curve front-loads almost all of
     // its travel, which would flash stages 01–03 and then crawl to 04. The
     // four nodes need to light at a steady beat.
     const controls = animate(progress, 1, {
-      duration: 6,
+      duration: 4.5,
       ease: [0.32, 0, 0.32, 1],
-      delay: 0.45,
+      delay: 0.3,
     });
     return () => controls.stop();
   }, [inView, reduced, progress]);
