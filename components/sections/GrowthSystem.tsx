@@ -53,7 +53,15 @@ export function GrowthSystem() {
   const ghostDrift = useTransform(sectionScroll, [0, 1], [16, -16]);
 
   return (
-    <section ref={sectionRef} data-theme="paper" className="section relative">
+    // overflow-x-clip, not hidden: the entry tilt is a 3D transform, and a
+    // rotated plane projects wider than its own box, which was pushing the
+    // document 8px past a 375px viewport. Clip contains it without creating a
+    // scroll container or breaking sticky positioning for any descendant.
+    <section
+      ref={sectionRef}
+      data-theme="paper"
+      className="section relative overflow-x-clip"
+    >
       {/* Atmosphere handoff from the hero: a faint indigo wash falling from
           the top edge, so the smoke's ground does not simply stop. */}
       <div
