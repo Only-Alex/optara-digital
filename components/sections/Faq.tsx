@@ -22,7 +22,9 @@ export function Faq() {
     // dark ground at a time.
     <section id="faqs" data-theme="ink" className="section">
       <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
-        <div className="lg:col-span-4">
+        {/* Sticky so the question "Frequently asked questions" keeps answering
+            while the reader works down the list. */}
+        <div className="lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
           <RevealText>
             <p className="t-mono text-[var(--muted)]">{faqs.eyebrow}</p>
             <h2 className="t-display-lg mt-6 max-w-[16ch]">
@@ -59,7 +61,13 @@ export function Faq() {
                   whileHover={{ color: "var(--accent-fg)" }}
                   transition={hoverTransition}
                 >
-                  <span className="t-body-lg font-medium">{item.question}</span>
+                  <span
+                    className={`t-body-lg font-medium transition-colors duration-200 ${
+                      isOpen ? "text-[var(--accent-fg)]" : ""
+                    }`}
+                  >
+                    {item.question}
+                  </span>
                   <motion.span
                     className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--hairline)]"
                     animate={{ rotate: isOpen ? 45 : 0 }}
@@ -80,7 +88,9 @@ export function Faq() {
                       transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
                     >
                       <div className="pb-8 pr-4">
-                        <p className="t-body text-[var(--muted)]">{item.answer}</p>
+                        <p className="t-body max-w-[62ch] text-[var(--muted)]">
+                          {item.answer}
+                        </p>
 
                         <div className="mt-6 flex flex-wrap items-center gap-3">
                           {vote === null ? (

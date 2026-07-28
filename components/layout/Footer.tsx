@@ -74,7 +74,16 @@ export function Footer() {
         </RevealItem>
       </RevealGroup>
 
-      <div className="shell mt-16 flex flex-col gap-4 border-t border-[var(--hairline)] py-7 sm:flex-row sm:items-center sm:justify-between">
+      {/* Oversized ghost wordmark — the hero opens with this gesture in ink on
+          paper; the footer closes with it in paper on ink. Decorative, and
+          cropped by its own container so it can never cause horizontal scroll. */}
+      <div aria-hidden="true" className="mt-14 overflow-hidden">
+        <p className="shell select-none whitespace-nowrap font-semibold leading-none tracking-[-0.04em] text-paper/[0.05] text-[clamp(3.5rem,12.5vw,11rem)]">
+          {site.name.toLowerCase()}
+        </p>
+      </div>
+
+      <div className="shell mt-10 flex flex-col gap-4 border-t border-[var(--hairline)] py-7 sm:flex-row sm:items-center sm:justify-between">
         <p className="t-mono text-[var(--muted)]">
           © {new Date().getFullYear()} {site.name}. All rights reserved.
         </p>
