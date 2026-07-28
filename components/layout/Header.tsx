@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { ArrowIcon, LogoMark, MenuIcon } from "@/components/ui/Icons";
+import { MenuParticles } from "@/components/ui/MenuParticles";
 import { MenuVapour } from "@/components/ui/MenuVapour";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
@@ -354,6 +355,11 @@ export function Header() {
                     edges; unmounts with the panel, so nothing loops after
                     close. */}
                 {!reduced && <MenuVapour />}
+
+                {/* Curl-field particle silk behind the card — the signature
+                    layer. Canvas 2D, so it never contends with the hero's
+                    WebGL context; bounded to the menu being open. */}
+                {!reduced && <MenuParticles />}
 
                 <motion.div
                   className="relative rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
