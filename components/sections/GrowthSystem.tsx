@@ -13,6 +13,7 @@ const STAGE_COUNT = growthSystem.stages.length;
 export function GrowthSystem() {
   const reduced = useReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
 
   // Progress across the stage track only, not the whole section, so the line
   // finishes drawing as the last stage reaches comfortable reading height.
@@ -45,8 +46,14 @@ export function GrowthSystem() {
   const headLeft = useTransform(drawn, [0, 1], ["0%", "100%"]);
   const headOpacity = useTransform(progress, [0.12, 0.2, 0.9, 1], [0, 1, 1, 0]);
 
+  // Numerals drift against the copy as the section passes, so they read as a
+  // plane set back from the text rather than sitting on it. Small — parallax
+  // is a depth cue here, not a ride.
+  const sectionScroll = useScrollProgress(sectionRef, ["start end", "end start"]);
+  const ghostDrift = useTransform(sectionScroll, [0, 1], [16, -16]);
+
   return (
-    <section data-theme="paper" className="section relative">
+    <section ref={sectionRef} data-theme="paper" className="section relative">
       {/* Atmosphere handoff from the hero: a faint indigo wash falling from
           the top edge, so the smoke's ground does not simply stop. */}
       <div
@@ -171,13 +178,17 @@ export function GrowthSystem() {
               return (
                 <li
                   key={stage.number}
-                  className="relative pl-9 md:border-t md:pl-0 md:pt-9 lg:border-t-0"
+                  // Reached stages sit a little forward of the ones still to
+                  // come — depth carrying the meaning, not just decorating it.
+                  className="relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"
                       : "var(--color-line)",
+                    transform:
+                      active && !reduced ? "translateY(-6px)" : "translateY(0)",
                     transition:
-                      "border-color 240ms cubic-bezier(0.16,1,0.3,1)",
+                      "border-color 240ms cubic-bezier(0.16,1,0.3,1), transform 420ms cubic-bezier(0.16,1,0.3,1)",
                   }}
                 >
                   {/* Node as a lit sphere: a halo that blooms on activation,
@@ -221,31 +232,25 @@ export function GrowthSystem() {
                     </span>
                   </span>
 
-                  {/* Ghost numeral: a depth layer behind the stage, echoing
-                      the hero's oversized background type. Legitimate
-                      numbering — the four stages are a real sequence. */}
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute right-0 top-5 select-none font-semibold leading-none tracking-[-0.04em] transition-colors duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[4.25rem] md:top-8 md:text-[5.25rem]"
-                    style={{
-                      color: active
-                        ? "rgba(59,30,255,0.07)"
-                        : "rgba(18,19,26,0.04)",
-                    }}
-                  >
-                    {stage.number}
-                  </span>
-
-                  <span
-                    className="t-mono relative block transition-colors duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-                    style={{
-                      color: active
-                        ? "var(--color-accent)"
-                        : "color-mix(in srgb, var(--color-ink) 40%, transparent)",
-                    }}
-                  >
-                    {stage.number}
-                  </span>
+                  {/* One numeral per stage, in its own row: the ghost used to
+                      be a second copy sitting behind the title, which read as
+                      a collision rather than a layer. It is now the stage
+                      marker itself — oversized, right-aligned, and drifting
+                      slower than the copy so it still sits back in space. */}
+                  <div className="relative flex justify-end overflow-hidden">
+                    <motion.span
+                      aria-hidden="true"
+                      className="pointer-events-none select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
+                      style={{
+                        color: active
+                          ? "rgba(59,30,255,0.16)"
+                          : "rgba(18,19,26,0.07)",
+                        y: reduced ? 0 : ghostDrift,
+                      }}
+                    >
+                      {stage.number}
+                    </motion.span>
+                  </div>
 
                   <h3
                     className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
