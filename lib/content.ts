@@ -5,7 +5,8 @@ export type ServiceIcon =
   | "seo"
   | "ads"
   | "social"
-  | "web";
+  | "web"
+  | "app";
 
 export type NavChild = {
   label: string;
@@ -105,11 +106,18 @@ export const serviceNav: NavChild[] = [
     icon: "social",
   },
   {
-    label: "Website Design & App Development",
-    href: "/services/website-design-app-development",
+    label: "Website Design",
+    href: "/services/website-design",
     blurb:
-      "Create fast, conversion-focused websites and scalable digital products.",
+      "Design fast, conversion-focused websites that turn research into enquiries.",
     icon: "web",
+  },
+  {
+    label: "App Development",
+    href: "/services/app-development",
+    blurb:
+      "Build scalable web and mobile applications on modern, maintainable foundations.",
+    icon: "app",
   },
 ];
 
@@ -229,7 +237,7 @@ export const work = {
         "Treat the research phase as the real sales funnel. Identify the questions a procurement lead asks between deciding to tender and choosing who to invite, then own the answers.",
       solution:
         "A rebuilt identity that reads as commercially serious rather than trade-generic, sector and accreditation pages written to be found and cited, and a project record structured so each completed job earns visibility for the next one.",
-      services: ["Branding", "SEO & GEO", "Website Design & App Development"],
+      services: ["Branding", "SEO & GEO", "Website Design"],
     },
     {
       label: "Concept project",
@@ -241,7 +249,7 @@ export const work = {
         "Build a second channel alongside referral rather than replacing it. Buy visibility on the terms that signal genuine intent, earn it on the terms that signal research, and make the difference measurable.",
       solution:
         "Paid search scoped tightly to high-intent enquiries so budget is not spent on browsers, service pages written for the questions asked before instructing a firm, and enquiry tracking rebuilt so referral and search can finally be told apart.",
-      services: ["Google Ads", "SEO & GEO", "Website Design & App Development"],
+      services: ["Google Ads", "SEO & GEO", "Website Design"],
     },
     {
       label: "Concept project",
@@ -253,7 +261,7 @@ export const work = {
         "Fix the language first. Establish how buyers actually name the problem, then rebuild the positioning, the site and the content around those words instead of internal terminology.",
       solution:
         "A messaging framework that survives being repeated second-hand, a site architecture organised by application rather than product code, and a content programme that gives specifiers something worth sending to a colleague.",
-      services: ["Branding", "Social Media", "Website Design & App Development"],
+      services: ["Branding", "Social Media", "Website Design"],
     },
   ] as ConceptProject[],
 };
@@ -544,7 +552,7 @@ export const scrollCue = "Scroll down";
 
 export const servicesIndex = {
   eyebrow: "Services",
-  title: { lead: "Five disciplines,", accent: "one revenue target." },
+  title: { lead: "Six disciplines,", accent: "one revenue target." },
   standfirst:
     "Engaged individually or as one programme. Whichever you pick, the reporting leads on qualified enquiries and what each one cost.",
 };
@@ -663,7 +671,7 @@ export const growthSystem = {
     {
       number: "03",
       title: "Convert attention",
-      services: ["Website Design & App Development"],
+      services: ["Website Design", "App Development"],
       description:
         "Turn interest into action with fast, intuitive digital experiences built around clear conversion paths.",
     },
@@ -685,14 +693,15 @@ export const connectedSystem = {
   },
   body: "Agencies are usually hired one channel at a time. A brand agency, then an SEO specialist, then someone for the ads. Each does their part, nobody owns the result, and the handovers are where the budget quietly disappears.",
   secondary:
-    "We run all five as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
+    "We run all six as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
   caption: "One system",
   // Ordered as the system cycles, not as a price list.
   modules: [
     { short: "Branding", full: "Branding" },
     { short: "SEO & GEO", full: "Search and generative engine optimisation" },
     { short: "Google Ads", full: "Google Ads and paid search" },
-    { short: "Website & App", full: "Website Design & App Development" },
+    { short: "Website Design", full: "Website Design" },
+    { short: "App Development", full: "App Development" },
     { short: "Social Media", full: "Social Media" },
   ],
 };

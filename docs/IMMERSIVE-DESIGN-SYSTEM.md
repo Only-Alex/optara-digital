@@ -35,7 +35,7 @@ Every service is a stage of one growth system:
 |---|---|
 | Build recognition | Branding |
 | Capture demand | SEO & GEO, Google Ads |
-| Convert attention | Website Design & App Development |
+| Convert attention | Website Design, App Development |
 | Scale growth | Social Media, and the system compounding |
 
 Sections and pages should reinforce this narrative rather than presenting five
@@ -201,7 +201,7 @@ Each section should answer a real visitor question:
 - What happens after someone gets in touch?
 
 Visuals should reinforce that answer. Give each service its **own** visual
-idea — do not reuse one concept across all five:
+idea — do not reuse one concept across all six:
 
 | Service | Visual direction |
 |---|---|
@@ -209,7 +209,8 @@ idea — do not reuse one concept across all five:
 | Google Ads | Campaign system or data-flow graphic |
 | Branding | Identity elements resolving into a coherent system |
 | Social Media | Content moving through an engagement ecosystem |
-| Website Design & App Development | Layered interfaces, devices, interactive product scene |
+| Website Design | Layered interfaces, conversion-path storytelling |
+| App Development | Devices, interactive product scene |
 
 ---
 

@@ -271,13 +271,55 @@ export function Header() {
                 ref={panelRef}
                 id="services-mega-menu"
                 className="absolute left-1/2 top-full hidden w-[min(58rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
-                initial={reduced ? undefined : { opacity: 0, y: 8, scale: 0.985 }}
-                animate={reduced ? undefined : { opacity: 1, y: 0, scale: 1 }}
-                exit={reduced ? undefined : { opacity: 0, y: 6, scale: 0.99 }}
-                transition={{ duration: 0.24, ease: EASE }}
+                // Unrolls from the header edge in perspective while resolving
+                // from a soft blur — vapour condensing into a surface. The
+                // clip runs top-to-bottom so the panel reads as unrolling, not
+                // popping; the blur is what makes it read as smoke rather than
+                // cardboard. Attached to the header, so the 3D hinge is
+                // mechanics, not decoration.
+                initial={
+                  reduced
+                    ? undefined
+                    : {
+                        opacity: 0,
+                        rotateX: -14,
+                        y: 6,
+                        filter: "blur(12px)",
+                        clipPath: "inset(0 0 86% 0 round 22px)",
+                      }
+                }
+                animate={
+                  reduced
+                    ? undefined
+                    : {
+                        opacity: 1,
+                        rotateX: 0,
+                        y: 0,
+                        filter: "blur(0px)",
+                        clipPath: "inset(0 0 0% 0 round 22px)",
+                      }
+                }
+                exit={
+                  reduced
+                    ? undefined
+                    : {
+                        opacity: 0,
+                        rotateX: -6,
+                        y: 4,
+                        filter: "blur(8px)",
+                        clipPath: "inset(0 0 24% 0 round 22px)",
+                        transition: { duration: 0.2, ease: EASE },
+                      }
+                }
+                transition={{
+                  duration: 0.34,
+                  ease: EASE,
+                  clipPath: { duration: 0.44, ease: EASE },
+                }}
                 style={{
                   transformOrigin: "top center",
-                  willChange: "transform, opacity",
+                  transformPerspective: 1100,
+                  willChange: "transform, opacity, filter, clip-path",
                 }}
                 onMouseEnter={clearTimers}
                 onMouseLeave={scheduleClose}
@@ -286,29 +328,44 @@ export function Header() {
                   className="rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
                   style={{ boxShadow: PANEL_SHADOW }}
                 >
+                  {/* Six services, an even two-by-three grid — no spanning
+                      special cases, which is most of what makes it clean. */}
                   <ul className="grid gap-1 md:grid-cols-2">
                     {megaEntry.children?.map((child, index) => {
                       const current = pathname === child.href;
-                      const isLast =
-                        index === (megaEntry.children?.length ?? 0) - 1;
 
                       return (
-                        <li
+                        // Rows condense in just behind the unroll, top pair
+                        // first — the cascade is what sells the scroll. No
+                        // exit: the panel's own exit carries the close.
+                        <motion.li
                           key={child.href}
-                          className={isLast ? "md:col-span-2" : undefined}
+                          initial={
+                            reduced
+                              ? undefined
+                              : { opacity: 0, y: 10, filter: "blur(5px)" }
+                          }
+                          animate={
+                            reduced
+                              ? undefined
+                              : { opacity: 1, y: 0, filter: "blur(0px)" }
+                          }
+                          transition={{
+                            duration: 0.34,
+                            ease: EASE,
+                            delay: 0.08 + Math.floor(index / 2) * 0.05,
+                          }}
                         >
                           <Link
                             href={child.href}
                             onClick={() => closeMenu()}
                             aria-current={current ? "page" : undefined}
-                            className={`group flex h-full gap-4 rounded-[16px] p-4 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
-                              isLast ? "items-center" : "items-start"
-                            } ${current ? "bg-accent/[0.045]" : ""}`}
+                            className={`group flex h-full items-start gap-4 rounded-[16px] p-4 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
+                              current ? "bg-accent/[0.045]" : ""
+                            }`}
                           >
                             <span
-                              className={`grid h-11 w-11 shrink-0 place-items-center rounded-[13px] text-accent transition-colors duration-[240ms] ${EASE_CSS} ${
-                                isLast ? "" : "mt-0.5"
-                              } ${
+                              className={`mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-[13px] text-accent transition-colors duration-[240ms] ${EASE_CSS} ${
                                 current
                                   ? "bg-accent/[0.14]"
                                   : "bg-accent/[0.07] group-hover:bg-accent/[0.14]"
@@ -320,39 +377,25 @@ export function Header() {
                               />
                             </span>
 
-                            {/* The fifth item spans both columns, so its title and
-                                description sit side by side to use that width. */}
-                            <span
-                              className={`min-w-0 flex-1 ${
-                                isLast ? "md:flex md:items-center md:gap-8" : ""
-                              }`}
-                            >
+                            <span className="min-w-0 flex-1">
                               <span
                                 className={`block text-[0.9375rem] font-medium leading-tight transition-colors duration-[240ms] ${EASE_CSS} group-hover:text-accent ${
-                                  isLast ? "md:w-[17rem] md:shrink-0" : ""
-                                } ${current ? "text-accent" : ""}`}
+                                  current ? "text-accent" : ""
+                                }`}
                               >
                                 {child.label}
                               </span>
-                              <span
-                                className={`block text-[0.8125rem] leading-[1.55] text-ink/60 transition-colors duration-[240ms] group-hover:text-ink/75 ${
-                                  isLast
-                                    ? "mt-1.5 md:mt-0 md:flex-1"
-                                    : "mt-1.5 max-w-[40ch]"
-                                }`}
-                              >
+                              <span className="mt-1.5 block max-w-[40ch] text-[0.8125rem] leading-[1.55] text-ink/60 transition-colors duration-[240ms] group-hover:text-ink/75">
                                 {child.blurb}
                               </span>
                             </span>
 
                             <ArrowIcon
                               aria-hidden="true"
-                              className={`h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100 ${
-                                isLast ? "" : "mt-1"
-                              }`}
+                              className={`mt-1 h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100`}
                             />
                           </Link>
-                        </li>
+                        </motion.li>
                       );
                     })}
                   </ul>

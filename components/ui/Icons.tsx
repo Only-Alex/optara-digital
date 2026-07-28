@@ -151,3 +151,12 @@ export function WebIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function AppIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} {...strokeProps}>
+      <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+      <path d="M7 6h10M7 17.5h10M11 20h2" />
+    </svg>
+  );
+}

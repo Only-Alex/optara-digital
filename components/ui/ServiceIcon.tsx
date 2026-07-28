@@ -1,6 +1,7 @@
 import type { ServiceIcon as ServiceIconName } from "@/lib/content";
 import {
   AdsIcon,
+  AppIcon,
   BrandingIcon,
   SeoIcon,
   SocialIcon,
@@ -13,6 +14,7 @@ const map = {
   ads: AdsIcon,
   social: SocialIcon,
   web: WebIcon,
+  app: AppIcon,
 } as const;
 
 export function ServiceIcon({

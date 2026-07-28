@@ -14,15 +14,17 @@ import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
 import { RevealText } from "@/components/ui/RevealText";
 
 // Geometry of the ring, in percentages of the diagram box. SEATS sit exactly
-// on the ellipse below (cx/cy 50, rx 36, ry 34), spaced every 72 degrees from
-// the top, so the CSS-positioned labels and the SVG line up at any aspect
-// ratio. SCATTER is where each module starts: deliberately unaligned.
+// on the ellipse below (cx/cy 50, rx 36, ry 34), spaced every 60 degrees from
+// the top — six modules since Website Design and App Development split — so
+// the CSS-positioned labels and the SVG line up at any aspect ratio. SCATTER
+// is where each module starts: deliberately unaligned.
 const SEATS = [
   { x: 50, y: 16 },
-  { x: 84.24, y: 39.49 },
-  { x: 71.16, y: 77.51 },
-  { x: 28.84, y: 77.51 },
-  { x: 15.76, y: 39.49 },
+  { x: 81.18, y: 33 },
+  { x: 81.18, y: 67 },
+  { x: 50, y: 84 },
+  { x: 18.82, y: 67 },
+  { x: 18.82, y: 33 },
 ];
 
 const SCATTER = [
@@ -31,6 +33,7 @@ const SCATTER = [
   { x: 34, y: 52 },
   { x: 91, y: 63 },
   { x: 57, y: 91 },
+  { x: 13, y: 82 },
 ];
 
 type Box = { w: number; h: number };
