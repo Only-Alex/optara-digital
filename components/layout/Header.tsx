@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { ArrowIcon, LogoMark, MenuIcon } from "@/components/ui/Icons";
+import { MenuVapour } from "@/components/ui/MenuVapour";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
@@ -280,6 +281,10 @@ export function Header() {
                 // a slow top-to-bottom unroll, and only a hint of perspective
                 // so it drifts down rather than hinging like a door. The
                 // magic is in the resolve being slower than the movement.
+                //
+                // The unroll clip lives on the inner card, not here — clipping
+                // this wrapper would shear off the vapour and bloom that hug
+                // the card's borders from outside.
                 initial={
                   reduced
                     ? undefined
@@ -289,7 +294,6 @@ export function Header() {
                         y: 12,
                         scale: 0.98,
                         filter: "blur(14px)",
-                        clipPath: "inset(0 0 88% 0 round 22px)",
                       }
                 }
                 animate={
@@ -301,7 +305,6 @@ export function Header() {
                         y: 0,
                         scale: 1,
                         filter: "blur(0px)",
-                        clipPath: "inset(0 0 0% 0 round 22px)",
                       }
                 }
                 exit={
@@ -312,20 +315,18 @@ export function Header() {
                         rotateX: -4,
                         y: 6,
                         filter: "blur(8px)",
-                        clipPath: "inset(0 0 22% 0 round 22px)",
                         transition: { duration: 0.22, ease: EASE },
                       }
                 }
                 transition={{
                   duration: 0.5,
                   ease: EASE,
-                  clipPath: { duration: 0.56, ease: EASE },
                   filter: { duration: 0.56, ease: EASE },
                 }}
                 style={{
                   transformOrigin: "top center",
                   transformPerspective: 1100,
-                  willChange: "transform, opacity, filter, clip-path",
+                  willChange: "transform, opacity, filter",
                 }}
                 onMouseEnter={clearTimers}
                 onMouseLeave={scheduleClose}
@@ -347,9 +348,35 @@ export function Header() {
                     transition={{ duration: 1.0, ease: EASE, times: [0, 0.35, 1] }}
                   />
                 )}
-                <div
+
+                {/* Lingering vapour around the borders while the menu is open.
+                    Lives outside the clipped card so it can drift past the
+                    edges; unmounts with the panel, so nothing loops after
+                    close. */}
+                {!reduced && <MenuVapour />}
+
+                <motion.div
                   className="relative rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
                   style={{ boxShadow: PANEL_SHADOW }}
+                  initial={
+                    reduced
+                      ? undefined
+                      : { clipPath: "inset(0 0 88% 0 round 22px)" }
+                  }
+                  animate={
+                    reduced
+                      ? undefined
+                      : { clipPath: "inset(0 0 0% 0 round 22px)" }
+                  }
+                  exit={
+                    reduced
+                      ? undefined
+                      : {
+                          clipPath: "inset(0 0 22% 0 round 22px)",
+                          transition: { duration: 0.22, ease: EASE },
+                        }
+                  }
+                  transition={{ duration: 0.56, ease: EASE }}
                 >
                   {/* Six services, an even two-by-three grid — no spanning
                       special cases, which is most of what makes it clean. */}
@@ -456,7 +483,7 @@ export function Header() {
                       />
                     </span>
                   </Link>
-                </div>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
