@@ -40,6 +40,11 @@ export function GrowthSystem() {
   const trackTilt = useTransform(entry, [0, 1], [9, 0]);
   const trackY = useTransform(entry, [0, 1], [28, 0]);
 
+  // The travelling head sits at the leading edge of the drawn rail, and
+  // fades at both ends so it never sits parked at a terminus.
+  const headLeft = useTransform(drawn, [0, 1], ["0%", "100%"]);
+  const headOpacity = useTransform(progress, [0.12, 0.2, 0.9, 1], [0, 1, 1, 0]);
+
   return (
     <section data-theme="paper" className="section relative">
       {/* Atmosphere handoff from the hero: a faint indigo wash falling from
@@ -86,93 +91,78 @@ export function GrowthSystem() {
                   }
             }
           >
+          {/* Rails are scaled divs, not SVG pathLength. Motion implements
+              pathLength with a dash array, and against a viewBox stretched
+              non-uniformly under non-scaling-stroke that array tiles — which
+              is why the rail was rendering as repeating dashes rather than
+              one continuous draw. A transform on a plain element cannot
+              tile, and is cheaper besides. */}
+
           {/* The stem: the route descending out of the hero's ground before
               it turns and runs the four stages. Desktop only — mobile's rail
               is already vertical. */}
-          <svg
+          <div
             aria-hidden="true"
             className="pointer-events-none absolute left-[7px] top-[-84px] hidden h-[84px] w-px lg:block"
-            viewBox="0 0 1 100"
-            preserveAspectRatio="none"
           >
-            <line
-              x1="0.5"
-              y1="0"
-              x2="0.5"
-              y2="100"
-              stroke="var(--color-line)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
+            <div className="absolute inset-0 bg-[var(--color-line)]" />
+            <motion.div
+              className="absolute inset-x-0 top-0 h-full origin-top bg-accent"
+              style={{ scaleY: reduced ? 1 : stemDrawn }}
             />
-            <motion.line
-              x1="0.5"
-              y1="0"
-              x2="0.5"
-              y2="100"
-              stroke="var(--color-accent)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-              style={{ pathLength: reduced ? 1 : stemDrawn }}
+            <motion.div
+              className="absolute inset-y-0 left-[-2px] w-[5px] origin-top bg-accent/25 blur-[3px]"
+              style={{ scaleY: reduced ? 1 : stemDrawn }}
             />
-          </svg>
+          </div>
 
           {/* Continuous horizontal route, desktop only. At tablet the stages
               wrap to 2x2, where a single full-width line would be misleading,
               so each stage carries its own rule instead. */}
-          <svg
+          <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-[7px] hidden h-px w-full lg:block"
-            viewBox="0 0 100 1"
-            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-x-0 top-[7px] hidden h-px lg:block"
           >
-            <line
-              x1="0"
-              y1="0.5"
-              x2="100"
-              y2="0.5"
-              stroke="var(--color-line)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
+            <div className="absolute inset-0 bg-[var(--color-line)]" />
+            {/* Glow beneath the drawn length gives the rail body without a
+                hue ramp — depth from blur and opacity, per §4. */}
+            <motion.div
+              className="absolute inset-x-0 top-[-2px] h-[5px] origin-left bg-accent/25 blur-[3px]"
+              style={{ scaleX: reduced ? 1 : drawn }}
             />
-            <motion.line
-              x1="0"
-              y1="0.5"
-              x2="100"
-              y2="0.5"
-              stroke="var(--color-accent)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-              style={{ pathLength: reduced ? 1 : drawn }}
+            <motion.div
+              className="absolute inset-0 origin-left bg-accent"
+              style={{ scaleX: reduced ? 1 : drawn }}
             />
-          </svg>
+            {/* The head of the draw: a lit point travelling the rail, fading
+                out as it lands on the final stage. */}
+            {!reduced && (
+              <motion.span
+                className="absolute top-1/2 block h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent"
+                style={{
+                  left: headLeft,
+                  opacity: headOpacity,
+                  boxShadow: "0 0 14px 2px rgba(59,30,255,0.55)",
+                }}
+              />
+            )}
+          </div>
 
           {/* Vertical route, mobile. Runs down the left gutter. */}
-          <svg
+          <div
             aria-hidden="true"
             className="pointer-events-none absolute left-[7px] top-0 block h-full w-px md:hidden"
-            viewBox="0 0 1 100"
-            preserveAspectRatio="none"
           >
-            <line
-              x1="0.5"
-              y1="0"
-              x2="0.5"
-              y2="100"
-              stroke="var(--color-line)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
+            <div className="absolute inset-0 bg-[var(--color-line)]" />
+            <motion.div
+              className="absolute inset-y-0 left-[-2px] w-[5px] origin-top bg-accent/25 blur-[3px]"
+              style={{ scaleY: reduced ? 1 : drawn }}
             />
-            <motion.line
-              x1="0.5"
-              y1="0"
-              x2="0.5"
-              y2="100"
-              stroke="var(--color-accent)"
-              strokeWidth="1"
-              vectorEffect="non-scaling-stroke"
-              style={{ pathLength: reduced ? 1 : drawn }}
+            <motion.div
+              className="absolute inset-0 origin-top bg-accent"
+              style={{ scaleY: reduced ? 1 : drawn }}
             />
-          </svg>
+          </div>
 
           <ol className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8">
             {growthSystem.stages.map((stage, index) => {
@@ -190,19 +180,45 @@ export function GrowthSystem() {
                       "border-color 240ms cubic-bezier(0.16,1,0.3,1)",
                   }}
                 >
+                  {/* Node as a lit sphere: a halo that blooms on activation,
+                      a paper collar so the rail cannot run through the orb,
+                      and a white specular highlight offset up-left. The
+                      highlight is lightness only — no hue ramp, per §4. */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-[1px] block h-[15px] w-[15px] rounded-full bg-paper p-[3px] md:-top-[7px] lg:top-0"
+                    className="absolute left-0 top-[1px] block h-[15px] w-[15px] md:-top-[7px] lg:top-0"
                   >
                     <span
-                      className="block h-full w-full rounded-full transition-colors duration-[240ms]"
+                      className="absolute -inset-[9px] rounded-full transition-opacity duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                       style={{
-                        backgroundColor: active
-                          ? "var(--color-accent)"
-                          : "var(--color-line)",
-                        transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+                        background:
+                          "radial-gradient(circle, rgba(59,30,255,0.30), transparent 66%)",
+                        opacity: active ? 1 : 0,
                       }}
                     />
+                    <span className="absolute inset-0 rounded-full bg-paper p-[3px]">
+                      <span
+                        className="relative block h-full w-full rounded-full transition-[background-color,transform,box-shadow] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                        style={{
+                          backgroundColor: active
+                            ? "var(--color-accent)"
+                            : "var(--color-line)",
+                          transform: active ? "scale(1.15)" : "scale(1)",
+                          boxShadow: active
+                            ? "0 1px 4px rgba(59,30,255,0.55)"
+                            : "0 0 0 rgba(59,30,255,0)",
+                        }}
+                      >
+                        <span
+                          className="absolute inset-0 rounded-full transition-opacity duration-[280ms]"
+                          style={{
+                            background:
+                              "radial-gradient(circle at 32% 26%, rgba(255,255,255,0.75), transparent 58%)",
+                            opacity: active ? 1 : 0,
+                          }}
+                        />
+                      </span>
+                    </span>
                   </span>
 
                   {/* Ghost numeral: a depth layer behind the stage, echoing
