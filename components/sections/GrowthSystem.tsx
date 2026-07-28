@@ -49,8 +49,10 @@ export function GrowthSystem() {
   // Numerals drift against the copy as the section passes, so they read as a
   // plane set back from the text rather than sitting on it. Small — parallax
   // is a depth cue here, not a ride.
+  // ±10, not ±16: with the numeral row no longer clipped, the drift's
+  // extremes have to stay clear of the rail above and the title below.
   const sectionScroll = useScrollProgress(sectionRef, ["start end", "end start"]);
-  const ghostDrift = useTransform(sectionScroll, [0, 1], [16, -16]);
+  const ghostDrift = useTransform(sectionScroll, [0, 1], [10, -10]);
 
   return (
     // overflow-x-clip, not hidden: the entry tilt is a 3D transform, and a
@@ -245,24 +247,17 @@ export function GrowthSystem() {
                       a collision rather than a layer. It is now the stage
                       marker itself — oversized, right-aligned, and drifting
                       slower than the copy so it still sits back in space. */}
-                  <div className="relative flex justify-end overflow-hidden">
-                    {/* Soft accent bloom behind a reached numeral, echoing the
-                        node halo on the rail above it. */}
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -right-6 top-[-14px] h-32 w-32 rounded-full transition-opacity duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
-                      style={{
-                        background:
-                          "radial-gradient(circle, rgba(59,30,255,0.13), transparent 68%)",
-                        opacity: active ? 1 : 0,
-                      }}
-                    />
+                  {/* No overflow-hidden and no bloom here: the clip was
+                      shearing the drifting numerals flat, and it was also
+                      squaring the round bloom into a visible box of colour
+                      behind them. The numeral alone carries the tint. */}
+                  <div className="relative flex justify-end">
                     <motion.span
                       aria-hidden="true"
                       className="pointer-events-none relative select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
                       style={{
                         color: active
-                          ? "rgba(59,30,255,0.22)"
+                          ? "rgba(59,30,255,0.3)"
                           : "rgba(18,19,26,0.11)",
                         y: reduced ? 0 : ghostDrift,
                       }}
