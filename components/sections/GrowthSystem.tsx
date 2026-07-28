@@ -27,11 +27,27 @@ export function GrowthSystem() {
     setReached((current) => (current === next ? current : next));
   });
 
-  const drawn = useTransform(progress, [0, 1], [0, 1]);
+  // The stem draws first — the hero's energy descending into the system —
+  // then the route runs horizontal. Same single progress, split in two.
+  const stemDrawn = useTransform(progress, [0, 0.12], [0, 1]);
+  const drawn = useTransform(progress, [0.12, 1], [0, 1]);
   const isActive = (index: number) => reduced || index < reached;
 
+  // Entry: the whole track reclines slightly in perspective while it is
+  // still below the reading line and settles flat as it arrives — the plane
+  // rising to meet the reader, one gesture, then still.
+  const entry = useScrollProgress(trackRef, ["start 100%", "start 55%"]);
+  const trackTilt = useTransform(entry, [0, 1], [9, 0]);
+  const trackY = useTransform(entry, [0, 1], [28, 0]);
+
   return (
-    <section data-theme="paper" className="section">
+    <section data-theme="paper" className="section relative">
+      {/* Atmosphere handoff from the hero: a faint indigo wash falling from
+          the top edge, so the smoke's ground does not simply stop. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(55%_100%_at_50%_0%,rgba(59,30,255,0.05),transparent_72%)]"
+      />
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-6">
@@ -56,6 +72,50 @@ export function GrowthSystem() {
         </div>
 
         <div ref={trackRef} className="relative mt-20 md:mt-24">
+          <motion.div
+            className="relative"
+            style={
+              reduced
+                ? undefined
+                : {
+                    rotateX: trackTilt,
+                    y: trackY,
+                    transformPerspective: 1200,
+                    transformOrigin: "top center",
+                    willChange: "transform",
+                  }
+            }
+          >
+          {/* The stem: the route descending out of the hero's ground before
+              it turns and runs the four stages. Desktop only — mobile's rail
+              is already vertical. */}
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute left-[7px] top-[-84px] hidden h-[84px] w-px lg:block"
+            viewBox="0 0 1 100"
+            preserveAspectRatio="none"
+          >
+            <line
+              x1="0.5"
+              y1="0"
+              x2="0.5"
+              y2="100"
+              stroke="var(--color-line)"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+            <motion.line
+              x1="0.5"
+              y1="0"
+              x2="0.5"
+              y2="100"
+              stroke="var(--color-accent)"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+              style={{ pathLength: reduced ? 1 : stemDrawn }}
+            />
+          </svg>
+
           {/* Continuous horizontal route, desktop only. At tablet the stages
               wrap to 2x2, where a single full-width line would be misleading,
               so each stage carries its own rule instead. */}
@@ -145,8 +205,23 @@ export function GrowthSystem() {
                     />
                   </span>
 
+                  {/* Ghost numeral: a depth layer behind the stage, echoing
+                      the hero's oversized background type. Legitimate
+                      numbering — the four stages are a real sequence. */}
                   <span
-                    className="t-mono block transition-colors duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-0 top-5 select-none font-semibold leading-none tracking-[-0.04em] transition-colors duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[4.25rem] md:top-8 md:text-[5.25rem]"
+                    style={{
+                      color: active
+                        ? "rgba(59,30,255,0.07)"
+                        : "rgba(18,19,26,0.04)",
+                    }}
+                  >
+                    {stage.number}
+                  </span>
+
+                  <span
+                    className="t-mono relative block transition-colors duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
                       color: active
                         ? "var(--color-accent)"
@@ -184,7 +259,11 @@ export function GrowthSystem() {
                     {stage.services.map((service) => (
                       <li
                         key={service}
-                        className="t-mono rounded-full border border-[var(--hairline)] px-3 py-1.5 text-ink/60"
+                        className={`t-mono rounded-full border px-3 py-1.5 transition-colors duration-[240ms] ${
+                          active
+                            ? "border-accent/35 text-ink/70"
+                            : "border-[var(--hairline)] text-ink/60"
+                        }`}
                       >
                         {service}
                       </li>
@@ -201,6 +280,7 @@ export function GrowthSystem() {
               );
             })}
           </ol>
+          </motion.div>
         </div>
       </div>
     </section>
