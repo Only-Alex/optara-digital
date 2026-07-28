@@ -186,8 +186,13 @@ export function Header() {
                         : "transparent",
                       color:
                         expanded || active ? "rgb(59,30,255)" : "rgb(18,19,26)",
+                      // Faint halo while open — the trigger is the wand, the
+                      // panel is what it conjured; the glow ties them together.
+                      boxShadow: expanded
+                        ? "0 4px 20px rgba(59,30,255,0.2)"
+                        : "0 0 0 rgba(59,30,255,0)",
                       transition:
-                        "background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1)",
+                        "background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 300ms cubic-bezier(0.16,1,0.3,1)",
                     }}
                     aria-expanded={expanded}
                     aria-controls="services-mega-menu"
@@ -271,21 +276,20 @@ export function Header() {
                 ref={panelRef}
                 id="services-mega-menu"
                 className="absolute left-1/2 top-full hidden w-[min(58rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
-                // Unrolls from the header edge in perspective while resolving
-                // from a soft blur — vapour condensing into a surface. The
-                // clip runs top-to-bottom so the panel reads as unrolling, not
-                // popping; the blur is what makes it read as smoke rather than
-                // cardboard. Attached to the header, so the 3D hinge is
-                // mechanics, not decoration.
+                // Vapour condensing into a surface: a long soft-blur resolve,
+                // a slow top-to-bottom unroll, and only a hint of perspective
+                // so it drifts down rather than hinging like a door. The
+                // magic is in the resolve being slower than the movement.
                 initial={
                   reduced
                     ? undefined
                     : {
                         opacity: 0,
-                        rotateX: -14,
-                        y: 6,
-                        filter: "blur(12px)",
-                        clipPath: "inset(0 0 86% 0 round 22px)",
+                        rotateX: -8,
+                        y: 12,
+                        scale: 0.98,
+                        filter: "blur(14px)",
+                        clipPath: "inset(0 0 88% 0 round 22px)",
                       }
                 }
                 animate={
@@ -295,6 +299,7 @@ export function Header() {
                         opacity: 1,
                         rotateX: 0,
                         y: 0,
+                        scale: 1,
                         filter: "blur(0px)",
                         clipPath: "inset(0 0 0% 0 round 22px)",
                       }
@@ -304,17 +309,18 @@ export function Header() {
                     ? undefined
                     : {
                         opacity: 0,
-                        rotateX: -6,
-                        y: 4,
+                        rotateX: -4,
+                        y: 6,
                         filter: "blur(8px)",
-                        clipPath: "inset(0 0 24% 0 round 22px)",
-                        transition: { duration: 0.2, ease: EASE },
+                        clipPath: "inset(0 0 22% 0 round 22px)",
+                        transition: { duration: 0.22, ease: EASE },
                       }
                 }
                 transition={{
-                  duration: 0.34,
+                  duration: 0.5,
                   ease: EASE,
-                  clipPath: { duration: 0.44, ease: EASE },
+                  clipPath: { duration: 0.56, ease: EASE },
+                  filter: { duration: 0.56, ease: EASE },
                 }}
                 style={{
                   transformOrigin: "top center",
@@ -324,8 +330,25 @@ export function Header() {
                 onMouseEnter={clearTimers}
                 onMouseLeave={scheduleClose}
               >
+                {/* One-off bloom of accent light while the panel condenses —
+                    it flares and dies, never persists. Light is what sells
+                    materialisation; the flat accent, not a hue ramp. */}
+                {!reduced && (
+                  <motion.div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -inset-4 top-0 rounded-[30px]"
+                    style={{
+                      background:
+                        "radial-gradient(55% 60% at 50% 0%, rgba(59,30,255,0.18), transparent 72%)",
+                      filter: "blur(16px)",
+                    }}
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: [0, 0.85, 0], scale: [0.92, 1.02, 1] }}
+                    transition={{ duration: 1.0, ease: EASE, times: [0, 0.35, 1] }}
+                  />
+                )}
                 <div
-                  className="rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
+                  className="relative rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
                   style={{ boxShadow: PANEL_SHADOW }}
                 >
                   {/* Six services, an even two-by-three grid — no spanning
@@ -343,17 +366,27 @@ export function Header() {
                           initial={
                             reduced
                               ? undefined
-                              : { opacity: 0, y: 10, filter: "blur(5px)" }
+                              : {
+                                  opacity: 0,
+                                  y: 12,
+                                  scale: 0.97,
+                                  filter: "blur(6px)",
+                                }
                           }
                           animate={
                             reduced
                               ? undefined
-                              : { opacity: 1, y: 0, filter: "blur(0px)" }
+                              : {
+                                  opacity: 1,
+                                  y: 0,
+                                  scale: 1,
+                                  filter: "blur(0px)",
+                                }
                           }
                           transition={{
-                            duration: 0.34,
+                            duration: 0.45,
                             ease: EASE,
-                            delay: 0.08 + Math.floor(index / 2) * 0.05,
+                            delay: 0.12 + Math.floor(index / 2) * 0.06,
                           }}
                         >
                           <Link
