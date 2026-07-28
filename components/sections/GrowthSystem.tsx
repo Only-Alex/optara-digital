@@ -29,11 +29,13 @@ export function GrowthSystem() {
   const progress = useMotionValue(0);
   // Margin, not `amount`: the track is ~400px at desktop and ~1200px stacked
   // on mobile, so a percentage-of-element threshold fires at wildly different
-  // moments. This trips when the track's top edge reaches a quarter up from
-  // the bottom of the viewport — the same instant on any screen.
+  // moments. This trips when the track's top edge has climbed to roughly a
+  // third up from the bottom of the viewport — the reader has arrived and
+  // settled, rather than the rail merely peeking in — and it behaves the same
+  // on any screen.
   const inView = useInView(trackRef, {
     once: true,
-    margin: "0px 0px -25% 0px",
+    margin: "0px 0px -30% 0px",
   });
 
   useEffect(() => {
@@ -43,13 +45,17 @@ export function GrowthSystem() {
     }
     if (!inView) return;
 
+    // Six seconds, deliberately unhurried: this is the page's one moment of
+    // watching rather than reading, and at 2.7s it was over before the reader
+    // had settled. A stage now lights roughly every 1.5s.
+    //
     // Even pacing, not the shared EASE: that curve front-loads almost all of
     // its travel, which would flash stages 01–03 and then crawl to 04. The
     // four nodes need to light at a steady beat.
     const controls = animate(progress, 1, {
-      duration: 2.7,
-      ease: [0.4, 0, 0.35, 1],
-      delay: 0.15,
+      duration: 6,
+      ease: [0.32, 0, 0.32, 1],
+      delay: 0.45,
     });
     return () => controls.stop();
   }, [inView, reduced, progress]);
