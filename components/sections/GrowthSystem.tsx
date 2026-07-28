@@ -238,13 +238,24 @@ export function GrowthSystem() {
                       marker itself — oversized, right-aligned, and drifting
                       slower than the copy so it still sits back in space. */}
                   <div className="relative flex justify-end overflow-hidden">
+                    {/* Soft accent bloom behind a reached numeral, echoing the
+                        node halo on the rail above it. */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -right-6 top-[-14px] h-32 w-32 rounded-full transition-opacity duration-[700ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                      style={{
+                        background:
+                          "radial-gradient(circle, rgba(59,30,255,0.13), transparent 68%)",
+                        opacity: active ? 1 : 0,
+                      }}
+                    />
                     <motion.span
                       aria-hidden="true"
-                      className="pointer-events-none select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
+                      className="pointer-events-none relative select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
                       style={{
                         color: active
-                          ? "rgba(59,30,255,0.16)"
-                          : "rgba(18,19,26,0.07)",
+                          ? "rgba(59,30,255,0.22)"
+                          : "rgba(18,19,26,0.11)",
                         y: reduced ? 0 : ghostDrift,
                       }}
                     >
@@ -252,12 +263,15 @@ export function GrowthSystem() {
                     </motion.span>
                   </div>
 
+                  {/* Unreached stages are quieter, never disabled: a stage the
+                      reader has not arrived at yet still has to look finished,
+                      so the contrast step is emphasis, not an on/off switch. */}
                   <h3
                     className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
                       color: active
                         ? "var(--color-ink)"
-                        : "color-mix(in srgb, var(--color-ink) 55%, transparent)",
+                        : "color-mix(in srgb, var(--color-ink) 78%, transparent)",
                       // Settles upward as the line reaches it — a depth cue in
                       // the same register as the colour shift. Static under
                       // reduced motion because `active` is then always true.
@@ -273,7 +287,7 @@ export function GrowthSystem() {
                     animate={
                       reduced
                         ? { opacity: 1, y: 0 }
-                        : { opacity: active ? 1 : 0.35, y: active ? 0 : 6 }
+                        : { opacity: active ? 1 : 0.78, y: active ? 0 : 6 }
                     }
                     transition={{ duration: 0.28, ease: EASE }}
                   >
@@ -282,8 +296,8 @@ export function GrowthSystem() {
                         key={service}
                         className={`t-mono rounded-full border px-3 py-1.5 transition-colors duration-[240ms] ${
                           active
-                            ? "border-accent/35 text-ink/70"
-                            : "border-[var(--hairline)] text-ink/60"
+                            ? "border-accent/35 bg-accent/[0.05] text-ink/80"
+                            : "border-[var(--hairline)] text-ink/65"
                         }`}
                       >
                         {service}
@@ -293,7 +307,7 @@ export function GrowthSystem() {
 
                   <p
                     className="t-body mt-5 max-w-[38ch] transition-opacity duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-ink/60"
-                    style={{ opacity: active ? 1 : 0.62 }}
+                    style={{ opacity: active ? 1 : 0.88 }}
                   >
                     {stage.description}
                   </p>
