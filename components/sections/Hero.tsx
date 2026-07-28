@@ -6,7 +6,6 @@ import { hero, scrollCue, site } from "@/lib/content";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
 import { FluidCursor } from "@/components/ui/FluidCursor";
-import { AmbientPlume } from "@/components/ui/AmbientPlume";
 
 export function Hero() {
   const reduced = useReducedMotion();
@@ -26,10 +25,6 @@ export function Hero() {
       className="relative flex min-h-svh flex-col overflow-hidden bg-[var(--bg)]"
     >
       <FluidCursor />
-      {/* Sanctioned addition to the protected hero (explicit request,
-          2026-07-28): a corner-scoped instance of the same fluid engine,
-          rising as a constant plume. FluidCursor itself is untouched. */}
-      <AmbientPlume />
 
       <span
         aria-hidden="true"
