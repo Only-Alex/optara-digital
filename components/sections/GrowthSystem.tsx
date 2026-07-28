@@ -1,7 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useMotionValueEvent, useTransform } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useMotionValueEvent,
+  useTransform,
+} from "motion/react";
 import { growthSystem } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
@@ -15,9 +22,37 @@ export function GrowthSystem() {
   const trackRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Progress across the stage track only, not the whole section, so the line
-  // finishes drawing as the last stage reaches comfortable reading height.
-  const progress = useScrollProgress(trackRef, ["start 78%", "end 65%"]);
+  // The route plays itself once the track is on screen, rather than being
+  // scrubbed by the scrollbar: the reader arrives, and the system runs for
+  // them through to stage four. Timed rather than scroll-linked, so it always
+  // finishes — a fast scroll used to leave the line stranded mid-draw.
+  const progress = useMotionValue(0);
+  // Margin, not `amount`: the track is ~400px at desktop and ~1200px stacked
+  // on mobile, so a percentage-of-element threshold fires at wildly different
+  // moments. This trips when the track's top edge reaches a quarter up from
+  // the bottom of the viewport — the same instant on any screen.
+  const inView = useInView(trackRef, {
+    once: true,
+    margin: "0px 0px -25% 0px",
+  });
+
+  useEffect(() => {
+    if (reduced) {
+      progress.set(1);
+      return;
+    }
+    if (!inView) return;
+
+    // Even pacing, not the shared EASE: that curve front-loads almost all of
+    // its travel, which would flash stages 01–03 and then crawl to 04. The
+    // four nodes need to light at a steady beat.
+    const controls = animate(progress, 1, {
+      duration: 2.7,
+      ease: [0.4, 0, 0.35, 1],
+      delay: 0.15,
+    });
+    return () => controls.stop();
+  }, [inView, reduced, progress]);
 
   // Motion drives the line directly; React state only changes four times, when
   // progress crosses a node. Avoids re-rendering on every frame.
