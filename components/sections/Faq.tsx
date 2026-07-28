@@ -17,9 +17,9 @@ export function Faq() {
   const reduced = useReducedMotion();
 
   return (
-    // Ink is on loan. It holds the third dark beat while Testimonials has no
-    // verified quotes to render; when that section returns this goes back to
-    // paper, so the page keeps three evenly spaced dark moments either way.
+    // The late dark beat of the shortened homepage — ConnectedSystem holds the
+    // mid-page one. An accordion suits ink: only one short answer sits on the
+    // dark ground at a time.
     <section id="faqs" data-theme="ink" className="section">
       <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-4">

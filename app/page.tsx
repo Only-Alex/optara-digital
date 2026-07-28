@@ -2,29 +2,22 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
 import { Hero } from "@/components/sections/Hero";
-// Two components are deliberately absent from this page:
-//
-// Results — its figures were never verified, so the data is zeroed and the
-// component is held for the day real, attributable numbers exist.
-// Intro — retired from the homepage because it restated GrowthSystem. The
-// component and its copy stay for the /about rebuild in sprint 5.
-//
-// Insights/blog is also absent until /blog has real articles rather than stubs.
 import { GrowthSystem } from "@/components/sections/GrowthSystem";
 import { ConnectedSystem } from "@/components/sections/ConnectedSystem";
 import { Capabilities } from "@/components/sections/Capabilities";
-import { Work } from "@/components/sections/Work";
-import { Difference } from "@/components/sections/Difference";
-import { Process } from "@/components/sections/Process";
-import { Sectors } from "@/components/sections/Sectors";
-import { Testimonials } from "@/components/sections/Testimonials";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { SpeakBubble } from "@/components/ui/SpeakBubble";
 
-// Grounds alternate deliberately: paper · paper · bone · paper · ink · paper ·
-// bone · paper · ink · paper · bone, closing on an ink footer. The three dark
-// moments are evenly spaced so the page changes gear rather than running flat.
+// Deliberately short. On 2026-07-28 the homepage was cut from eleven sections
+// to seven: Work, Difference, Process, Sectors and Testimonials came off. The
+// components stay on disk — Work's concept projects live on /case-studies, the
+// Difference commitments live on /about and in the FAQ answers, and Process
+// belongs to /about. Results stays unrendered until real figures exist, and
+// Testimonials returns only with verified, nameable quotes.
+//
+// Grounds: paper · paper · ink · paper · ink · bone · ink. ConnectedSystem is
+// the mid-page dark moment; FAQ holds the late one.
 export default function Home() {
   return (
     <>
@@ -35,11 +28,6 @@ export default function Home() {
         <GrowthSystem />
         <ConnectedSystem />
         <Capabilities />
-        <Work />
-        <Difference />
-        <Process />
-        <Sectors />
-        <Testimonials />
         <Faq />
         <Contact />
       </main>

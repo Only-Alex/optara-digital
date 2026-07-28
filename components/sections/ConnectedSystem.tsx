@@ -1,7 +1,12 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { motion, useTransform, type MotionValue } from "motion/react";
+import {
+  motion,
+  useMotionTemplate,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import { connectedSystem } from "@/lib/content";
 import { EASE } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
@@ -57,11 +62,21 @@ function Module({ index, short, full, progress, box }: ModuleProps) {
     [0, 0.82],
     [0, ((seat.y - start.y) / 100) * box.h],
   );
-  const tint = useTransform(
+  // Motion cannot interpolate between var() strings, so these step at the
+  // threshold; the CSS transition classes below turn the step into a fade.
+  // Theme tokens rather than raw colours, so the section can change ground
+  // without touching this file again.
+  const dotTint = useTransform(
     progress,
     [0.5, 0.9],
-    ["var(--color-line)", "var(--color-accent)"],
+    ["var(--hairline)", "var(--accent-fg)"],
   );
+  const labelTint = useTransform(
+    progress,
+    [0.5, 0.9],
+    ["var(--muted)", "var(--accent-fg)"],
+  );
+  const halo = useMotionTemplate`0 0 16px ${dotTint}`;
 
   return (
     <li
@@ -74,10 +89,13 @@ function Module({ index, short, full, progress, box }: ModuleProps) {
       >
         <motion.span
           aria-hidden="true"
-          className="block h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: tint }}
+          className="block h-2.5 w-2.5 rounded-full transition-[background-color,box-shadow] duration-500"
+          style={{ backgroundColor: dotTint, boxShadow: halo }}
         />
-        <motion.span className="t-mono leading-tight" style={{ color: tint }}>
+        <motion.span
+          className="t-mono leading-tight transition-colors duration-500"
+          style={{ color: labelTint }}
+        >
           <span aria-hidden="true">{short}</span>
           <span className="sr-only">{full}</span>
         </motion.span>
@@ -134,13 +152,21 @@ function Diagram() {
         viewBox="0 0 100 100"
         preserveAspectRatio="none"
       >
+        <defs>
+          {/* Soft halo behind the drawn ring. A contained glow on the dark
+              ground — §3: direct attention, emotional impact — not an aurora
+              wash; the blur stays within the ring's own neighbourhood. */}
+          <filter id="cs-glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="1.1" />
+          </filter>
+        </defs>
         <ellipse
           cx="50"
           cy="50"
           rx="36"
           ry="34"
           fill="none"
-          stroke="var(--color-line)"
+          stroke="var(--hairline)"
           strokeWidth="1"
           vectorEffect="non-scaling-stroke"
         />
@@ -150,7 +176,20 @@ function Diagram() {
           rx="36"
           ry="34"
           fill="none"
-          stroke="var(--color-accent)"
+          stroke="var(--accent-fg)"
+          strokeWidth="3"
+          opacity="0.5"
+          filter="url(#cs-glow)"
+          vectorEffect="non-scaling-stroke"
+          style={{ pathLength: drawn }}
+        />
+        <motion.ellipse
+          cx="50"
+          cy="50"
+          rx="36"
+          ry="34"
+          fill="none"
+          stroke="var(--accent-fg)"
           strokeWidth="1"
           vectorEffect="non-scaling-stroke"
           style={{ pathLength: drawn }}
@@ -189,7 +228,7 @@ function StaticList({ className }: { className: string }) {
         <li key={module.short} className="relative pl-9">
           <span
             aria-hidden="true"
-            className="absolute left-[3.5px] top-[7px] block h-2 w-2 rounded-full bg-accent"
+            className="absolute left-[3.5px] top-[7px] block h-2 w-2 rounded-full bg-[var(--accent-fg)]"
           />
           <span className="t-body">{module.full}</span>
         </li>
@@ -202,7 +241,10 @@ export function ConnectedSystem() {
   const reduced = useReducedMotion();
 
   return (
-    <section id="system" data-theme="bone" className="section">
+    // Ink: this is the homepage's mid-page dark moment now that Work has moved
+    // to /case-studies. The ring draws in light on dark, which is where the
+    // glow treatment earns its place.
+    <section id="system" data-theme="ink" className="section">
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-7">

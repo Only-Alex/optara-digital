@@ -8,6 +8,7 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { RevealText } from "@/components/ui/RevealText";
 import { CheckIcon } from "@/components/ui/Icons";
 import { ServiceMockup } from "@/components/ui/ServiceMockup";
+import { TiltCard } from "@/components/ui/TiltCard";
 
 export function Capabilities() {
   const [active, setActive] = useState(0);
@@ -47,15 +48,14 @@ export function Capabilities() {
                       whileHover={{ x: 6 }}
                       transition={hoverTransition}
                     >
+                      {/* No 01–04 numerals: a tab list is not a sequence, and
+                          §4 limits numbering to real ones. */}
                       <span
                         className={`t-display-md transition-colors duration-200 ${
                           selected ? "text-accent" : "text-[var(--fg)]"
                         }`}
                       >
                         {item.name}
-                      </span>
-                      <span className="t-mono shrink-0 text-[var(--muted)]">
-                        {String(i + 1).padStart(2, "0")}
                       </span>
                       {selected && (
                         <motion.span
@@ -85,11 +85,11 @@ export function Capabilities() {
               >
                 {/* First point on the page that shows a screen rather than
                     describing one. Decorative, so the copy below still carries
-                    the whole meaning if it fails to paint. */}
-                <ServiceMockup
-                  index={active}
-                  className="mb-9 aspect-[4/3] w-full max-w-[30rem] rounded-[13px] bg-[color-mix(in_srgb,var(--fg)_3%,transparent)] p-4 sm:p-5"
-                />
+                    the whole meaning if it fails to paint. The tilt is a depth
+                    cue on fine pointers only. */}
+                <TiltCard className="mb-9 aspect-[4/3] w-full max-w-[30rem] rounded-[13px] bg-[color-mix(in_srgb,var(--fg)_3%,transparent)] p-4 sm:p-5">
+                  <ServiceMockup index={active} className="h-full w-full" />
+                </TiltCard>
 
                 {group.body.map((paragraph, i) => (
                   <p
