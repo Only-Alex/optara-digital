@@ -157,11 +157,15 @@ export function GrowthSystem() {
                   </span>
 
                   <h3
-                    className="t-display-md mt-4 transition-colors duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
                       color: active
                         ? "var(--color-ink)"
                         : "color-mix(in srgb, var(--color-ink) 55%, transparent)",
+                      // Settles upward as the line reaches it — a depth cue in
+                      // the same register as the colour shift. Static under
+                      // reduced motion because `active` is then always true.
+                      transform: active ? "translateY(0)" : "translateY(5px)",
                     }}
                   >
                     {stage.title}
