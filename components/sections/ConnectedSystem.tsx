@@ -17,7 +17,8 @@ import { EASE } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
 import { RevealText } from "@/components/ui/RevealText";
-import { ArrowIcon, LogoMark } from "@/components/ui/Icons";
+import { Button } from "@/components/ui/Button";
+import { LogoMark } from "@/components/ui/Icons";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 
 /* ------------------------------------------------------------------ *
@@ -545,7 +546,7 @@ function Node({
         </Link>
         <span
           aria-hidden="true"
-          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.16em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
+          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.08em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
           style={{
             color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.88)",
             opacity: anyHover && !hovered ? 0.8 : 1,
@@ -1173,7 +1174,7 @@ export function ConnectedSystem() {
   return (
     // Ink: the homepage's mid-page dark moment. The Optara System draws in
     // light on dark, which is where the depth treatment earns its keep.
-    <section id="system" data-theme="ink" className="section relative overflow-x-clip bg-[#080911]">
+    <section id="system" data-theme="ink" className="section relative overflow-x-clip">
       {/* Chapter seam in: a fine lit line and a falling wash, so the ground
           change reads as a new chapter rather than a background swap. */}
       <div
@@ -1196,14 +1197,10 @@ export function ConnectedSystem() {
           {/* Editorial column: eyebrow, heading, paragraph, CTA. */}
           <div className="xl:col-span-5">
             <RevealText>
-              <p className="t-mono bg-[linear-gradient(92deg,#63aaff_0%,#8e7bff_100%)] bg-clip-text text-transparent">
-                {connectedSystem.eyebrow}
-              </p>
-              <h2 className="mt-6 max-w-[15ch] font-[family-name:var(--font-display-serif)] text-[clamp(2.5rem,4.5vw,4rem)] font-normal leading-[1.06] tracking-[-0.01em]">
+              <p className="t-mono text-paper/70">{connectedSystem.eyebrow}</p>
+              <h2 className="t-display-lg mt-6 max-w-[16ch]">
                 {connectedSystem.heading.lead}{" "}
-                {/* The approved blue-to-purple treatment, on this line
-                    only. */}
-                <span className="bg-[linear-gradient(92deg,#63aaff_0%,#8e7bff_55%,#a98bff_100%)] bg-clip-text pb-[0.08em] text-transparent">
+                <span className="text-[var(--accent-fg)]">
                   {connectedSystem.heading.accent}
                 </span>
               </h2>
@@ -1211,13 +1208,14 @@ export function ConnectedSystem() {
                 {connectedSystem.body}
               </p>
               <div className="mt-9">
-                <Link
+                <Button
                   href={connectedSystem.cta.href}
-                  className="group/cta inline-flex items-center gap-4 rounded-[8px] border border-[color-mix(in_srgb,var(--accent-fg)_50%,transparent)] px-8 py-4 font-mono text-[0.8125rem] uppercase tracking-[0.2em] text-paper transition-[border-color,background-color] duration-300 hover:border-[var(--accent-fg)] hover:bg-accent/[0.07]"
+                  variant="outline"
+                  withArrow
+                  className="border-[color-mix(in_srgb,var(--accent-fg)_45%,transparent)] text-paper"
                 >
                   {connectedSystem.cta.label}
-                  <ArrowIcon className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-1" />
-                </Link>
+                </Button>
               </div>
             </RevealText>
           </div>

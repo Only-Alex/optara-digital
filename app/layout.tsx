@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { site } from "@/lib/content";
@@ -17,15 +17,6 @@ const jetbrainsMono = JetBrains_Mono({
   weight: "400",
   display: "swap",
   variable: "--font-jetbrains-mono",
-});
-
-// Loaded for the Optara System section's approved serif display heading
-// only; the global type system stays Instrument Sans.
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  display: "swap",
-  variable: "--font-display-serif",
 });
 
 export const metadata: Metadata = {
@@ -76,7 +67,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
-      className={`${instrumentSans.variable} ${jetbrainsMono.variable} ${instrumentSerif.variable}`}
+      className={`${instrumentSans.variable} ${jetbrainsMono.variable}`}
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>
