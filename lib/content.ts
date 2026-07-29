@@ -686,25 +686,90 @@ export const growthSystem = {
   ] as GrowthStage[],
 };
 
+export type ConnectedService = {
+  id: string;
+  title: string;
+  /** Accessible name, where the visible label reads as an abbreviation. */
+  spoken?: string;
+  href: string;
+  icon: ServiceIcon;
+  /** Which orbital plane the node sits on. */
+  orbit: "back" | "mid" | "front";
+  /** Seat on that plane, degrees anticlockwise from the right. */
+  angle: number;
+  /** Position in the travelling signal's sequence, from zero. */
+  order: number;
+};
+
 export const connectedSystem = {
   eyebrow: "The problem with channels",
   heading: {
     lead: "Most businesses do not need more marketing.",
     accent: "They need it connected.",
   },
-  body: "Agencies are usually hired one channel at a time. A brand agency, then an SEO specialist, then someone for the ads. Each does their part, nobody owns the result, and the handovers are where the budget quietly disappears.",
-  secondary:
-    "We run all six as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
+  body: "Branding, search, paid media, social, websites and apps perform at their best when they work together. Optara Digital connects every part of your marketing, so each decision strengthens the next and momentum compounds over time.",
   caption: "One connected system",
-  // Ordered as the system cycles, not as a price list.
-  modules: [
-    { short: "Branding", full: "Branding" },
-    { short: "SEO & GEO", full: "Search and generative engine optimisation" },
-    { short: "Google Ads", full: "Google Ads and paid search" },
-    { short: "Website Design", full: "Website Design" },
-    { short: "App Development", full: "App Development" },
-    { short: "Social Media", full: "Social Media" },
-  ],
+  // One source for every viewport: desktop, tablet and mobile all read the
+  // same services from here and only the arrangement differs. The angles are
+  // deliberately a few degrees off symmetrical.
+  services: [
+    {
+      id: "branding",
+      title: "Branding",
+      href: "/services/branding",
+      icon: "branding",
+      orbit: "mid",
+      angle: 97,
+      order: 0,
+    },
+    {
+      id: "search",
+      title: "SEO & GEO",
+      spoken: "Search and generative engine optimisation",
+      href: "/services/seo-geo",
+      icon: "seo",
+      orbit: "front",
+      angle: 18,
+      order: 1,
+    },
+    {
+      id: "ads",
+      title: "Google Ads",
+      spoken: "Google Ads and paid search",
+      href: "/services/google-ads",
+      icon: "ads",
+      orbit: "front",
+      angle: 322,
+      order: 2,
+    },
+    {
+      id: "web",
+      title: "Website Design",
+      href: "/services/website-design",
+      icon: "web",
+      orbit: "mid",
+      angle: 267,
+      order: 3,
+    },
+    {
+      id: "app",
+      title: "App Development",
+      href: "/services/app-development",
+      icon: "app",
+      orbit: "back",
+      angle: 211,
+      order: 4,
+    },
+    {
+      id: "social",
+      title: "Social Media",
+      href: "/services/social-media",
+      icon: "social",
+      orbit: "back",
+      angle: 150,
+      order: 5,
+    },
+  ] as ConnectedService[],
 };
 
 export const primaryCta = { label: "Get Started", href: "/contact" };
