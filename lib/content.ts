@@ -329,10 +329,11 @@ export const footer = {
       ] as NavItem[],
     },
   ],
-  legal: [
-    { label: "Privacy policy", href: "#" },
-    { label: "Terms", href: "#" },
-  ] as NavItem[],
+  // Deliberately empty until real Privacy and Terms pages exist. Dead "#"
+  // links are worse than absent ones — they promise a policy and deliver a
+  // scroll-to-top. Reinstate with real routes only. Launch blocker either
+  // way: a public site still needs the actual pages (design system §15).
+  legal: [] as NavItem[],
 };
 
 export const intro = {
@@ -652,35 +653,35 @@ export const growthSystem = {
   heading: "Four stages.",
   accentText: "One connected growth system.",
   supportingParagraph:
-    "Growth accelerates when brand, demand, conversion, and optimisation function as a unified system. At Optara Digital, we integrate every stage of the marketing journey, ensuring each decision enhances the next, making every investment work harder, and momentum compounds over time.",
+    "Brand, demand, conversion and optimisation perform better as one system. Optara Digital connects every stage, so each decision strengthens the next\u2014and every investment works harder over time.",
   stages: [
     {
       number: "01",
       title: "Build recognition",
       services: ["Branding"],
       description:
-        "Create a distinctive identity that earns attention, trust and recall before the buying decision begins.",
+        "Create a distinctive brand people notice, trust and remember\u2014before they are ready to buy.",
     },
     {
       number: "02",
       title: "Capture demand",
       services: ["SEO & GEO", "Google Ads"],
       description:
-        "Be visible when intent peaks—across Google, AI-powered discovery and strategically managed paid campaigns.",
+        "Show up when intent is highest across search, AI discovery and precisely managed paid campaigns.",
     },
     {
       number: "03",
       title: "Convert attention",
       services: ["Website Design", "App Development"],
       description:
-        "Turn interest into action with fast, intuitive digital experiences built around clear conversion paths.",
+        "Turn interest into action through fast, intuitive digital experiences built around clear conversion paths.",
     },
     {
       number: "04",
       title: "Scale growth",
       services: ["Social Media", "Continuous optimisation"],
       description:
-        "Use content, insight and continuous improvement to strengthen performance across the entire system.",
+        "Use content, insight and continuous optimisation to improve performance across the entire system.",
     },
   ] as GrowthStage[],
 };
@@ -694,7 +695,7 @@ export const connectedSystem = {
   body: "Agencies are usually hired one channel at a time. A brand agency, then an SEO specialist, then someone for the ads. Each does their part, nobody owns the result, and the handovers are where the budget quietly disappears.",
   secondary:
     "We run all six as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
-  caption: "One system",
+  caption: "One connected system",
   // Ordered as the system cycles, not as a price list.
   modules: [
     { short: "Branding", full: "Branding" },

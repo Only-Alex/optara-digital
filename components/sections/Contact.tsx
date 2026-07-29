@@ -16,8 +16,11 @@ const initialState: ContactState = {
   fieldErrors: {},
 };
 
+// Focus is a border change plus a soft accent ring — visible without relying
+// on colour alone against the field edge. aria-invalid picks up the accent
+// border so an errored field is findable before reading its message.
 const fieldClass =
-  "w-full rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-paper px-4 py-3.5 outline-none transition-colors duration-200 focus:border-accent";
+  "w-full rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-paper px-4 py-3.5 outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:shadow-[0_0_0_3px_rgba(59,30,255,0.12)] aria-[invalid=true]:border-accent";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -49,12 +52,20 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={htmlFor} className="t-mono text-[var(--muted)]">
+      {/* Sentence-case sans labels: the tiny uppercase mono read as interface
+          chrome rather than as the form asking a question. */}
+      <label
+        htmlFor={htmlFor}
+        className="text-[0.875rem] font-medium text-ink/80"
+      >
         {label}
       </label>
       {children}
       {error ? (
-        <span id={`${htmlFor}-error`} className="t-caption text-accent">
+        <span
+          id={`${htmlFor}-error`}
+          className="text-[0.8125rem] font-medium text-accent"
+        >
           {error}
         </span>
       ) : null}

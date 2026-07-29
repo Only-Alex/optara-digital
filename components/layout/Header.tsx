@@ -109,8 +109,15 @@ export function Header() {
         transition={{ duration: 0.8, ease: EASE }}
       >
         <motion.div
-          className="shell relative flex items-center justify-between gap-8 py-4"
+          // Compact scrolled state: the bar loses a third of its padding once
+          // the reader leaves the hero. Padding animates rather than height,
+          // so nothing inside reflows; the header is fixed, so the page never
+          // shifts; and the mega menu is anchored to this shell's bottom edge,
+          // so it tracks the compact state automatically.
+          className="shell relative flex items-center justify-between gap-8"
           animate={{
+            paddingTop: lifted ? "0.625rem" : "1rem",
+            paddingBottom: lifted ? "0.625rem" : "1rem",
             backgroundColor:
               lifted || megaOpen
                 ? "rgba(255,255,255,0.72)"
@@ -124,6 +131,8 @@ export function Header() {
           }}
           transition={{ duration: 0.4, ease: EASE }}
           style={{
+            paddingTop: "1rem",
+            paddingBottom: "1rem",
             borderBottomWidth: 1,
             borderBottomStyle: "solid",
             backdropFilter:

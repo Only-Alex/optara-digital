@@ -20,7 +20,10 @@ export function FluidCursor() {
 
     const sizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // 1.75, not 2: the §11 ceiling for expensive WebGL surfaces. On a 3x
+      // phone-class display this is ~23% fewer pixels through the whole
+      // simulation chain with no visible loss in the smoke.
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
       canvas.width = Math.round(rect.width * dpr);
       canvas.height = Math.round(rect.height * dpr);
     };
@@ -90,9 +93,33 @@ export function FluidCursor() {
 
       window.addEventListener("pointermove", forward, { passive: true });
       window.addEventListener("pointerdown", forward, { passive: true });
+
+      // Offscreen pause. The library keeps its private merged config, but it
+      // also installs a window keydown listener that toggles PAUSED on KeyP —
+      // the only runtime pause hook it exposes. A paused sim skips the whole
+      // simulation step each frame, so scrolling past the hero stops the GPU
+      // work. Tracked locally because the control is a toggle, not a setter;
+      // a visitor pressing P themselves can desync it for one cycle, which
+      // self-corrects on the next visibility change. Hidden-tab pause needs
+      // nothing: the loop is requestAnimationFrame-driven, and browsers halt
+      // rAF in hidden tabs.
+      let simPaused = false;
+      const setPaused = (paused: boolean) => {
+        if (paused === simPaused) return;
+        simPaused = paused;
+        window.dispatchEvent(new KeyboardEvent("keydown", { code: "KeyP" }));
+      };
+      const visibility = new IntersectionObserver(
+        ([entry]) => setPaused(!entry.isIntersecting),
+        { threshold: 0 },
+      );
+      visibility.observe(canvas);
+
       detachForwarding = () => {
         window.removeEventListener("pointermove", forward);
         window.removeEventListener("pointerdown", forward);
+        visibility.disconnect();
+        setPaused(false);
       };
     });
 

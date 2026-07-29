@@ -44,10 +44,20 @@ type ModuleProps = {
   full: string;
   progress: MotionValue<number>;
   box: Box;
+  hovered: boolean;
+  onHover: (index: number | null) => void;
 };
 
 /** One labelled node. Owns its own transforms so the hooks stay unconditional. */
-function Module({ index, short, full, progress, box }: ModuleProps) {
+function Module({
+  index,
+  short,
+  full,
+  progress,
+  box,
+  hovered,
+  onHover,
+}: ModuleProps) {
   const seat = SEATS[index];
   const start = SCATTER[index];
 
@@ -83,8 +93,13 @@ function Module({ index, short, full, progress, box }: ModuleProps) {
 
   return (
     <li
-      className="absolute w-28 -translate-x-1/2 -translate-y-1/2 md:w-32"
+      className="absolute w-32 -translate-x-1/2 -translate-y-1/2 md:w-36"
       style={{ left: `${start.x}%`, top: `${start.y}%` }}
+      // Hover is emphasis only — the labels are always visible, so nothing
+      // essential hides behind the pointer. Mouse-driven; touch gets the
+      // settled diagram.
+      onPointerEnter={(e) => e.pointerType === "mouse" && onHover(index)}
+      onPointerLeave={() => onHover(null)}
     >
       <motion.div
         className="flex flex-col items-center gap-3 text-center"
@@ -92,12 +107,19 @@ function Module({ index, short, full, progress, box }: ModuleProps) {
       >
         <motion.span
           aria-hidden="true"
-          className="block h-2.5 w-2.5 rounded-full transition-[background-color,box-shadow] duration-500"
-          style={{ backgroundColor: dotTint, boxShadow: halo }}
+          className={`block h-3 w-3 rounded-full transition-[background-color,box-shadow,transform] duration-300 ${
+            hovered ? "scale-125" : "scale-100"
+          }`}
+          style={{
+            backgroundColor: dotTint,
+            boxShadow: hovered
+              ? "0 0 22px 4px rgba(142,123,255,0.55)"
+              : (halo as unknown as string),
+          }}
         />
         <motion.span
-          className="t-mono leading-tight transition-colors duration-500"
-          style={{ color: labelTint }}
+          className="font-mono text-[0.8125rem] font-medium uppercase leading-tight tracking-[0.06em] transition-colors duration-300 md:text-[0.875rem]"
+          style={{ color: hovered ? "var(--color-paper)" : labelTint }}
         >
           <span aria-hidden="true">{short}</span>
           <span className="sr-only">{full}</span>
@@ -110,6 +132,7 @@ function Module({ index, short, full, progress, box }: ModuleProps) {
 function Diagram() {
   const boxRef = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<Box>({ w: 0, h: 0 });
+  const [hovered, setHovered] = useState<number | null>(null);
 
   const progress = useScrollProgress(boxRef, ["start 82%", "end 62%"]);
   const drawn = useTransform(progress, [0.12, 0.92], [0, 1]);
@@ -147,7 +170,9 @@ function Diagram() {
   return (
     <div
       ref={boxRef}
-      className="relative mx-auto mt-16 aspect-[4/3] w-full max-w-3xl md:mt-20 md:aspect-[16/10]"
+      // Tighter to the copy than before: the diagram was drifting away from
+      // the paragraphs that explain it, leaving a band of empty ink.
+      className="relative mx-auto mt-10 aspect-[4/3] w-full max-w-3xl md:mt-12 md:aspect-[16/10]"
     >
       <svg
         aria-hidden="true"
@@ -197,15 +222,67 @@ function Diagram() {
           vectorEffect="non-scaling-stroke"
           style={{ pathLength: drawn }}
         />
+
+        {/* Spokes: hovering a discipline reveals its connection to the core.
+            Opacity reveal rather than pathLength — a dash array tiles against
+            this non-uniformly stretched viewBox, the same defect the growth
+            rail had. */}
+        {SEATS.map((seat, index) => (
+          <motion.line
+            key={index}
+            x1={seat.x}
+            y1={seat.y}
+            x2="50"
+            y2="50"
+            stroke="var(--accent-fg)"
+            strokeWidth="1"
+            vectorEffect="non-scaling-stroke"
+            initial={false}
+            animate={{ opacity: hovered === index ? 0.75 : 0 }}
+            transition={{ duration: 0.28, ease: EASE }}
+          />
+        ))}
       </svg>
 
-      <motion.p
+      {/* One restrained signal travelling from the hovered discipline to the
+          core. HTML rather than SVG so the stretched viewBox cannot squash it
+          into an ellipse. Keyed so a fresh hover restarts it cleanly. */}
+      {hovered !== null && (
+        <motion.span
+          key={hovered}
+          aria-hidden="true"
+          className="pointer-events-none absolute block h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent-fg)]"
+          style={{ boxShadow: "0 0 10px rgba(142,123,255,0.7)" }}
+          initial={{
+            left: `${SEATS[hovered].x}%`,
+            top: `${SEATS[hovered].y}%`,
+            opacity: 0,
+          }}
+          animate={{
+            left: "50%",
+            top: "50%",
+            opacity: [0, 1, 0],
+          }}
+          transition={{ duration: 0.55, ease: EASE }}
+        />
+      )}
+
+      {/* The strategic core: the centre the disciplines align around, given
+          real presence rather than a floating caption. */}
+      <motion.div
         aria-hidden="true"
-        className="t-mono absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--muted)]"
-        style={{ opacity: captionIn }}
+        className="absolute left-1/2 top-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--accent-fg)]/35 text-center md:h-36 md:w-36"
+        style={{
+          opacity: captionIn,
+          background:
+            "radial-gradient(circle, rgba(59,30,255,0.22), rgba(59,30,255,0.05) 62%, transparent 74%)",
+        }}
       >
-        {connectedSystem.caption}
-      </motion.p>
+        <span className="absolute inset-2.5 rounded-full border border-paper/10" />
+        <span className="max-w-[6.5rem] font-mono text-[0.6875rem] font-medium uppercase leading-[1.5] tracking-[0.14em] text-paper/90">
+          {connectedSystem.caption}
+        </span>
+      </motion.div>
 
       <ul className="absolute inset-0">
         {connectedSystem.modules.map((module, index) => (
@@ -216,6 +293,8 @@ function Diagram() {
             full={module.full}
             progress={progress}
             box={box}
+            hovered={hovered === index}
+            onHover={setHovered}
           />
         ))}
       </ul>
@@ -247,7 +326,18 @@ export function ConnectedSystem() {
     // Ink: this is the homepage's mid-page dark moment now that Work has moved
     // to /case-studies. The ring draws in light on dark, which is where the
     // glow treatment earns its place.
-    <section id="system" data-theme="ink" className="section">
+    <section id="system" data-theme="ink" className="section relative">
+      {/* Chapter seam: a fine lit line and a falling wash mark the entry into
+          the dark system, so the ground change reads as a new chapter rather
+          than a background swap. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[rgba(142,123,255,0.45)] to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[radial-gradient(55%_100%_at_50%_0%,rgba(142,123,255,0.06),transparent_72%)]"
+      />
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-7">
@@ -266,10 +356,12 @@ export function ConnectedSystem() {
 
           <div className="lg:col-span-4 lg:col-start-9 lg:self-end">
             <RevealText delay={0.1}>
-              <p className="t-body text-[var(--muted)]">
-                {connectedSystem.body}
+              {/* Brighter than the muted token: dark-ground body copy was
+                  sitting below comfortable reading contrast. */}
+              <p className="t-body text-paper/75">{connectedSystem.body}</p>
+              <p className="t-body mt-5 text-paper/90">
+                {connectedSystem.secondary}
               </p>
-              <p className="t-body mt-5">{connectedSystem.secondary}</p>
             </RevealText>
           </div>
         </div>

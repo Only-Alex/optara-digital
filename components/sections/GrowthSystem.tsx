@@ -45,17 +45,14 @@ export function GrowthSystem() {
     }
     if (!inView) return;
 
-    // Unhurried but not slow: this is the page's one moment of watching
-    // rather than reading. 2.7s was over before the reader had settled, 6s
-    // outstayed its welcome — a stage lights roughly every 0.9s here.
-    //
+    // Refinement-brief pacing: the full route in ~2.4s, run once, then still.
     // Even pacing, not the shared EASE: that curve front-loads almost all of
     // its travel, which would flash stages 01–03 and then crawl to 04. The
     // four nodes need to light at a steady beat.
     const controls = animate(progress, 1, {
-      duration: 4.5,
+      duration: 2.4,
       ease: [0.32, 0, 0.32, 1],
-      delay: 0.3,
+      delay: 0.25,
     });
     return () => controls.stop();
   }, [inView, reduced, progress]);
@@ -118,25 +115,33 @@ export function GrowthSystem() {
               <p className="t-mono text-[var(--muted)]">
                 {growthSystem.eyebrow}
               </p>
-              <h2 className="t-display-lg mt-6 max-w-[16ch]">
-                {growthSystem.heading}{" "}
-                <span className="text-accent">{growthSystem.accentText}</span>
+              {/* Two intentional lines: the accent phrase owns its own line
+                  so it can never shatter into isolated words at odd widths. */}
+              <h2 className="t-display-lg mt-6">
+                {growthSystem.heading}
+                <span className="block text-accent">
+                  {growthSystem.accentText}
+                </span>
               </h2>
             </RevealText>
           </div>
 
           <div className="lg:col-span-5 lg:col-start-8 lg:self-end">
             <RevealText delay={0.1}>
-              <p className="t-body-lg text-ink/60">
+              <p className="t-body-lg max-w-[46ch] text-ink/75">
                 {growthSystem.supportingParagraph}
               </p>
             </RevealText>
           </div>
         </div>
 
-        <div ref={trackRef} className="relative mt-20 md:mt-24">
+        <div ref={trackRef} className="relative mt-16 md:mt-20">
           <motion.div
-            className="relative"
+            // One connected surface holding all four stages — an architectural
+            // frame on a barely-cool ground, so the stages read as chambers of
+            // one system rather than four detached columns. The inner wrapper
+            // is unpadded so every rail offset keeps its original geometry.
+            className="relative rounded-[22px] border border-[var(--hairline)] bg-[color-mix(in_srgb,var(--color-bone)_45%,var(--color-paper))] px-6 py-8 md:px-8 md:py-10 lg:px-10"
             style={
               reduced
                 ? undefined
@@ -149,6 +154,7 @@ export function GrowthSystem() {
                   }
             }
           >
+          <div className="relative">
           {/* Rails are scaled divs, not SVG pathLength. Motion implements
               pathLength with a dash array, and against a viewBox stretched
               non-uniformly under non-scaling-stroke that array tiles — which
@@ -231,7 +237,7 @@ export function GrowthSystem() {
                   key={stage.number}
                   // Reached stages sit a little forward of the ones still to
                   // come — depth carrying the meaning, not just decorating it.
-                  className="relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0"
+                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"
@@ -258,7 +264,7 @@ export function GrowthSystem() {
                         opacity: active ? 1 : 0,
                       }}
                     />
-                    <span className="absolute inset-0 rounded-full bg-paper p-[3px]">
+                    <span className="absolute inset-0 rounded-full bg-[color-mix(in_srgb,var(--color-bone)_45%,var(--color-paper))] p-[3px]">
                       <span
                         className="relative block h-full w-full rounded-full transition-[background-color,transform,box-shadow] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                         style={{
@@ -282,6 +288,24 @@ export function GrowthSystem() {
                       </span>
                     </span>
                   </span>
+
+                  {/* Hover illumination: a restrained wash behind the whole
+                      stage. Class-driven so it cannot fight the inline
+                      activation styles. */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -inset-x-3 -inset-y-2 rounded-2xl bg-accent/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:-inset-x-2"
+                  />
+
+                  {/* Fine vertical connection from the rail's node down into
+                      the stage — drawn as its stage activates, emphasised on
+                      hover, so number and node read as one joined fixture. */}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute left-[7px] top-[17px] hidden h-8 w-px origin-top bg-gradient-to-b from-accent/70 to-accent/0 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 lg:block ${
+                      active ? "scale-y-100 opacity-70" : "scale-y-0 opacity-0"
+                    }`}
+                  />
 
                   {/* One numeral per stage, in its own row: the ghost used to
                       be a second copy sitting behind the title, which read as
@@ -347,10 +371,10 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 ${
                           active
                             ? "border-accent/30 bg-accent/[0.06] text-ink/85"
-                            : "border-[var(--hairline)] bg-transparent text-ink/65"
+                            : "border-[var(--hairline)] bg-transparent text-ink/70"
                         }`}
                       >
                         <span
@@ -370,9 +394,11 @@ export function GrowthSystem() {
                     ))}
                   </motion.ul>
 
+                  {/* Refinement brief: darker body at 17px, tighter to the
+                      tags above, and never heavily faded when unreached. */}
                   <p
-                    className="t-body mt-5 max-w-[38ch] transition-opacity duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-ink/60"
-                    style={{ opacity: active ? 1 : 0.88 }}
+                    className="mt-3.5 max-w-[38ch] text-[1.0625rem] leading-[1.62] text-ink/75 transition-opacity duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    style={{ opacity: active ? 1 : 0.92 }}
                   >
                     {stage.description}
                   </p>
@@ -380,6 +406,7 @@ export function GrowthSystem() {
               );
             })}
           </ol>
+          </div>
           </motion.div>
         </div>
       </div>

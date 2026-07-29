@@ -88,7 +88,10 @@ export function Faq() {
                       transition={{ duration: reduced ? 0 : 0.4, ease: EASE }}
                     >
                       <div className="pb-8 pr-4">
-                        <p className="t-body max-w-[62ch] text-[var(--muted)]">
+                        {/* Refinement brief: 17px, relaxed leading, brighter
+                            than the muted token — answers were small and dim
+                            on the dark ground. */}
+                        <p className="max-w-[58ch] text-[1.0625rem] leading-[1.65] text-paper/80">
                           {item.answer}
                         </p>
 

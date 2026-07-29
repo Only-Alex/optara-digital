@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { speakBubble } from "@/lib/content";
 import { DURATION, EASE } from "@/lib/motion";
@@ -19,17 +20,55 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 export function SpeakBubble() {
   const reduced = useReducedMotion();
 
+  // The button's whole job is to carry the reader to Contact — once Contact
+  // or the footer is on screen it has nothing left to offer, and floating
+  // over the form or the footer links it would only obscure them. Retire it
+  // there; bring it back when the reader scrolls up. On pages without a
+  // #contact section it simply never hides.
+  const [retired, setRetired] = useState(false);
+  // Preserves the original 1.1s entrance beat now that `animate` also serves
+  // the retire toggle — without this the button would pop in immediately.
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setEntered(true), reduced ? 0 : 1100);
+    return () => window.clearTimeout(t);
+  }, [reduced]);
+
+  useEffect(() => {
+    const targets = [
+      document.getElementById("contact"),
+      document.querySelector("footer"),
+    ].filter(Boolean) as Element[];
+    if (targets.length === 0) return;
+
+    const visible = new Set<Element>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target);
+          else visible.delete(entry.target);
+        }
+        setRetired(visible.size > 0);
+      },
+      { threshold: 0.12 },
+    );
+    targets.forEach((t) => observer.observe(t));
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <motion.a
       href={speakBubble.href}
       className="group fixed bottom-5 right-5 z-40 block h-[5.25rem] w-[5.25rem] rounded-full bg-accent text-paper shadow-[0_10px_30px_rgba(59,30,255,0.28)] transition-colors duration-200 hover:bg-accent-deep md:bottom-7 md:right-7 md:h-[5.75rem] md:w-[5.75rem]"
+      style={{ pointerEvents: retired ? "none" : "auto" }}
+      tabIndex={retired ? -1 : 0}
+      aria-hidden={retired || undefined}
       initial={reduced ? false : { opacity: 0, scale: 0.7 }}
       animate={{
-        opacity: 1,
-        scale: 1,
-        transition: reduced
-          ? { duration: 0 }
-          : { duration: 0.6, ease: EASE, delay: 1.1 },
+        opacity: retired || !entered ? 0 : 1,
+        scale: retired || !entered ? 0.85 : 1,
+        transition: reduced ? { duration: 0 } : { duration: 0.45, ease: EASE },
       }}
       whileHover={reduced ? undefined : { scale: 1.06 }}
       whileFocus={reduced ? undefined : { scale: 1.06 }}
