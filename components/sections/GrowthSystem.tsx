@@ -337,8 +337,13 @@ export function GrowthSystem() {
                   {/* Unreached stages are quieter, never disabled: a stage the
                       reader has not arrived at yet still has to look finished,
                       so the contrast step is emphasis, not an on/off switch. */}
+                  {/* Title region reserves two lines at desktop (2 × the
+                      1.15 line-height, in em so it tracks the clamp()ed font
+                      size). "Scale growth" is the only one-line title; without
+                      the reservation its chips and description sat higher than
+                      the other three columns. Mobile/tablet flow naturally. */}
                   <h3
-                    className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:min-h-[2.3em]"
                     style={{
                       color: active
                         ? "var(--color-ink)"
@@ -355,12 +360,12 @@ export function GrowthSystem() {
                   {/* Compact enough that every column's chips sit on ONE row
                       at desktop — "Website Design" + "App Development" side by
                       side inside a quarter-width column is the constraint that
-                      sets the size. The small min-height is a fallback for the
-                      narrow-desktop band where a pair can still wrap; it keeps
-                      the descriptions on a shared baseline without leaving a
-                      visible hole at full width. */}
+                      sets the size. The label region reserves two pill rows
+                      (2 × 27px pill + 6px gap = 3.75rem) at desktop only, so
+                      every description starts level even in the narrow band
+                      where stage 04's pair wraps. Tablet/mobile flow free. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 md:min-h-[3.75rem]"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem]"
                     initial={false}
                     animate={
                       reduced

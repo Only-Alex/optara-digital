@@ -653,35 +653,35 @@ export const growthSystem = {
   heading: "Four stages.",
   accentText: "One connected growth system.",
   supportingParagraph:
-    "Brand, demand, conversion and optimisation perform better as one system. Optara Digital connects every stage, so each decision strengthens the next\u2014and every investment works harder over time.",
+    "Growth accelerates when brand, demand, conversion and optimisation move as one. Optara Digital connects every stage, so each decision strengthens the next and momentum builds faster over time.",
   stages: [
     {
       number: "01",
       title: "Build recognition",
       services: ["Branding"],
       description:
-        "Shape a distinctive brand with a clear position, consistent identity and a point of view people remember. Stronger recognition builds trust, increases perceived value and gives customers a compelling reason to choose you when they are ready to buy.",
+        "Build a distinctive brand that earns attention, inspires trust and stays memorable. Clear positioning and a consistent identity give customers a stronger reason to choose you.",
     },
     {
       number: "02",
       title: "Capture demand",
       services: ["SEO & GEO", "Google Ads"],
       description:
-        "Put your business in front of the right people at the moments that matter most. By combining search visibility, AI-powered discovery and precisely targeted paid campaigns, we capture high-intent demand and turn attention into qualified opportunity.",
+        "Reach the right people when intent is highest. Strategic SEO, AI search visibility and targeted Google Ads turn active demand into valuable opportunities for your business.",
     },
     {
       number: "03",
       title: "Convert attention",
       services: ["Website Design", "App Development"],
       description:
-        "Turn interest into action through fast, intuitive websites and digital products shaped around how people actually behave. Clear journeys, persuasive messaging and frictionless interactions make it easier for visitors to engage, enquire and become customers.",
+        "Turn attention into action with fast, intuitive websites and apps. Clear messaging and frictionless journeys make it easier for people to engage, enquire and convert.",
     },
     {
       number: "04",
       title: "Scale growth",
       services: ["Social Media", "Continuous optimisation"],
       description:
-        "Build on what works through strategic content, audience insight and continuous optimisation. By learning from performance and refining every stage of the system, we uncover new opportunities, improve efficiency and compound momentum over time.",
+        "Improve what works through smart content, audience insight and ongoing optimisation. Find new opportunities, sharpen performance and build stronger momentum across every stage.",
     },
   ] as GrowthStage[],
 };
