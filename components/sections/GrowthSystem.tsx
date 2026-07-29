@@ -357,17 +357,15 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
-                  {/* One pill per row at desktop: "Continuous Optimisation"
-                      cannot share a row inside a quarter-width column, so a
-                      side-by-side layout leaves stage 04 stacked while 02/03
-                      pair up — uneven levels. Stacking every column instead
-                      puts each first pill on one shared line and each second
-                      pill on another. The region still reserves two pill rows
-                      (2 × 27px pill + 6px gap = 3.75rem) so stage 01's single
-                      pill keeps its description level. Tablet/mobile wrap
-                      naturally. */}
+                  {/* Every column's pills on ONE shared line at desktop. The
+                      constraint is "Social Media" + "Continuous Optimisation"
+                      side by side inside the narrowest quarter-width column
+                      (~209px at 1024), which is why the pills drop to a
+                      smaller size and tighter metrics at lg. The min-height
+                      keeps descriptions level if a future label ever wraps.
+                      Tablet/mobile keep the larger pill size and wrap free. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem] lg:flex-col lg:items-start"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem] lg:gap-1"
                     initial={false}
                     animate={
                       reduced
@@ -381,7 +379,7 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 ${
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.46875rem] lg:tracking-normal ${
                           active
                             ? "border-accent/30 bg-accent/[0.06] text-ink/85"
                             : "border-[var(--hairline)] bg-transparent text-ink/70"
@@ -389,7 +387,7 @@ export function GrowthSystem() {
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms]"
+                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[3px] lg:w-[3px]"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
