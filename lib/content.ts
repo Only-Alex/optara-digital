@@ -686,15 +686,6 @@ export const growthSystem = {
   ] as GrowthStage[],
 };
 
-export type Discipline = {
-  id: string;
-  title: string;
-  /** Accessible name, where the visible label reads as an abbreviation. */
-  spoken?: string;
-  orbit: "back" | "mid" | "front";
-  angle: number;
-};
-
 export const connectedSystem = {
   eyebrow: "The problem with channels",
   heading: {
@@ -705,33 +696,15 @@ export const connectedSystem = {
   secondary:
     "We run all six as one system. Brand shapes the words people search for. Search shows us what is worth bidding on. The site turns both into enquiries. Social and continuous optimisation feed the next round.",
   caption: "One connected system",
-  // Ordered as the system cycles, not as a price list. `orbit` and `angle`
-  // place each discipline in the dimensional system: the orbit sets its depth
-  // plane, the angle its seat on that plane, measured anticlockwise from the
-  // right in the projection maths. One source for every viewport — desktop,
-  // tablet and mobile read the same names from here and only the arrangement
-  // differs. `spoken` is the accessible name where the short visible label
-  // would read as an abbreviation.
-  disciplines: [
-    { id: "branding", title: "Branding", orbit: "mid", angle: 180 },
-    {
-      id: "search",
-      title: "SEO & GEO",
-      spoken: "Search and generative engine optimisation",
-      orbit: "mid",
-      angle: 0,
-    },
-    {
-      id: "ads",
-      title: "Google Ads",
-      spoken: "Google Ads and paid search",
-      orbit: "front",
-      angle: 304,
-    },
-    { id: "web", title: "Website Design", orbit: "front", angle: 236 },
-    { id: "app", title: "App Development", orbit: "back", angle: 52 },
-    { id: "social", title: "Social Media", orbit: "back", angle: 128 },
-  ] as Discipline[],
+  // Ordered as the system cycles, not as a price list.
+  modules: [
+    { short: "Branding", full: "Branding" },
+    { short: "SEO & GEO", full: "Search and generative engine optimisation" },
+    { short: "Google Ads", full: "Google Ads and paid search" },
+    { short: "Website Design", full: "Website Design" },
+    { short: "App Development", full: "App Development" },
+    { short: "Social Media", full: "Social Media" },
+  ],
 };
 
 export const primaryCta = { label: "Get Started", href: "/contact" };
