@@ -357,15 +357,17 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
-                  {/* Compact enough that every column's chips sit on ONE row
-                      at desktop — "Website Design" + "App Development" side by
-                      side inside a quarter-width column is the constraint that
-                      sets the size. The label region reserves two pill rows
-                      (2 × 27px pill + 6px gap = 3.75rem) at desktop only, so
-                      every description starts level even in the narrow band
-                      where stage 04's pair wraps. Tablet/mobile flow free. */}
+                  {/* One pill per row at desktop: "Continuous Optimisation"
+                      cannot share a row inside a quarter-width column, so a
+                      side-by-side layout leaves stage 04 stacked while 02/03
+                      pair up — uneven levels. Stacking every column instead
+                      puts each first pill on one shared line and each second
+                      pill on another. The region still reserves two pill rows
+                      (2 × 27px pill + 6px gap = 3.75rem) so stage 01's single
+                      pill keeps its description level. Tablet/mobile wrap
+                      naturally. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem]"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem] lg:flex-col lg:items-start"
                     initial={false}
                     animate={
                       reduced
