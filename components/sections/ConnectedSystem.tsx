@@ -118,7 +118,7 @@ function Module({
           }}
         />
         <motion.span
-          className="font-mono text-[0.8125rem] font-medium uppercase leading-tight tracking-[0.06em] transition-colors duration-300 md:text-[0.875rem]"
+          className="font-mono text-[0.875rem] font-medium uppercase leading-tight tracking-[0.06em] transition-colors duration-300 md:text-[0.9375rem]"
           style={{ color: hovered ? "var(--color-paper)" : labelTint }}
         >
           <span aria-hidden="true">{short}</span>
@@ -279,7 +279,7 @@ function Diagram() {
         }}
       >
         <span className="absolute inset-2.5 rounded-full border border-paper/10" />
-        <span className="max-w-[6.5rem] font-mono text-[0.6875rem] font-medium uppercase leading-[1.5] tracking-[0.14em] text-paper/90">
+        <span className="max-w-[7rem] font-mono text-[0.75rem] font-medium uppercase leading-[1.5] tracking-[0.14em] text-paper/95">
           {connectedSystem.caption}
         </span>
       </motion.div>
@@ -358,7 +358,7 @@ export function ConnectedSystem() {
             <RevealText delay={0.1}>
               {/* Brighter than the muted token: dark-ground body copy was
                   sitting below comfortable reading contrast. */}
-              <p className="t-body text-paper/75">{connectedSystem.body}</p>
+              <p className="t-body text-paper/82">{connectedSystem.body}</p>
               <p className="t-body mt-5 text-paper/90">
                 {connectedSystem.secondary}
               </p>
