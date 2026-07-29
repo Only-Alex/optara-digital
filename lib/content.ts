@@ -652,7 +652,7 @@ export const growthSystem = {
   heading: "Four stages.",
   accentText: "One connected growth system.",
   supportingParagraph:
-    "Growth works best when brand, demand, conversion and optimisation reinforce one another. Optara Digital connects every stage, so each decision builds momentum instead of operating in isolation.",
+    "Growth accelerates when brand, demand, conversion, and optimisation function as a unified system. At Optara Digital, we integrate every stage of the marketing journey, ensuring each decision enhances the next, making every investment work harder, and momentum compounds over time.",
   stages: [
     {
       number: "01",
