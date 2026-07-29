@@ -228,7 +228,7 @@ export function GrowthSystem() {
             />
           </div>
 
-          <ol className="relative grid grid-cols-1 gap-y-12 [--pill-size:0.625rem] md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8 lg:[--pill-size:8px] 2xl:[--pill-size:9.5px]">
+          <ol className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8">
             {growthSystem.stages.map((stage, index) => {
               const active = isActive(index);
 
@@ -240,7 +240,7 @@ export function GrowthSystem() {
                   // last:lg:pr-9 keeps stage 04's longer description clear of
                   // the floating contact button at laptop widths — measured
                   // 20px of text under the disc at 1280 without it.
-                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12 last:xl:pr-9 last:2xl:pr-2"
+                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12 last:xl:pr-11 last:2xl:pr-2"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"
@@ -362,18 +362,17 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
-                  {/* Every column's pills on ONE shared line from 1280 up.
-                      The binding pair is "Social Media" + "Continuous
-                      Optimisation" inside the narrowest column, so the pills
-                      are sized in em off --pill-size — one knob scales text,
-                      padding and dot together, stepped per breakpoint to the
-                      largest that still fits. Between 1024 and 1279 the column
-                      is too narrow for any legible one-line size, so that band
-                      alone keeps the two-row reservation to hold descriptions
-                      level; above it the reservation is dropped and the
-                      descriptions sit straight under a single row. */}
+                  {/* Full-size pills, per the approved visual: readable
+                      12px mono in a tinted capsule. At this size the wide
+                      pairs wrap to a second row inside a quarter-width
+                      column, so the label region reserves two pill rows —
+                      first pills all sit on one shared line and every
+                      description starts level. The 1024–1279 band alone
+                      keeps the previous compact size: stage 04's column is
+                      only ~135px there after the floating-button clearance,
+                      which cannot hold a 12px capsule at all. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3rem] lg:gap-1 xl:min-h-0"
+                    className="mt-5 flex flex-wrap content-start gap-2 md:min-h-[4.25rem] lg:gap-1 xl:gap-2"
                     initial={false}
                     animate={
                       reduced
@@ -387,15 +386,15 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 lg:gap-[0.3em] lg:py-[0.36em] lg:pl-[0.36em] lg:pr-[0.55em] lg:text-[length:var(--pill-size)] lg:tracking-normal ${
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-3 pr-3 font-mono text-[0.75rem] leading-none uppercase tracking-[0.02em] lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.5rem] lg:tracking-normal xl:gap-1.5 xl:py-[7px] xl:pl-3 xl:pr-3 xl:text-[0.75rem] xl:tracking-[0.02em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
                           active
-                            ? "border-accent/30 bg-accent/[0.06] text-ink/85"
-                            : "border-[var(--hairline)] bg-transparent text-ink/70"
+                            ? "border-accent/35 bg-accent/[0.08] text-ink/85"
+                            : "border-[var(--hairline)] bg-accent/[0.03] text-ink/70"
                         }`}
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[0.34em] lg:w-[0.34em]"
+                          className="block h-[5px] w-[5px] shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[3px] lg:w-[3px] xl:h-[5px] xl:w-[5px]"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
