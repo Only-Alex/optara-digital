@@ -26,102 +26,172 @@ import { ServiceIcon } from "@/components/ui/ServiceIcon";
  *
  * The scene is drawn in one fixed coordinate space and the stage box is
  * given the matching aspect ratio, so SVG units and HTML percentages map
- * to the same pixels. That is what keeps the orbital paths (SVG) and the
- * node icons and labels (real HTML) locked together at every width.
+ * to the same pixels. Nodes sit on a loose hexagon around the core, as
+ * in the approved reference, and the nested rings are texture centred
+ * behind them.
  * ------------------------------------------------------------------ */
 
-const VIEW = { w: 1000, h: 680 };
-const CENTRE = { x: 500, y: 340 };
-const SCENE_R = 240;
-// The core is the anchor of the reference composition: ~240px at the
-// desktop stage width, which is this many view units of radius.
-const CORE_R = 168;
-
-type Orbit = {
-  /** Multiple of the scene radius. */
-  radius: number;
-  /** Degrees tipped away from the viewer. Higher is flatter on screen. */
-  tilt: number;
-  /** Degrees of roll in the picture plane. */
-  roll: number;
-  /** Depth plane, px, inside the stage's perspective. */
-  z: number;
-};
-
-// Four primary planes at different radii, tilts and roll, so the system
-// reads as one architecture seen in perspective rather than a diagram.
-// `mid` is the flattest — flat enough that its projected height is inside
-// the core's radius, which is what makes the occlusion real: its far half
-// hides behind the core, its near half draws across it.
-const ORBITS: Record<ConnectedService["orbit"], Orbit> = {
-  back: { radius: 1.52, tilt: 62, roll: 8, z: -52 },
-  mid: { radius: 1.3, tilt: 72, roll: -5, z: 0 },
-  front: { radius: 1.42, tilt: 58, roll: 12, z: 44 },
-};
-
-// Secondary decorative paths: dashed, no nodes. Their dash patterns crawl
-// slowly to carry live orbital drift without moving any geometry the
-// nodes are seated on. Mixed directions and durations.
-const DRIFT_ORBITS: (Orbit & {
-  opacity: number;
-  duration: number;
-  reverse?: boolean;
-})[] = [
-  { radius: 1.14, tilt: 70, roll: 3, z: -28, opacity: 0.16, duration: 44 },
-  {
-    radius: 1.64,
-    tilt: 66,
-    roll: -9,
-    z: -42,
-    opacity: 0.13,
-    duration: 64,
-    reverse: true,
-  },
-  { radius: 0.96, tilt: 79, roll: 16, z: 24, opacity: 0.18, duration: 32 },
-];
-
-// Central knobs for the motion system, rather than magic numbers spread
-// through the component.
-const MOTION = {
-  signalDuration: 12,
-  signalPause: 4,
-  pointer: { rotateX: 2, rotateY: 3.5 },
-} as const;
-
-const rad = (deg: number) => (deg * Math.PI) / 180;
+const VIEW = { w: 1000, h: 800 };
+const CENTRE = { x: 500, y: 400 };
+// The core anchors the composition: ~240px at the desktop stage width.
+const CORE_R = 165;
 
 // Server and client V8 builds can disagree in the last bit of a cosine,
 // which is enough to make React flag a hydration mismatch on an SVG
 // attribute. Every geometric output is rounded to a stable precision so
 // both sides serialise identically.
 const round2 = (n: number) => Math.round(n * 100) / 100;
+const rad = (deg: number) => (deg * Math.PI) / 180;
 
-/** Where a seat on an orbit lands on screen, in view units. */
-function seat(orbit: Orbit, angle: number) {
+/** Where a service's node lands on screen, in view units. */
+const seat = (service: ConnectedService) => ({
+  x: CENTRE.x + service.x,
+  y: CENTRE.y + service.y,
+});
+
+const px = (value: number) => `${round2((value / VIEW.w) * 100)}%`;
+const py = (value: number) => `${round2((value / VIEW.h) * 100)}%`;
+
+/* Depth planes for the node tiers. */
+const NODE_Z: Record<ConnectedService["orbit"], number> = {
+  back: -36,
+  mid: 0,
+  front: 40,
+};
+
+/* ------------------------------------------------------------------ *
+ * Rings: nested ellipses centred on the core, per the reference. One
+ * crosses the core's face and is split so its far half genuinely
+ * disappears behind the opaque core; one bright foreground ring passes
+ * in front. Three carry a slow dash drift.
+ * ------------------------------------------------------------------ */
+
+type RingDef = {
+  rx: number;
+  ry: number;
+  roll: number;
+  z: number;
+  opacity: number;
+  width: number;
+  tier: "back" | "mid" | "front";
+  dashed?: boolean;
+  drift?: { duration: number; reverse?: boolean };
+  split?: boolean;
+  /** Deterministic bead seats, degrees along the ellipse. */
+  beads?: number[];
+};
+
+const RINGS: RingDef[] = [
+  // Inner bright ring, crossing the core's face (split far/near).
+  {
+    rx: 212,
+    ry: 64,
+    roll: -4,
+    z: 6,
+    opacity: 0.55,
+    width: 1.2,
+    tier: "mid",
+    split: true,
+    beads: [24, 118, 204, 297],
+  },
+  {
+    rx: 268,
+    ry: 94,
+    roll: 3,
+    z: -14,
+    opacity: 0.3,
+    width: 1,
+    tier: "mid",
+    beads: [61, 152, 246, 335],
+  },
+  {
+    rx: 322,
+    ry: 120,
+    roll: -7,
+    z: -26,
+    opacity: 0.26,
+    width: 1,
+    tier: "back",
+    dashed: true,
+    drift: { duration: 44 },
+  },
+  {
+    rx: 378,
+    ry: 150,
+    roll: 5,
+    z: -38,
+    opacity: 0.22,
+    width: 1,
+    tier: "back",
+    beads: [14, 87, 141, 199, 262, 328],
+  },
+  {
+    rx: 428,
+    ry: 177,
+    roll: -3,
+    z: -48,
+    opacity: 0.17,
+    width: 1,
+    tier: "back",
+    dashed: true,
+    drift: { duration: 64, reverse: true },
+  },
+  {
+    rx: 472,
+    ry: 202,
+    roll: 8,
+    z: -56,
+    opacity: 0.13,
+    width: 1,
+    tier: "back",
+    dashed: true,
+    drift: { duration: 32 },
+    beads: [39, 171, 293],
+  },
+  // Bright foreground ring, passing in front of the core.
+  {
+    rx: 342,
+    ry: 132,
+    roll: -12,
+    z: 30,
+    opacity: 0.5,
+    width: 1.3,
+    tier: "front",
+    beads: [8, 76, 133, 187, 244, 311, 352],
+  },
+];
+
+/** Point on a rolled ellipse, view units. */
+function ringPoint(ring: RingDef, angle: number) {
   const a = rad(angle);
-  const t = rad(orbit.tilt);
-  const r = rad(orbit.roll);
-  const radius = SCENE_R * orbit.radius;
-  const x = radius * Math.cos(a);
-  const y = -radius * Math.sin(a) * Math.cos(t);
+  const r = rad(ring.roll);
+  const x = ring.rx * Math.cos(a);
+  const y = ring.ry * Math.sin(a);
   return {
     x: round2(CENTRE.x + x * Math.cos(r) - y * Math.sin(r)),
     y: round2(CENTRE.y + x * Math.sin(r) + y * Math.cos(r)),
   };
 }
 
-const px = (value: number) => `${round2((value / VIEW.w) * 100)}%`;
-const py = (value: number) => `${round2((value / VIEW.h) * 100)}%`;
-
-/** Half of an orbit as an arc command: the far half runs over the top. */
-function arc(orbit: Orbit, half: "far" | "near") {
-  const a = round2(SCENE_R * orbit.radius);
-  const b = round2(a * Math.cos(rad(orbit.tilt)));
+/** Half of a split ring as an arc command: the far half runs on top. */
+function arc(ring: RingDef, half: "far" | "near") {
   const { x, y } = CENTRE;
+  const a = ring.rx;
+  const b = ring.ry;
   return half === "far"
     ? `M ${x - a} ${y} A ${a} ${b} 0 0 1 ${x + a} ${y}`
     : `M ${x + a} ${y} A ${a} ${b} 0 0 1 ${x - a} ${y}`;
 }
+
+/* ------------------------------------------------------------------ *
+ * Motion configuration, in one place.
+ * ------------------------------------------------------------------ */
+
+const MOTION = {
+  signalDuration: 12,
+  signalPause: 4,
+  pointer: { rotateX: 2, rotateY: 3.5 },
+} as const;
 
 /* ------------------------------------------------------------------ *
  * The signal route: one luminous point visiting every service in
@@ -136,14 +206,11 @@ type Point = { x: number; y: number };
 type Leg = { from: Point; to: Point; ctrl: Point };
 
 const LEGS: Leg[] = (() => {
-  const seats = SEQUENCE.map((s) => seat(ORBITS[s.orbit], s.angle));
-  const stops = [...seats, { x: CENTRE.x, y: CENTRE.y }];
+  const stops = [...SEQUENCE.map(seat), { x: CENTRE.x, y: CENTRE.y }];
   return stops.slice(0, -1).map((from, i) => {
     const to = stops[i + 1];
     const mx = (from.x + to.x) / 2;
     const my = (from.y + to.y) / 2;
-    // Perpendicular of the leg, signed so the bow points away from the
-    // centre; the final leg into the core bows only gently.
     const dx = to.x - from.x;
     const dy = to.y - from.y;
     const len = Math.hypot(dx, dy) || 1;
@@ -173,9 +240,8 @@ function routePoint(v: number): Point {
 
 /* ------------------------------------------------------------------ *
  * The scroll-linked entrance, expressed as named windows on one 0 → 1
- * value: core forward, paths back to front, nodes into position, then
- * the first signal pass. The value is latched — it only ever advances —
- * so small scroll reversals never replay the build.
+ * value. The value is latched — it only ever advances — so small
+ * scroll reversals never replay the build.
  * ------------------------------------------------------------------ */
 
 const CUE = {
@@ -229,72 +295,90 @@ function Plane({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** One orbital path; contrast, not thickness, carries the hierarchy. */
+/** One ring, with its luminous beads. Contrast carries the hierarchy. */
 function Ring({
-  orbit,
+  ring,
   half,
-  opacity,
-  width,
   progress,
-  window: cue,
-  dashed,
-  drift,
 }: {
-  orbit: Orbit;
+  ring: RingDef;
   half?: "far" | "near";
-  opacity: number;
-  width: number;
   progress: MotionValue<number>;
-  window: readonly [number, number];
-  dashed?: boolean;
-  drift?: { duration: number; reverse?: boolean };
 }) {
-  const reveal = useTransform(progress, [cue[0], cue[1]], [0, opacity]);
+  const cue = CUE.ring[ring.tier];
+  const reveal = useTransform(progress, [cue[0], cue[1]], [0, ring.opacity]);
+  const beadReveal = useTransform(
+    progress,
+    [cue[1], Math.min(1, cue[1] + 0.18)],
+    [0, 1],
+  );
   const grow = useTransform(progress, [cue[0], cue[1]], [0.94, 1]);
-  const a = round2(SCENE_R * orbit.radius);
-  const b = round2(a * Math.cos(rad(orbit.tilt)));
 
   const shared = {
     fill: "none",
     stroke: "var(--accent-fg)",
-    strokeWidth: width,
+    strokeWidth: ring.width,
     vectorEffect: "non-scaling-stroke" as const,
-    strokeDasharray: dashed ? "1 7" : undefined,
-    className: drift ? "cs-drift" : undefined,
-    style: drift
+    strokeDasharray: ring.dashed ? "1 7" : undefined,
+    className: ring.drift ? "cs-drift" : undefined,
+    style: ring.drift
       ? ({
-          animationDuration: `${drift.duration}s`,
-          animationDirection: drift.reverse ? "reverse" : "normal",
+          animationDuration: `${ring.drift.duration}s`,
+          animationDirection: ring.drift.reverse ? "reverse" : "normal",
         } as React.CSSProperties)
       : undefined,
   };
 
   return (
-    <motion.g
-      style={{
-        opacity: reveal,
-        scale: grow,
-        originX: `${CENTRE.x}px`,
-        originY: `${CENTRE.y}px`,
-      }}
-    >
-      {half ? (
-        <path d={arc(orbit, half)} {...shared} />
-      ) : (
-        <ellipse
-          cx={CENTRE.x}
-          cy={CENTRE.y}
-          rx={a}
-          ry={b}
-          transform={`rotate(${orbit.roll} ${CENTRE.x} ${CENTRE.y})`}
-          {...shared}
-        />
+    <>
+      <motion.g
+        style={{
+          opacity: reveal,
+          scale: grow,
+          originX: `${CENTRE.x}px`,
+          originY: `${CENTRE.y}px`,
+        }}
+      >
+        {half ? (
+          <path d={arc(ring, half)} {...shared} />
+        ) : (
+          <ellipse
+            cx={CENTRE.x}
+            cy={CENTRE.y}
+            rx={ring.rx}
+            ry={ring.ry}
+            transform={`rotate(${ring.roll} ${CENTRE.x} ${CENTRE.y})`}
+            {...shared}
+          />
+        )}
+      </motion.g>
+      {/* Small lights seated along the path, as in the reference. The
+          seats are fixed, so nothing sparkles or wanders. On a split
+          ring only the near half carries them. */}
+      {ring.beads && (
+        <motion.g style={{ opacity: beadReveal }}>
+          {ring.beads
+            .filter((angle) => !half || (half === "near") === (angle < 180))
+            .map((angle, i) => {
+              const p = ringPoint(ring, angle);
+              return (
+                <circle
+                  key={angle}
+                  cx={p.x}
+                  cy={p.y}
+                  r={i % 3 === 0 ? 4 : 2.6}
+                  fill={i % 3 === 0 ? "#cfd4ff" : "var(--accent-fg)"}
+                  opacity={i % 2 === 0 ? 0.9 : 0.55}
+                />
+              );
+            })}
+        </motion.g>
       )}
-    </motion.g>
+    </>
   );
 }
 
-/** A service's fine line in to the core. Subtle until its node is lit. */
+/** A service's lit stem in to the core. */
 function Connector({
   point,
   order,
@@ -310,34 +394,40 @@ function Connector({
 }) {
   const start = CUE.nodeFirst + order * CUE.nodeStep + CUE.connector;
   const reveal = useTransform(entrance, [start, start + 0.16], [0, 1]);
-  // The core's "redistribute" beat lifts every connector together for a
-  // moment; an individually lit connector overrides that with more.
   const opacity = useTransform(
     [reveal, glowAll] as [MotionValue<number>, MotionValue<number>],
-    ([r, g]: number[]) => r * (lit ? 0.75 : 0.15 + g * 0.2),
+    ([r, g]: number[]) => r * (lit ? 0.85 : 0.32 + g * 0.2),
   );
 
   const dx = CENTRE.x - point.x;
   const dy = CENTRE.y - point.y;
   const length = Math.hypot(dx, dy) || 1;
+  const endX = round2(CENTRE.x - (dx / length) * CORE_R);
+  const endY = round2(CENTRE.y - (dy / length) * CORE_R);
+  // Node edge, so the stem starts at the frame rather than under it.
+  const startX = round2(point.x + (dx / length) * 46);
+  const startY = round2(point.y + (dy / length) * 46);
 
   return (
-    <motion.line
-      x1={point.x}
-      y1={point.y}
-      x2={CENTRE.x - (dx / length) * CORE_R}
-      y2={CENTRE.y - (dy / length) * CORE_R}
-      stroke="var(--accent-fg)"
-      strokeWidth={1}
-      vectorEffect="non-scaling-stroke"
-      style={{ opacity }}
-    />
+    <motion.g style={{ opacity }}>
+      <line
+        x1={startX}
+        y1={startY}
+        x2={endX}
+        y2={endY}
+        stroke="var(--accent-fg)"
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
+      />
+      {/* The junction light where the stem meets the core. */}
+      <circle cx={endX} cy={endY} r={4} fill="var(--accent-fg)" opacity={0.9} />
+    </motion.g>
   );
 }
 
 /* ------------------------------------------------------------------ *
- * One service node: a real link, with the shared line icon in a fine
- * circular frame and a front-facing label seated on its orbit.
+ * One service node: a real link — a luminous double-ring frame with
+ * the shared line icon, label seated outside the composition's centre.
  * ------------------------------------------------------------------ */
 
 function Node({
@@ -364,10 +454,10 @@ function Node({
   const rise = useTransform(entrance, [start, start + CUE.nodeSpan], [12, 0]);
 
   const lit = active || hovered;
-  // Label sits on the side of the node facing away from the centre, so it
-  // never lies across the busiest part of the composition.
+  // Top and bottom nodes carry their labels above/below; side nodes
+  // carry them outside, as in the reference.
   const side =
-    Math.abs(point.x - CENTRE.x) < SCENE_R * 0.55
+    Math.abs(point.x - CENTRE.x) < 140
       ? point.y < CENTRE.y
         ? "above"
         : "below"
@@ -383,12 +473,12 @@ function Node({
         top: py(point.y),
         opacity: appear,
         y: rise,
-        z: ORBITS[service.orbit].z,
+        z: NODE_Z[service.orbit],
         transformStyle: "preserve-3d",
       }}
     >
       <motion.div
-        className={`flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 ${
+        className={`flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 ${
           side === "above"
             ? "flex-col-reverse"
             : side === "below"
@@ -409,7 +499,7 @@ function Node({
         <Link
           href={service.href}
           aria-label={service.spoken ?? service.title}
-          className="relative flex h-12 w-12 items-center justify-center rounded-full text-paper/90 outline-offset-4"
+          className="relative flex h-16 w-16 items-center justify-center rounded-full text-paper outline-offset-4"
           onPointerEnter={(event) =>
             event.pointerType === "mouse" && onHover(service.id)
           }
@@ -417,31 +507,36 @@ function Node({
           onFocus={() => onHover(service.id)}
           onBlur={() => onHover(null)}
         >
+          {/* Outer luminous ring plus inner dark disc — the reference's
+              double-ring frame. */}
           <span
             aria-hidden="true"
-            className="absolute inset-0.5 rounded-full border transition-[border-color,background-color,box-shadow] duration-300"
+            className="absolute inset-0 rounded-full border transition-[border-color,box-shadow] duration-300"
             style={{
               borderColor: lit
-                ? "color-mix(in srgb, var(--accent-fg) 80%, transparent)"
-                : "color-mix(in srgb, var(--accent-fg) 34%, rgba(255,255,255,0.14))",
-              background: lit
-                ? "color-mix(in srgb, var(--accent-fg) 14%, rgba(14,14,20,0.9))"
-                : "rgba(14,14,20,0.82)",
+                ? "color-mix(in srgb, var(--accent-fg) 90%, white)"
+                : "color-mix(in srgb, var(--accent-fg) 55%, rgba(255,255,255,0.2))",
               boxShadow: lit
-                ? "0 0 18px 2px rgba(142,123,255,0.45)"
-                : "0 0 10px rgba(142,123,255,0.16)",
+                ? "0 0 26px 4px rgba(142,123,255,0.55), inset 0 0 14px rgba(142,123,255,0.3)"
+                : "0 0 16px 1px rgba(142,123,255,0.3), inset 0 0 10px rgba(142,123,255,0.16)",
             }}
           />
-          <ServiceIcon
-            name={service.icon}
-            className="relative h-[18px] w-[18px]"
+          <span
+            aria-hidden="true"
+            className="absolute inset-[9%] rounded-full border border-paper/12 transition-[background-color] duration-300"
+            style={{
+              background: lit
+                ? "color-mix(in srgb, var(--accent-fg) 16%, rgba(12,12,18,0.92))"
+                : "rgba(12,12,18,0.86)",
+            }}
           />
+          <ServiceIcon name={service.icon} className="relative h-6 w-6" />
         </Link>
         <span
           aria-hidden="true"
-          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.05em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
+          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.08em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
           style={{
-            color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.85)",
+            color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.88)",
             opacity: anyHover && !hovered ? 0.8 : 1,
           }}
         >
@@ -454,7 +549,7 @@ function Node({
 
 /* ------------------------------------------------------------------ *
  * The central Optara System core: the genuine logo mark on a layered
- * dark surface with fine concentric rings and a controlled edge light.
+ * dark surface with fine concentric rings and a strong controlled halo.
  * ------------------------------------------------------------------ */
 
 function Core({
@@ -478,7 +573,7 @@ function Core({
   const coreLight = useTransform(
     seq,
     [-1, arrival, 0.97, 1],
-    [0.4, 0.4, 1, 0.5],
+    [0.55, 0.55, 1, 0.65],
   );
   const coreRing = useTransform(seq, [arrival, 0.97, 1], [0.98, 1.03, 1.04]);
   const coreRingOpacity = useTransform(seq, [arrival, 0.94, 1], [0, 0.45, 0]);
@@ -486,53 +581,61 @@ function Core({
   return (
     <motion.div
       aria-hidden="true"
-      className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full"
+      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       style={{
-        width: `${((CORE_R * 2) / VIEW.w) * 100}%`,
+        width: `${round2(((CORE_R * 2) / VIEW.w) * 100)}%`,
         aspectRatio: "1",
         opacity: coreOpacity,
         scale: coreScale,
         z: coreZ,
-        // Opaque layered surfaces with a fine lit edge — solid, so the
-        // far arcs genuinely vanish behind it. Not glass, not a planet.
-        background:
-          "radial-gradient(circle at 50% 34%, #232138 0%, #15151f 55%, #0f0f16 100%)",
-        boxShadow:
-          "inset 0 0 0 1px rgba(142,123,255,0.45), inset 0 0 42px rgba(59,30,255,0.2), inset 0 1px 0 rgba(255,255,255,0.07), 0 0 44px rgba(59,30,255,0.22), 0 30px 70px -34px rgba(0,0,0,0.95)",
+        transformStyle: "preserve-3d",
       }}
     >
-      {/* Fine concentric details and one translucent depth layer. */}
-      <span className="pointer-events-none absolute inset-[6%] rounded-full border border-paper/10" />
-      <span className="pointer-events-none absolute inset-[11%] rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_22%,transparent)]" />
+      {/* The wide soft halo that lifts the core off the ink, per the
+          reference. A static gradient, never animated. */}
       <span
-        className="pointer-events-none absolute inset-[3%] rounded-full"
+        className="pointer-events-none absolute inset-[-38%] rounded-full"
         style={{
           background:
-            "radial-gradient(circle at 50% 24%, rgba(255,255,255,0.05), transparent 46%)",
+            "radial-gradient(circle, rgba(93,63,255,0.34) 0%, rgba(93,63,255,0.14) 42%, transparent 68%)",
         }}
       />
-      {/* Internal light that answers the signal's arrival. */}
-      <motion.span
-        className="pointer-events-none absolute inset-0 rounded-full"
+      <span
+        className="relative flex h-full w-full flex-col items-center justify-center rounded-full"
         style={{
-          opacity: reduced ? 0.45 : coreLight,
+          // Opaque layered surfaces with a lit edge — solid, so the far
+          // arcs genuinely vanish behind it. Not glass, not a planet.
           background:
-            "radial-gradient(circle at 50% 46%, rgba(142,123,255,0.3), transparent 60%)",
+            "radial-gradient(circle at 50% 32%, #2b2750 0%, #191831 52%, #101020 100%)",
+          boxShadow:
+            "inset 0 0 0 1.5px rgba(151,131,255,0.6), inset 0 0 52px rgba(84,56,255,0.35), inset 0 2px 0 rgba(255,255,255,0.1), 0 0 60px rgba(84,56,255,0.35), 0 30px 70px -34px rgba(0,0,0,0.95)",
         }}
-      />
-      {/* One restrained ring that expands as the core receives. */}
-      {!reduced && (
+      >
+        <span className="pointer-events-none absolute inset-[5%] rounded-full border border-paper/12" />
+        <span className="pointer-events-none absolute inset-[10%] rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_26%,transparent)]" />
+        {/* Internal light that answers the signal's arrival. */}
         <motion.span
-          className="pointer-events-none absolute inset-[-5%] rounded-full border border-[var(--accent-fg)]"
-          style={{ opacity: coreRingOpacity, scale: coreRing }}
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{
+            opacity: reduced ? 0.55 : coreLight,
+            background:
+              "radial-gradient(circle at 50% 44%, rgba(151,131,255,0.36), transparent 62%)",
+          }}
         />
-      )}
+        {/* One restrained ring that expands as the core receives. */}
+        {!reduced && (
+          <motion.span
+            className="pointer-events-none absolute inset-[-5%] rounded-full border border-[var(--accent-fg)]"
+            style={{ opacity: coreRingOpacity, scale: coreRing }}
+          />
+        )}
 
-      <LogoMark className="relative h-[26%] w-[26%] text-[var(--accent-fg)]" />
-      <span className="relative mt-[7%] text-center font-mono text-[0.6875rem] font-medium uppercase leading-[1.65] tracking-[0.22em] text-paper/95 lg:text-[0.8125rem]">
-        {connectedSystem.core.line1}
-        <br />
-        {connectedSystem.core.line2}
+        <LogoMark className="relative h-[30%] w-[30%] text-[var(--accent-fg)] [filter:drop-shadow(0_0_14px_rgba(142,123,255,0.55))]" />
+        <span className="relative mt-[6%] text-center font-mono text-[0.6875rem] font-medium uppercase leading-[1.65] tracking-[0.22em] text-paper lg:text-[0.8125rem]">
+          {connectedSystem.core.line1}
+          <br />
+          {connectedSystem.core.line2}
+        </span>
       </span>
     </motion.div>
   );
@@ -709,11 +812,19 @@ function Scene() {
 
   const emphasised = hovered ?? activeId;
 
+  const ringsFor = (tier: RingDef["tier"], where: "backdrop" | "foreground") =>
+    RINGS.filter(
+      (ring) =>
+        !ring.split &&
+        ring.tier === tier &&
+        (where === "foreground" ? ring.z > 0 : ring.z <= 0),
+    );
+
   return (
     <div
       ref={stageRef}
       data-paused={paused || undefined}
-      className="relative mx-auto aspect-[1000/680] w-full max-w-[46rem] [--depth:0.55] [perspective:1100px] lg:[--depth:1] lg:[perspective:1250px]"
+      className="relative mx-auto aspect-[1000/800] w-full max-w-[46rem] max-[1279px]:max-w-[40rem] [--depth:0.55] [perspective:1100px] md:[--depth:0.8] xl:[--depth:1] xl:[perspective:1250px]"
     >
       {/* The dash drift lives in CSS so it costs nothing per frame; the
           stage's data-paused attribute freezes it offscreen. The whole
@@ -734,15 +845,15 @@ function Scene() {
         }
       `}</style>
 
-      {/* Atmosphere: one pool of light behind the core, one restrained
+      {/* Atmosphere: one pool of light behind the system, one restrained
           vignette. Flat, outside the 3D stack, so it never parallaxes. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(46%_46%_at_50%_50%,rgba(142,123,255,0.15),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(48%_48%_at_50%_50%,rgba(120,95,255,0.16),transparent_70%)]"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(76%_76%_at_50%_50%,transparent_55%,rgba(10,10,14,0.5))]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(78%_78%_at_50%_50%,transparent_55%,rgba(9,9,14,0.5))]"
       />
 
       <motion.div
@@ -754,35 +865,45 @@ function Scene() {
             reduced ? "" : "cs-breathe"
           }`}
         >
-          {/* Deep background paths */}
-          <Layer z={DRIFT_ORBITS[1].z}>
+          {/* Background rings, deepest first. */}
+          {ringsFor("back", "backdrop").map((ring) => (
+            <Layer key={`${ring.rx}`} z={ring.z}>
+              <Plane>
+                <Ring
+                  ring={reduced && ring.drift ? { ...ring, drift: undefined } : ring}
+                  progress={entrance}
+                />
+              </Plane>
+            </Layer>
+          ))}
+          {ringsFor("mid", "backdrop").map((ring) => (
+            <Layer key={`${ring.rx}`} z={ring.z}>
+              <Plane>
+                <Ring ring={ring} progress={entrance} />
+              </Plane>
+            </Layer>
+          ))}
+
+          {/* Far half of the split ring: disappears behind the core. */}
+          <Layer z={-8}>
             <Plane>
               <Ring
-                orbit={DRIFT_ORBITS[1]}
-                opacity={DRIFT_ORBITS[1].opacity}
-                width={1}
+                ring={RINGS.find((r) => r.split)!}
+                half="far"
                 progress={entrance}
-                window={CUE.ring.back}
-                dashed
-                drift={reduced ? undefined : DRIFT_ORBITS[1]}
               />
             </Plane>
           </Layer>
-          <Layer z={ORBITS.back.z}>
+
+          {/* Rear stems, then the core above them. */}
+          <Layer z={2}>
             <Plane>
-              <Ring
-                orbit={ORBITS.back}
-                opacity={0.32}
-                width={1}
-                progress={entrance}
-                window={CUE.ring.back}
-              />
               {connectedSystem.services
-                .filter((s) => s.orbit === "back")
+                .filter((s) => s.orbit !== "front")
                 .map((s) => (
                   <Connector
                     key={s.id}
-                    point={seat(ORBITS.back, s.angle)}
+                    point={seat(s)}
                     order={nodeOrder(s)}
                     lit={emphasised === s.id}
                     entrance={entrance}
@@ -791,96 +912,25 @@ function Scene() {
                 ))}
             </Plane>
           </Layer>
-          <Layer z={DRIFT_ORBITS[0].z}>
-            <Plane>
-              <Ring
-                orbit={DRIFT_ORBITS[0]}
-                opacity={DRIFT_ORBITS[0].opacity}
-                width={1}
-                progress={entrance}
-                window={CUE.ring.mid}
-                dashed
-                drift={reduced ? undefined : DRIFT_ORBITS[0]}
-              />
-            </Plane>
-          </Layer>
-
-          {/* Far half of the mid orbit: disappears behind the core. */}
-          <Layer z={-14}>
-            <Plane>
-              <Ring
-                orbit={ORBITS.mid}
-                half="far"
-                opacity={0.36}
-                width={1}
-                progress={entrance}
-                window={CUE.ring.mid}
-              />
-            </Plane>
-          </Layer>
-
-          {/* The core and the mid plane's connectors */}
           <Layer z={16}>
             <Core entrance={entrance} seq={seq} reduced={reduced} />
-            <Plane>
-              {connectedSystem.services
-                .filter((s) => s.orbit === "mid")
-                .map((s) => (
-                  <Connector
-                    key={s.id}
-                    point={seat(ORBITS.mid, s.angle)}
-                    order={nodeOrder(s)}
-                    lit={emphasised === s.id}
-                    entrance={entrance}
-                    glowAll={glowAll}
-                  />
-                ))}
-            </Plane>
           </Layer>
 
-          {/* Near half of the mid orbit: draws across the core's face. */}
-          <Layer z={30}>
+          {/* Near half of the split ring: draws across the core's face,
+              then the front stems above it. */}
+          <Layer z={26}>
             <Plane>
               <Ring
-                orbit={ORBITS.mid}
+                ring={RINGS.find((r) => r.split)!}
                 half="near"
-                opacity={0.8}
-                width={1.4}
                 progress={entrance}
-                window={CUE.ring.mid}
-              />
-            </Plane>
-          </Layer>
-
-          {/* Foreground paths, and the travelling signal above them */}
-          <Layer z={DRIFT_ORBITS[2].z}>
-            <Plane>
-              <Ring
-                orbit={DRIFT_ORBITS[2]}
-                opacity={DRIFT_ORBITS[2].opacity}
-                width={1}
-                progress={entrance}
-                window={CUE.ring.front}
-                dashed
-                drift={reduced ? undefined : DRIFT_ORBITS[2]}
-              />
-            </Plane>
-          </Layer>
-          <Layer z={ORBITS.front.z}>
-            <Plane>
-              <Ring
-                orbit={ORBITS.front}
-                opacity={0.66}
-                width={1.2}
-                progress={entrance}
-                window={CUE.ring.front}
               />
               {connectedSystem.services
                 .filter((s) => s.orbit === "front")
                 .map((s) => (
                   <Connector
                     key={s.id}
-                    point={seat(ORBITS.front, s.angle)}
+                    point={seat(s)}
                     order={nodeOrder(s)}
                     lit={emphasised === s.id}
                     entrance={entrance}
@@ -888,6 +938,17 @@ function Scene() {
                   />
                 ))}
             </Plane>
+          </Layer>
+
+          {/* Foreground ring, and the travelling signal above it. */}
+          {ringsFor("front", "foreground").map((ring) => (
+            <Layer key={`${ring.rx}`} z={ring.z}>
+              <Plane>
+                <Ring ring={ring} progress={entrance} />
+              </Plane>
+            </Layer>
+          ))}
+          <Layer z={NODE_Z.front}>
             {!reduced && (
               <>
                 <motion.span
@@ -918,7 +979,7 @@ function Scene() {
               <Node
                 key={service.id}
                 service={service}
-                point={seat(ORBITS[service.orbit], service.angle)}
+                point={seat(service)}
                 active={activeId === service.id}
                 hovered={hovered === service.id}
                 anyHover={hovered !== null}
@@ -957,7 +1018,7 @@ function CompactSystem() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(52%_60%_at_50%_28%,rgba(142,123,255,0.15),transparent_72%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(52%_60%_at_50%_28%,rgba(120,95,255,0.16),transparent_72%)]"
       />
 
       <div className="relative flex justify-center">
@@ -1002,17 +1063,17 @@ function CompactSystem() {
           }}
           style={{
             background:
-              "radial-gradient(circle at 50% 34%, #232138 0%, #15151f 55%, #0f0f16 100%)",
+              "radial-gradient(circle at 50% 32%, #2b2750 0%, #191831 52%, #101020 100%)",
             boxShadow:
-              "inset 0 0 0 1px rgba(142,123,255,0.45), 0 0 34px rgba(59,30,255,0.2), 0 22px 46px -28px rgba(0,0,0,0.9)",
+              "inset 0 0 0 1.5px rgba(151,131,255,0.6), 0 0 34px rgba(84,56,255,0.3), 0 22px 46px -28px rgba(0,0,0,0.9)",
           }}
         >
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-[6%] rounded-full border border-paper/10"
+            className="pointer-events-none absolute inset-[5%] rounded-full border border-paper/12"
           />
           <LogoMark className="relative h-8 w-8 text-[var(--accent-fg)]" />
-          <span className="relative mt-2 text-center font-mono text-[0.625rem] font-medium uppercase leading-[1.6] tracking-[0.2em] text-paper/95">
+          <span className="relative mt-2 text-center font-mono text-[0.625rem] font-medium uppercase leading-[1.6] tracking-[0.2em] text-paper">
             {connectedSystem.core.line1}
             <br />
             {connectedSystem.core.line2}
@@ -1071,7 +1132,8 @@ function CompactSystem() {
                   >
                     <span
                       aria-hidden="true"
-                      className="absolute inset-1 rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_34%,rgba(255,255,255,0.14))] bg-[rgba(14,14,20,0.82)]"
+                      className="absolute inset-1 rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_45%,rgba(255,255,255,0.16))] bg-[rgba(12,12,18,0.86)]"
+                      style={{ boxShadow: "0 0 10px rgba(142,123,255,0.2)" }}
                     />
                     <ServiceIcon
                       name={service.icon}
@@ -1092,7 +1154,7 @@ export function ConnectedSystem() {
   return (
     // Ink: the homepage's mid-page dark moment. The Optara System draws in
     // light on dark, which is where the depth treatment earns its keep.
-    <section id="system" data-theme="ink" className="section relative">
+    <section id="system" data-theme="ink" className="section relative overflow-x-clip">
       {/* Chapter seam in: a fine lit line and a falling wash, so the ground
           change reads as a new chapter rather than a background swap. */}
       <div
@@ -1111,9 +1173,9 @@ export function ConnectedSystem() {
       />
 
       <div className="shell">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-6">
+        <div className="grid items-center gap-12 xl:grid-cols-12 xl:gap-6">
           {/* Editorial column: eyebrow, heading, paragraph, CTA. */}
-          <div className="lg:col-span-5">
+          <div className="xl:col-span-5">
             <RevealText>
               <p className="t-mono bg-[linear-gradient(92deg,#63aaff_0%,#8e7bff_100%)] bg-clip-text text-transparent">
                 {connectedSystem.eyebrow}
@@ -1142,10 +1204,13 @@ export function ConnectedSystem() {
             </RevealText>
           </div>
 
-          {/* The Optara System. Below md it is replaced, not shrunk. The
-              right inset keeps the lower-right node clear of the floating
-              Speak-to-us button, which overlaps the shell until ~1600px. */}
-          <div className="hidden md:block lg:col-span-7 lg:max-[1600px]:pr-10">
+          {/* The Optara System. Below md it is replaced, not shrunk; below
+              xl the copy stacks above a centred stage, per the tablet
+              guidance — a quarter-narrower split cannot hold the hexagon.
+              The right inset keeps the right-hand nodes clear of the
+              floating Speak-to-us button, which overlaps the shell until
+              ~1600px. */}
+          <div className="hidden md:block xl:col-span-7 xl:max-[1440px]:pr-20 min-[1440px]:max-[1600px]:pr-10">
             <Scene />
           </div>
         </div>

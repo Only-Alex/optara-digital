@@ -693,10 +693,11 @@ export type ConnectedService = {
   spoken?: string;
   href: string;
   icon: ServiceIcon;
-  /** Which orbital plane the node sits on. */
+  /** Depth plane the node sits on. */
   orbit: "back" | "mid" | "front";
-  /** Seat on that plane, degrees anticlockwise from the right. */
-  angle: number;
+  /** Node position, view units offset from the system centre. */
+  x: number;
+  y: number;
   /** Position in the travelling signal's sequence, from zero. */
   order: number;
 };
@@ -720,7 +721,8 @@ export const connectedSystem = {
       href: "/services/branding",
       icon: "branding",
       orbit: "mid",
-      angle: 93,
+      x: -5,
+      y: -282,
       order: 0,
     },
     {
@@ -730,7 +732,8 @@ export const connectedSystem = {
       href: "/services/seo-geo",
       icon: "seo",
       orbit: "front",
-      angle: 22,
+      x: 362,
+      y: -136,
       order: 1,
     },
     {
@@ -740,7 +743,8 @@ export const connectedSystem = {
       href: "/services/google-ads",
       icon: "ads",
       orbit: "front",
-      angle: 331,
+      x: 356,
+      y: 188,
       order: 2,
     },
     {
@@ -749,7 +753,8 @@ export const connectedSystem = {
       href: "/services/website-design",
       icon: "web",
       orbit: "mid",
-      angle: 266,
+      x: 6,
+      y: 292,
       order: 3,
     },
     {
@@ -758,7 +763,8 @@ export const connectedSystem = {
       href: "/services/app-development",
       icon: "app",
       orbit: "back",
-      angle: 207,
+      x: -358,
+      y: 192,
       order: 4,
     },
     {
@@ -767,7 +773,8 @@ export const connectedSystem = {
       href: "/services/social-media",
       icon: "social",
       orbit: "back",
-      angle: 152,
+      x: -354,
+      y: -142,
       order: 5,
     },
   ] as ConnectedService[],
