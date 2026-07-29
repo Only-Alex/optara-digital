@@ -228,7 +228,12 @@ export function GrowthSystem() {
             />
           </div>
 
-          <ol className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8">
+          {/* From 1600px the last column takes a wider share so its one-line
+              pill pair ends inside the column rather than leaning on the
+              card's padding; stage one, with a single short pill, gives up
+              the width. Variants are max-bounded so none can out-cascade
+              another. */}
+          <ol className="relative grid grid-cols-1 gap-y-12 md:max-lg:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:max-[1600px]:grid-cols-4 lg:gap-x-8 min-[1600px]:grid-cols-[0.87fr_1fr_1fr_1.13fr]">
             {growthSystem.stages.map((stage, index) => {
               const active = isActive(index);
 
