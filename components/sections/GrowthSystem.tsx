@@ -325,13 +325,15 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
-                  {/* Reserved height from md up: stages carry one or two
-                      chips, and the two-chip columns wrap to a second row,
-                      which was pushing their descriptions out of line with
-                      the rest. Holding two rows' worth keeps every
-                      description on the same baseline across the grid. */}
+                  {/* Compact enough that every column's chips sit on ONE row
+                      at desktop — "Website Design" + "App Development" side by
+                      side inside a quarter-width column is the constraint that
+                      sets the size. The small min-height is a fallback for the
+                      narrow-desktop band where a pair can still wrap; it keeps
+                      the descriptions on a shared baseline without leaving a
+                      visible hole at full width. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-2 md:min-h-[4.75rem]"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 md:min-h-[3.75rem]"
                     initial={false}
                     animate={
                       reduced
@@ -343,9 +345,9 @@ export function GrowthSystem() {
                     {stage.services.map((service) => (
                       <li
                         key={service}
-                        // Dot plus label in a pill, echoing the hero's eyebrow
-                        // so the two ends of the page share one vocabulary.
-                        className={`t-mono inline-flex items-center gap-2 rounded-full border py-2 pl-2.5 pr-3.5 transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        // Dot plus label in a small pill — the hero eyebrow's
+                        // vocabulary at caption scale.
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                           active
                             ? "border-accent/30 bg-accent/[0.06] text-ink/85"
                             : "border-[var(--hairline)] bg-transparent text-ink/65"
@@ -353,13 +355,13 @@ export function GrowthSystem() {
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-1.5 w-1.5 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms]"
+                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms]"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
                               : "var(--color-line)",
                             boxShadow: active
-                              ? "0 0 6px rgba(59,30,255,0.55)"
+                              ? "0 0 5px rgba(59,30,255,0.55)"
                               : "0 0 0 rgba(59,30,255,0)",
                           }}
                         />
