@@ -228,7 +228,7 @@ export function GrowthSystem() {
             />
           </div>
 
-          <ol className="relative grid grid-cols-1 gap-y-12 md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8">
+          <ol className="relative grid grid-cols-1 gap-y-12 [--pill-size:0.625rem] md:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:grid-cols-4 lg:gap-x-8 lg:[--pill-size:8px] 2xl:[--pill-size:9.5px]">
             {growthSystem.stages.map((stage, index) => {
               const active = isActive(index);
 
@@ -240,7 +240,7 @@ export function GrowthSystem() {
                   // last:lg:pr-9 keeps stage 04's longer description clear of
                   // the floating contact button at laptop widths — measured
                   // 20px of text under the disc at 1280 without it.
-                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12"
+                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12 last:xl:pr-9 last:2xl:pr-2"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"
@@ -319,7 +319,12 @@ export function GrowthSystem() {
                       shearing the drifting numerals flat, and it was also
                       squaring the round bloom into a visible box of colour
                       behind them. The numeral alone carries the tint. */}
-                  <div className="relative flex justify-end">
+                  {/* Between 1280 and 1535 the floating Speak-to-us button
+                      overlaps the grid's right edge, and the right-aligned
+                      numeral is the element that reaches furthest into it.
+                      Nudging only the numeral keeps the pills and copy on the
+                      full column width they need to stay on one line. */}
+                  <div className="relative flex justify-end xl:group-last:pr-3 2xl:group-last:pr-0">
                     <motion.span
                       aria-hidden="true"
                       className="pointer-events-none relative select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
@@ -357,15 +362,18 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
-                  {/* Every column's pills on ONE shared line at desktop. The
-                      constraint is "Social Media" + "Continuous Optimisation"
-                      side by side inside the narrowest quarter-width column
-                      (~209px at 1024), which is why the pills drop to a
-                      smaller size and tighter metrics at lg. The min-height
-                      keeps descriptions level if a future label ever wraps.
-                      Tablet/mobile keep the larger pill size and wrap free. */}
+                  {/* Every column's pills on ONE shared line from 1280 up.
+                      The binding pair is "Social Media" + "Continuous
+                      Optimisation" inside the narrowest column, so the pills
+                      are sized in em off --pill-size — one knob scales text,
+                      padding and dot together, stepped per breakpoint to the
+                      largest that still fits. Between 1024 and 1279 the column
+                      is too narrow for any legible one-line size, so that band
+                      alone keeps the two-row reservation to hold descriptions
+                      level; above it the reservation is dropped and the
+                      descriptions sit straight under a single row. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3.75rem] lg:gap-1"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 lg:min-h-[3rem] lg:gap-1 xl:min-h-0"
                     initial={false}
                     animate={
                       reduced
@@ -379,7 +387,7 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.46875rem] lg:tracking-normal ${
+                        className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border py-1 pl-1.5 pr-2 font-mono text-[0.625rem] uppercase tracking-[0.04em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/30 lg:gap-[0.3em] lg:py-[0.36em] lg:pl-[0.36em] lg:pr-[0.55em] lg:text-[length:var(--pill-size)] lg:tracking-normal ${
                           active
                             ? "border-accent/30 bg-accent/[0.06] text-ink/85"
                             : "border-[var(--hairline)] bg-transparent text-ink/70"
@@ -387,7 +395,7 @@ export function GrowthSystem() {
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[3px] lg:w-[3px]"
+                          className="block h-1 w-1 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[0.34em] lg:w-[0.34em]"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
