@@ -372,7 +372,7 @@ export function GrowthSystem() {
                       only ~135px there after the floating-button clearance,
                       which cannot hold a 12px capsule at all. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-2 md:max-lg:flex-nowrap lg:max-xl:gap-[3px] lg:max-xl:min-h-[3.25rem] xl:max-[1600px]:min-h-[4.25rem] min-[1600px]:flex-nowrap"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 md:max-lg:flex-nowrap lg:max-xl:gap-[3px] lg:max-xl:min-h-[3.25rem] xl:max-[1600px]:min-h-[4.25rem] min-[1600px]:flex-nowrap min-[1600px]:gap-1"
                     initial={false}
                     animate={
                       reduced
@@ -386,7 +386,7 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-2.5 pr-2.5 font-mono text-[0.75rem] leading-none uppercase tracking-[0.01em] md:max-lg:text-[0.6875rem] lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.5rem] lg:tracking-normal xl:gap-1.5 xl:py-[7px] xl:pl-2.5 xl:pr-2.5 xl:text-[0.75rem] xl:tracking-[0.01em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-2 pr-2 font-mono text-[0.75rem] leading-none uppercase tracking-normal md:max-lg:text-[0.6875rem] lg:max-xl:gap-[2px] lg:max-xl:py-[3px] lg:max-xl:pl-[3px] lg:max-xl:pr-[3px] lg:max-xl:text-[0.5rem] min-[1600px]:gap-1 min-[1600px]:pl-1.5 min-[1600px]:pr-1.5 min-[1600px]:text-[0.6875rem] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
                           active
                             ? "border-accent/35 bg-accent/[0.08] text-ink/85"
                             : "border-[var(--hairline)] bg-accent/[0.03] text-ink/70"
@@ -394,7 +394,7 @@ export function GrowthSystem() {
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-[5px] w-[5px] shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:h-[3px] lg:w-[3px] xl:h-[5px] xl:w-[5px]"
+                          className="block h-[5px] w-[5px] shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:max-xl:h-[3px] lg:max-xl:w-[3px] min-[1600px]:h-1 min-[1600px]:w-1"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
