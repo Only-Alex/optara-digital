@@ -325,8 +325,13 @@ export function GrowthSystem() {
                     {stage.title}
                   </h3>
 
+                  {/* Reserved height from md up: stages carry one or two
+                      chips, and the two-chip columns wrap to a second row,
+                      which was pushing their descriptions out of line with
+                      the rest. Holding two rows' worth keeps every
+                      description on the same baseline across the grid. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap gap-2"
+                    className="mt-5 flex flex-wrap content-start gap-2 md:min-h-[4.75rem]"
                     initial={false}
                     animate={
                       reduced
@@ -338,12 +343,26 @@ export function GrowthSystem() {
                     {stage.services.map((service) => (
                       <li
                         key={service}
-                        className={`t-mono rounded-full border px-3 py-1.5 transition-colors duration-[240ms] ${
+                        // Dot plus label in a pill, echoing the hero's eyebrow
+                        // so the two ends of the page share one vocabulary.
+                        className={`t-mono inline-flex items-center gap-2 rounded-full border py-2 pl-2.5 pr-3.5 transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                           active
-                            ? "border-accent/35 bg-accent/[0.05] text-ink/80"
-                            : "border-[var(--hairline)] text-ink/65"
+                            ? "border-accent/30 bg-accent/[0.06] text-ink/85"
+                            : "border-[var(--hairline)] bg-transparent text-ink/65"
                         }`}
                       >
+                        <span
+                          aria-hidden="true"
+                          className="block h-1.5 w-1.5 shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms]"
+                          style={{
+                            backgroundColor: active
+                              ? "var(--color-accent)"
+                              : "var(--color-line)",
+                            boxShadow: active
+                              ? "0 0 6px rgba(59,30,255,0.55)"
+                              : "0 0 0 rgba(59,30,255,0)",
+                          }}
+                        />
                         {service}
                       </li>
                     ))}
