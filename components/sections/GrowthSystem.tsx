@@ -348,7 +348,7 @@ export function GrowthSystem() {
                       the reservation its chips and description sat higher than
                       the other three columns. Mobile/tablet flow naturally. */}
                   <h3
-                    className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:min-h-[2.3em]"
+                    className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:whitespace-nowrap lg:text-[clamp(1.25rem,1.95vw,1.75rem)]"
                     style={{
                       color: active
                         ? "var(--color-ink)"
@@ -372,7 +372,7 @@ export function GrowthSystem() {
                       only ~135px there after the floating-button clearance,
                       which cannot hold a 12px capsule at all. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-2 md:min-h-[4.25rem] lg:gap-1 xl:gap-2"
+                    className="mt-5 flex flex-wrap content-start gap-2 md:max-lg:flex-nowrap lg:max-xl:gap-[3px] lg:max-xl:min-h-[3.25rem] xl:max-[1600px]:min-h-[4.25rem] min-[1600px]:flex-nowrap"
                     initial={false}
                     animate={
                       reduced
@@ -386,7 +386,7 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-3 pr-3 font-mono text-[0.75rem] leading-none uppercase tracking-[0.02em] lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.5rem] lg:tracking-normal xl:gap-1.5 xl:py-[7px] xl:pl-3 xl:pr-3 xl:text-[0.75rem] xl:tracking-[0.02em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-2.5 pr-2.5 font-mono text-[0.75rem] leading-none uppercase tracking-[0.01em] md:max-lg:text-[0.6875rem] lg:gap-[2px] lg:py-[3px] lg:pl-[3px] lg:pr-[3px] lg:text-[0.5rem] lg:tracking-normal xl:gap-1.5 xl:py-[7px] xl:pl-2.5 xl:pr-2.5 xl:text-[0.75rem] xl:tracking-[0.01em] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
                           active
                             ? "border-accent/35 bg-accent/[0.08] text-ink/85"
                             : "border-[var(--hairline)] bg-accent/[0.03] text-ink/70"
