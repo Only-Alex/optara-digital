@@ -237,7 +237,10 @@ export function GrowthSystem() {
                   key={stage.number}
                   // Reached stages sit a little forward of the ones still to
                   // come — depth carrying the meaning, not just decorating it.
-                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2"
+                  // last:lg:pr-9 keeps stage 04's longer description clear of
+                  // the floating contact button at laptop widths — measured
+                  // 20px of text under the disc at 1280 without it.
+                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"

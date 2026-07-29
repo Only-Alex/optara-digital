@@ -660,28 +660,28 @@ export const growthSystem = {
       title: "Build recognition",
       services: ["Branding"],
       description:
-        "Create a distinctive brand people notice, trust and remember\u2014before they are ready to buy.",
+        "Shape a distinctive brand with a clear position, consistent identity and a point of view people remember. Stronger recognition builds trust, increases perceived value and gives customers a compelling reason to choose you when they are ready to buy.",
     },
     {
       number: "02",
       title: "Capture demand",
       services: ["SEO & GEO", "Google Ads"],
       description:
-        "Show up when intent is highest across search, AI discovery and precisely managed paid campaigns.",
+        "Put your business in front of the right people at the moments that matter most. By combining search visibility, AI-powered discovery and precisely targeted paid campaigns, we capture high-intent demand and turn attention into qualified opportunity.",
     },
     {
       number: "03",
       title: "Convert attention",
       services: ["Website Design", "App Development"],
       description:
-        "Turn interest into action through fast, intuitive digital experiences built around clear conversion paths.",
+        "Turn interest into action through fast, intuitive websites and digital products shaped around how people actually behave. Clear journeys, persuasive messaging and frictionless interactions make it easier for visitors to engage, enquire and become customers.",
     },
     {
       number: "04",
       title: "Scale growth",
       services: ["Social Media", "Continuous optimisation"],
       description:
-        "Use content, insight and continuous optimisation to improve performance across the entire system.",
+        "Build on what works through strategic content, audience insight and continuous optimisation. By learning from performance and refining every stage of the system, we uncover new opportunities, improve efficiency and compound momentum over time.",
     },
   ] as GrowthStage[],
 };
