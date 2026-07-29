@@ -17,8 +17,7 @@ import { EASE } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { useScrollProgress } from "@/lib/hooks/useScrollProgress";
 import { RevealText } from "@/components/ui/RevealText";
-import { Button } from "@/components/ui/Button";
-import { LogoMark } from "@/components/ui/Icons";
+import { ArrowIcon, LogoMark } from "@/components/ui/Icons";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 
 /* ------------------------------------------------------------------ *
@@ -361,15 +360,24 @@ function Ring({
             .filter((angle) => !half || (half === "near") === (angle < 180))
             .map((angle, i) => {
               const p = ringPoint(ring, angle);
+              const bright = i % 3 === 0;
               return (
-                <circle
-                  key={angle}
-                  cx={p.x}
-                  cy={p.y}
-                  r={i % 3 === 0 ? 4 : 2.6}
-                  fill={i % 3 === 0 ? "#cfd4ff" : "var(--accent-fg)"}
-                  opacity={i % 2 === 0 ? 0.9 : 0.55}
-                />
+                <g key={angle} opacity={i % 2 === 0 ? 1 : 0.65}>
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={bright ? 9 : 6}
+                    fill="var(--accent-fg)"
+                    opacity={0.22}
+                  />
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r={bright ? 3.4 : 2.4}
+                    fill={bright ? "#e6e6ff" : "#b9aefc"}
+                    opacity={0.95}
+                  />
+                </g>
               );
             })}
         </motion.g>
@@ -396,7 +404,7 @@ function Connector({
   const reveal = useTransform(entrance, [start, start + 0.16], [0, 1]);
   const opacity = useTransform(
     [reveal, glowAll] as [MotionValue<number>, MotionValue<number>],
-    ([r, g]: number[]) => r * (lit ? 0.85 : 0.32 + g * 0.2),
+    ([r, g]: number[]) => r * (lit ? 0.85 : 0.38 + g * 0.2),
   );
 
   const dx = CENTRE.x - point.x;
@@ -419,8 +427,11 @@ function Connector({
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"
       />
-      {/* The junction light where the stem meets the core. */}
-      <circle cx={endX} cy={endY} r={4} fill="var(--accent-fg)" opacity={0.9} />
+      {/* Junction lights where the stem leaves the node and meets the
+          core, each with a soft halo. */}
+      <circle cx={endX} cy={endY} r={8} fill="var(--accent-fg)" opacity={0.25} />
+      <circle cx={endX} cy={endY} r={3.6} fill="#cfd4ff" opacity={0.95} />
+      <circle cx={startX} cy={startY} r={2.6} fill="var(--accent-fg)" opacity={0.8} />
     </motion.g>
   );
 }
@@ -514,11 +525,11 @@ function Node({
             className="absolute inset-0 rounded-full border transition-[border-color,box-shadow] duration-300"
             style={{
               borderColor: lit
-                ? "color-mix(in srgb, var(--accent-fg) 90%, white)"
-                : "color-mix(in srgb, var(--accent-fg) 55%, rgba(255,255,255,0.2))",
+                ? "rgba(236,234,255,0.95)"
+                : "rgba(216,216,246,0.75)",
               boxShadow: lit
-                ? "0 0 26px 4px rgba(142,123,255,0.55), inset 0 0 14px rgba(142,123,255,0.3)"
-                : "0 0 16px 1px rgba(142,123,255,0.3), inset 0 0 10px rgba(142,123,255,0.16)",
+                ? "0 0 30px 5px rgba(142,123,255,0.6), inset 0 0 14px rgba(142,123,255,0.35)"
+                : "0 0 18px 2px rgba(142,123,255,0.38), inset 0 0 10px rgba(142,123,255,0.2)",
             }}
           />
           <span
@@ -526,15 +537,15 @@ function Node({
             className="absolute inset-[9%] rounded-full border border-paper/12 transition-[background-color] duration-300"
             style={{
               background: lit
-                ? "color-mix(in srgb, var(--accent-fg) 16%, rgba(12,12,18,0.92))"
-                : "rgba(12,12,18,0.86)",
+                ? "color-mix(in srgb, var(--accent-fg) 16%, rgba(9,10,17,0.94))"
+                : "rgba(9,10,17,0.9)",
             }}
           />
-          <ServiceIcon name={service.icon} className="relative h-6 w-6" />
+          <ServiceIcon name={service.icon} className="relative h-6 w-6 text-paper" />
         </Link>
         <span
           aria-hidden="true"
-          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.08em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
+          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.16em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
           style={{
             color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.88)",
             opacity: anyHover && !hovered ? 0.8 : 1,
@@ -597,7 +608,7 @@ function Core({
         className="pointer-events-none absolute inset-[-38%] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(93,63,255,0.34) 0%, rgba(93,63,255,0.14) 42%, transparent 68%)",
+            "radial-gradient(circle, rgba(97,66,255,0.42) 0%, rgba(97,66,255,0.16) 44%, transparent 70%)",
         }}
       />
       <span
@@ -606,11 +617,19 @@ function Core({
           // Opaque layered surfaces with a lit edge — solid, so the far
           // arcs genuinely vanish behind it. Not glass, not a planet.
           background:
-            "radial-gradient(circle at 50% 32%, #2b2750 0%, #191831 52%, #101020 100%)",
+            "radial-gradient(circle at 50% 30%, #312c66 0%, #191938 52%, #0e0e20 100%)",
           boxShadow:
-            "inset 0 0 0 1.5px rgba(151,131,255,0.6), inset 0 0 52px rgba(84,56,255,0.35), inset 0 2px 0 rgba(255,255,255,0.1), 0 0 60px rgba(84,56,255,0.35), 0 30px 70px -34px rgba(0,0,0,0.95)",
+            "inset 0 0 0 1.5px rgba(160,140,255,0.7), inset 0 0 60px rgba(90,60,255,0.4), inset 0 2px 0 rgba(255,255,255,0.12), 0 0 72px rgba(90,60,255,0.42), 0 30px 70px -34px rgba(0,0,0,0.95)",
         }}
       >
+        {/* Crisp specular arc on the upper edge, per the reference. */}
+        <span
+          className="pointer-events-none absolute inset-[1.5%] rounded-full border-2 border-transparent"
+          style={{
+            borderTopColor: "rgba(205,195,255,0.85)",
+            transform: "rotate(-26deg)",
+          }}
+        />
         <span className="pointer-events-none absolute inset-[5%] rounded-full border border-paper/12" />
         <span className="pointer-events-none absolute inset-[10%] rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_26%,transparent)]" />
         {/* Internal light that answers the signal's arrival. */}
@@ -1154,7 +1173,7 @@ export function ConnectedSystem() {
   return (
     // Ink: the homepage's mid-page dark moment. The Optara System draws in
     // light on dark, which is where the depth treatment earns its keep.
-    <section id="system" data-theme="ink" className="section relative overflow-x-clip">
+    <section id="system" data-theme="ink" className="section relative overflow-x-clip bg-[#080911]">
       {/* Chapter seam in: a fine lit line and a falling wash, so the ground
           change reads as a new chapter rather than a background swap. */}
       <div
@@ -1180,7 +1199,7 @@ export function ConnectedSystem() {
               <p className="t-mono bg-[linear-gradient(92deg,#63aaff_0%,#8e7bff_100%)] bg-clip-text text-transparent">
                 {connectedSystem.eyebrow}
               </p>
-              <h2 className="t-display-lg mt-6 max-w-[16ch]">
+              <h2 className="mt-6 max-w-[15ch] font-[family-name:var(--font-display-serif)] text-[clamp(2.5rem,4.5vw,4rem)] font-normal leading-[1.06] tracking-[-0.01em]">
                 {connectedSystem.heading.lead}{" "}
                 {/* The approved blue-to-purple treatment, on this line
                     only. */}
@@ -1192,14 +1211,13 @@ export function ConnectedSystem() {
                 {connectedSystem.body}
               </p>
               <div className="mt-9">
-                <Button
+                <Link
                   href={connectedSystem.cta.href}
-                  variant="outline"
-                  withArrow
-                  className="border-[color-mix(in_srgb,var(--accent-fg)_45%,transparent)] text-paper hover:bg-accent/[0.06]"
+                  className="group/cta inline-flex items-center gap-4 rounded-[8px] border border-[color-mix(in_srgb,var(--accent-fg)_50%,transparent)] px-8 py-4 font-mono text-[0.8125rem] uppercase tracking-[0.2em] text-paper transition-[border-color,background-color] duration-300 hover:border-[var(--accent-fg)] hover:bg-accent/[0.07]"
                 >
                   {connectedSystem.cta.label}
-                </Button>
+                  <ArrowIcon className="h-4 w-4 transition-transform duration-300 group-hover/cta:translate-x-1" />
+                </Link>
               </div>
             </RevealText>
           </div>
