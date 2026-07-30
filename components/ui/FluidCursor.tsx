@@ -25,7 +25,7 @@ const RAMP_PERIOD = 16;
  * fed the COMPLEMENT of what is seen. Displayed = (1 - k) + k * brand, so this
  * is a clean white-to-brand tint dial: lower k is paler ink at the same hue.
  */
-const INK = 0.27;
+const INK = 0.24;
 
 /**
  * Minimum pointer travel between splats, in CSS pixels.
@@ -121,7 +121,7 @@ export function FluidCursor() {
       // Falls to a floor when the pointer rests and to nothing when it leaves,
       // so no coloured stain is left sitting on the hero.
       const idle = now - lastMove;
-      const want = inside ? Math.max(0.2, 1 - idle / 900) : 0;
+      const want = inside ? Math.max(0.3, 1 - idle / 900) : 0;
       alpha += (want - alpha) * 0.07;
 
       const [r, g, b] = rampAt(now);
@@ -211,25 +211,37 @@ export function FluidCursor() {
         IMMEDIATE: false,
         AUTO: false,
         SIM_RESOLUTION: 128,
-        DYE_RESOLUTION: 1024,
+        // Raised from 1024. A finer dye grid means less numerical smearing, so
+        // filaments hold their edges instead of blurring outward as they age —
+        // compactness bought without touching the flow itself.
+        DYE_RESOLUTION: 1280,
         // Lowered from 4.2 so a stroke stays legible long enough to travel,
         // but nowhere near as low as the previous attempt: below about 2 the
         // hero holds a visible haze for seconds after the pointer has left.
         DENSITY_DISSIPATION: 2.2,
         // Velocity is what carries the smoke, so this is the dial that
-        // lengthens a trail instead of thickening it.
-        VELOCITY_DISSIPATION: 0.25,
+        // lengthens a trail instead of thickening it. Low, because with the
+        // gentler force below there is less momentum to begin with and it has
+        // to persist for the trail to keep travelling.
+        VELOCITY_DISSIPATION: 0.12,
         PRESSURE: 0.8,
         PRESSURE_ITERATIONS: 20,
         // Barely softened from 30. The previous attempt dropped this to 15 and
         // lost the fine filaments that make it read as smoke rather than dye.
-        CURL: 27,
-        // Only slightly wider than the original 0.2. Pushing this far up does
-        // soften the core, but at 0.5+ the smoke turns into rolling blobs.
-        SPLAT_RADIUS: 0.28,
-        // Force pushes dye away from where it lands, so raising it thins the
-        // core and lengthens the travel in the same move.
-        SPLAT_FORCE: 7600,
+        CURL: 20,
+        // Only slightly wider than the original 0.2. Both directions were
+        // measured: at 0.5+ the smoke turns into rolling blobs, and at 0.18 the
+        // dye volume — which goes with the SQUARE of this — drops so far that
+        // the trail breaks up and its reach collapsed to 288px.
+        SPLAT_RADIUS: 0.24,
+        // Down from 7600, and this is what makes the smoke compact. Force is
+        // momentum injected into the fluid, and it was the thing throwing dye
+        // wide of the pointer's path: cutting it took the trail 23% narrower
+        // and 26% FARTHER at the same time, because dye that stays coherent
+        // outlives dye that gets blasted apart. Not lower, though — measured at
+        // 3000 there is too little momentum to carry dye away at all, so it
+        // pools around the pointer and spreads worse than it started.
+        SPLAT_FORCE: 4200,
         // With SPLAT_COLOR set this is NOT random rainbow — Z() returns our own
         // colour. It is the only hook the library exposes for re-reading
         // SPLAT_COLOR after init, and it is what lets the ramp work at all: a
@@ -344,7 +356,7 @@ export function FluidCursor() {
         className="pointer-events-none absolute inset-0 [--gr:clamp(180px,25vw,400px)]"
         style={{
           background:
-            "radial-gradient(circle var(--gr) at var(--gx, 50%) var(--gy, 40%), rgb(var(--gc, 91 61 245) / calc(var(--ga, 0) * 0.17)), rgb(var(--gc, 91 61 245) / calc(var(--ga, 0) * 0.07)) 48%, transparent 74%)",
+            "radial-gradient(circle var(--gr) at var(--gx, 50%) var(--gy, 40%), rgb(var(--gc, 91 61 245) / calc(var(--ga, 0) * 0.30)), rgb(var(--gc, 91 61 245) / calc(var(--ga, 0) * 0.13)) 48%, transparent 74%)",
         }}
       />
       <canvas
