@@ -269,7 +269,7 @@ const nodeOrder = (service: ConnectedService) =>
 function Layer({ z, children }: { z: number; children: React.ReactNode }) {
   return (
     <div
-      className="absolute inset-0"
+      className="pointer-events-none absolute inset-0"
       // --depth flattens the whole stack on smaller screens without
       // changing any geometry maths.
       style={{
@@ -286,7 +286,7 @@ function Plane({ children }: { children: React.ReactNode }) {
   return (
     <svg
       aria-hidden="true"
-      className="absolute inset-0 h-full w-full overflow-visible"
+      className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
       viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
       preserveAspectRatio="none"
     >
@@ -490,15 +490,7 @@ function Node({
       }}
     >
       <motion.div
-        className={`flex -translate-x-1/2 -translate-y-1/2 items-center gap-3 ${
-          side === "above"
-            ? "flex-col-reverse"
-            : side === "below"
-              ? "flex-col"
-              : side === "left"
-                ? "flex-row-reverse"
-                : "flex-row"
-        }`}
+        className="-translate-x-1/2 -translate-y-1/2"
         initial={false}
         animate={
           reduced
@@ -508,10 +500,20 @@ function Node({
         transition={{ duration: 0.3, ease: EASE }}
         style={{ transformStyle: "preserve-3d" }}
       >
+        {/* The whole node — frame, icon and label — is one link, so the
+            visible name is clickable too. */}
         <Link
           href={service.href}
-          aria-label={service.spoken ?? service.title}
-          className="relative flex h-16 w-16 items-center justify-center rounded-full text-paper outline-offset-4"
+          aria-label={service.spoken}
+          className={`pointer-events-auto flex items-center gap-3 outline-offset-4 ${
+            side === "above"
+              ? "flex-col-reverse"
+              : side === "below"
+                ? "flex-col"
+                : side === "left"
+                  ? "flex-row-reverse"
+                  : "flex-row"
+          }`}
           onPointerEnter={(event) =>
             event.pointerType === "mouse" && onHover(service.id)
           }
@@ -519,41 +521,45 @@ function Node({
           onFocus={() => onHover(service.id)}
           onBlur={() => onHover(null)}
         >
-          {/* Outer luminous ring plus inner dark disc — the reference's
-              double-ring frame. */}
+          <span className="relative flex h-16 w-16 items-center justify-center rounded-full text-paper">
+            {/* Outer luminous ring plus inner dark disc — the reference's
+                double-ring frame. */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 rounded-full border transition-[border-color,box-shadow] duration-300"
+              style={{
+                borderColor: lit
+                  ? "rgba(236,234,255,0.95)"
+                  : "rgba(216,216,246,0.75)",
+                boxShadow: lit
+                  ? "0 0 30px 5px rgba(142,123,255,0.6), inset 0 0 14px rgba(142,123,255,0.35)"
+                  : "0 0 18px 2px rgba(142,123,255,0.38), inset 0 0 10px rgba(142,123,255,0.2)",
+              }}
+            />
+            <span
+              aria-hidden="true"
+              className="absolute inset-[9%] rounded-full border border-paper/12 transition-[background-color] duration-300"
+              style={{
+                background: lit
+                  ? "color-mix(in srgb, var(--accent-fg) 16%, rgba(9,10,17,0.94))"
+                  : "rgba(9,10,17,0.9)",
+              }}
+            />
+            <ServiceIcon
+              name={service.icon}
+              className="relative h-6 w-6 text-paper"
+            />
+          </span>
           <span
-            aria-hidden="true"
-            className="absolute inset-0 rounded-full border transition-[border-color,box-shadow] duration-300"
+            className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.08em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
             style={{
-              borderColor: lit
-                ? "rgba(236,234,255,0.95)"
-                : "rgba(216,216,246,0.75)",
-              boxShadow: lit
-                ? "0 0 30px 5px rgba(142,123,255,0.6), inset 0 0 14px rgba(142,123,255,0.35)"
-                : "0 0 18px 2px rgba(142,123,255,0.38), inset 0 0 10px rgba(142,123,255,0.2)",
+              color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.88)",
+              opacity: anyHover && !hovered ? 0.8 : 1,
             }}
-          />
-          <span
-            aria-hidden="true"
-            className="absolute inset-[9%] rounded-full border border-paper/12 transition-[background-color] duration-300"
-            style={{
-              background: lit
-                ? "color-mix(in srgb, var(--accent-fg) 16%, rgba(9,10,17,0.94))"
-                : "rgba(9,10,17,0.9)",
-            }}
-          />
-          <ServiceIcon name={service.icon} className="relative h-6 w-6 text-paper" />
+          >
+            {service.title}
+          </span>
         </Link>
-        <span
-          aria-hidden="true"
-          className="whitespace-nowrap font-mono text-[0.75rem] uppercase leading-tight tracking-[0.08em] transition-[color,opacity] duration-300 lg:text-[0.8125rem]"
-          style={{
-            color: lit ? "var(--color-paper)" : "rgba(255,255,255,0.88)",
-            opacity: anyHover && !hovered ? 0.8 : 1,
-          }}
-        >
-          {service.title}
-        </span>
       </motion.div>
     </motion.li>
   );
@@ -593,7 +599,7 @@ function Core({
   return (
     <motion.div
       aria-hidden="true"
-      className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+      className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
       style={{
         width: `${round2(((CORE_R * 2) / VIEW.w) * 100)}%`,
         aspectRatio: "1",
@@ -871,17 +877,13 @@ function Scene() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(48%_48%_at_50%_50%,rgba(120,95,255,0.16),transparent_70%)]"
       />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(78%_78%_at_50%_50%,transparent_55%,rgba(9,9,14,0.5))]"
-      />
 
       <motion.div
-        className="absolute inset-0"
+        className="pointer-events-none absolute inset-0"
         style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
       >
         <div
-          className={`absolute inset-0 [transform-style:preserve-3d] ${
+          className={`pointer-events-none absolute inset-0 [transform-style:preserve-3d] ${
             reduced ? "" : "cs-breathe"
           }`}
         >
@@ -991,8 +993,11 @@ function Scene() {
           </Layer>
 
           {/* All six services, each a real link seated on its plane. */}
+          {/* The list itself must not hit-test: its flat plane sits in
+              front of the back-tier nodes in 3D and was swallowing their
+              clicks. The links re-enable pointer events on themselves. */}
           <ul
-            className="absolute inset-0"
+            className="pointer-events-none absolute inset-0"
             style={{ transformStyle: "preserve-3d" }}
           >
             {connectedSystem.services.map((service) => (
@@ -1139,26 +1144,27 @@ function CompactSystem() {
                   }}
                   style={{ opacity: 1 - rowIndex * 0.05 }}
                 >
-                  <span
-                    aria-hidden="true"
-                    className="whitespace-nowrap font-mono text-[0.75rem] uppercase tracking-[0.02em] text-paper/90"
-                  >
-                    {service.title}
-                  </span>
                   <Link
                     href={service.href}
-                    aria-label={service.spoken ?? service.title}
-                    className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-paper/90"
+                    aria-label={service.spoken}
+                    className={`flex items-center gap-2 text-paper/90 ${
+                      sideIndex === 0 ? "" : "flex-row-reverse"
+                    }`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-1 rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_45%,rgba(255,255,255,0.16))] bg-[rgba(12,12,18,0.86)]"
-                      style={{ boxShadow: "0 0 10px rgba(142,123,255,0.2)" }}
-                    />
-                    <ServiceIcon
-                      name={service.icon}
-                      className="relative h-3.5 w-3.5"
-                    />
+                    <span className="whitespace-nowrap font-mono text-[0.75rem] uppercase tracking-[0.02em]">
+                      {service.title}
+                    </span>
+                    <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full">
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-1 rounded-full border border-[color-mix(in_srgb,var(--accent-fg)_45%,rgba(255,255,255,0.16))] bg-[rgba(12,12,18,0.86)]"
+                        style={{ boxShadow: "0 0 10px rgba(142,123,255,0.2)" }}
+                      />
+                      <ServiceIcon
+                        name={service.icon}
+                        className="relative h-3.5 w-3.5"
+                      />
+                    </span>
                   </Link>
                 </motion.div>
               ))}
