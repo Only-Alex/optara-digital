@@ -16,7 +16,7 @@ export function Footer() {
         <RevealItem className="lg:col-span-5">
           <span className="flex items-center gap-3.5">
             <LogoMark className="h-8 w-8" />
-            <Wordmark className="text-[0.9375rem]" />
+            <Wordmark className="text-[1.125rem]" />
           </span>
           <p className="t-body mt-5 max-w-[36ch] text-[var(--muted)]">
             {footer.blurb}
@@ -79,8 +79,8 @@ export function Footer() {
       <div aria-hidden="true" className="mt-14 overflow-hidden">
         <p className="shell select-none whitespace-nowrap">
           <Wordmark
-            decorative
-            className="text-paper/[0.05] text-[clamp(1.6rem,5.7vw,5rem)]"
+            display
+            className="text-paper/[0.05] text-[clamp(2.6rem,9.2vw,9rem)]"
           />
         </p>
       </div>

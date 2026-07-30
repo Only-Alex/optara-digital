@@ -36,8 +36,8 @@ export function Hero() {
         className="pointer-events-none absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-center"
       >
         <Wordmark
-          decorative
-          className="text-ink/[0.045] text-[clamp(1.4rem,7.2vw,7rem)]"
+          display
+          className="text-ink/[0.045] text-[clamp(2.4rem,11.2vw,11rem)]"
         />
       </span>
 

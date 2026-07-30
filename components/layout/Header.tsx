@@ -146,7 +146,7 @@ export function Header() {
             aria-label={`${site.name} — home`}
           >
             <LogoMark className="h-8 w-8" />
-            <Wordmark className="text-[0.9375rem]" />
+            <Wordmark className="text-[1.125rem]" />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
