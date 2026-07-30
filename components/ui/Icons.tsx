@@ -32,28 +32,23 @@ export function LogoMark({ className }: IconProps) {
           <stop offset="1" stopColor="var(--brand-blue)" />
         </linearGradient>
       </defs>
-      <g
-        fill="none"
-        stroke="url(#optara-mark)"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      >
-        {/* Outer ring, open at the upper right */}
-        <path d="M 18.6 6.22 A 12 12 0 1 0 25.78 13.4" strokeWidth="2" />
+      <g fill="none" stroke="url(#optara-mark)" strokeLinecap="round">
+        {/* Outer ring, open across the upper right */}
+        <path d="M 18.6 6.22 A 12.0 12.0 0 1 0 25.78 13.4" strokeWidth="1.5" />
         {/* Fine dashes along the bottom of the outer ring */}
         <path
-          d="M 7.62 27.33 A 12 12 0 0 0 21.38 27.33"
-          strokeWidth="2"
-          strokeDasharray="1.5 2.6"
+          d="M 7.62 27.33 A 12.0 12.0 0 0 0 21.38 27.33"
+          strokeWidth="1.5"
+          strokeDasharray="1.4 2.5"
         />
         {/* Inner ring, opening on the same diagonal */}
-        <path d="M 16.44 10.26 A 7.5 7.5 0 1 0 21.74 15.56" strokeWidth="2.4" />
+        <path d="M 15.93 10.75 A 6.9 6.9 0 1 0 21.25 16.07" strokeWidth="1.9" />
         {/* The link that breaks out of the opening */}
-        <path d="M 21.6 10.4 L 26.2 5.8" strokeWidth="1.6" />
+        <path d="M 22.99 9.01 L 26.8 5.2" strokeWidth="1.1" />
       </g>
       <g fill="url(#optara-mark)">
-        <circle cx="21.6" cy="10.4" r="1.9" />
-        <circle cx="26.2" cy="5.8" r="2.6" />
+        <circle cx="22.99" cy="9.01" r="1.7" />
+        <circle cx="26.8" cy="5.2" r="2.4" />
       </g>
     </svg>
   );

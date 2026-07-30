@@ -96,9 +96,9 @@ export function MobileMenu({ open, onClose }: Props) {
           {...overlayMotion}
         >
           <div className="shell flex items-center justify-between py-4">
-            <span className="flex items-center gap-2.5">
-              <LogoMark className="h-7 w-7" />
-              <Wordmark className="text-[1.0625rem]" />
+            <span className="flex items-center gap-3.5">
+              <LogoMark className="h-8 w-8" />
+              <Wordmark className="text-[0.9375rem]" />
             </span>
             <button
               ref={closeRef}

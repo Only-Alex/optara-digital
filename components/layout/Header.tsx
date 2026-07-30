@@ -142,11 +142,11 @@ export function Header() {
         >
           <Link
             href="/"
-            className="flex items-center gap-2.5"
+            className="flex items-center gap-3.5"
             aria-label={`${site.name} — home`}
           >
-            <LogoMark className="h-7 w-7" />
-            <Wordmark className="text-[1.0625rem]" />
+            <LogoMark className="h-8 w-8" />
+            <Wordmark className="text-[0.9375rem]" />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">

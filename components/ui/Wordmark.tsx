@@ -31,6 +31,11 @@ function Apex() {
  * The company wordmark: the site name in the lockup's light geometric face,
  * uppercase and widely tracked, with every A replaced by the drawn apex.
  *
+ * Tracking and word spacing are set from the logo's own proportions, measured
+ * against its cap height so the ratio holds at any size: the wordmark runs
+ * about 18.5 cap heights wide, and the gap between the two words is about
+ * twice a letter gap.
+ *
  * The visible run is decorative, so assistive technology reads the real name
  * from the screen-reader copy instead of a string peppered with SVGs. Where a
  * consumer already labels the link (the header lockup), that label wins and
@@ -43,7 +48,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
     <>
       <span
         aria-hidden="true"
-        className={`font-[family-name:var(--font-wordmark)] font-light uppercase leading-none tracking-[0.26em] ${className}`}
+        className={`font-[family-name:var(--font-wordmark)] font-light uppercase leading-none tracking-[0.57em] [word-spacing:0.31em] ${className}`}
       >
         {chunks.map((chunk, index) => (
           <Fragment key={index}>

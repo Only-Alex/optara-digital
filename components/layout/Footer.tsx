@@ -14,9 +14,9 @@ export function Footer() {
     <footer data-theme="ink" className="bg-[var(--bg)] pt-[var(--section-y)] text-[var(--fg)]">
       <RevealGroup className="shell grid gap-12 lg:grid-cols-12" stagger={0.08} soft>
         <RevealItem className="lg:col-span-5">
-          <span className="flex items-center gap-2.5">
-            <LogoMark className="h-7 w-7" />
-            <Wordmark className="text-[1.0625rem]" />
+          <span className="flex items-center gap-3.5">
+            <LogoMark className="h-8 w-8" />
+            <Wordmark className="text-[0.9375rem]" />
           </span>
           <p className="t-body mt-5 max-w-[36ch] text-[var(--muted)]">
             {footer.blurb}
