@@ -15,6 +15,23 @@ import { MobileMenu } from "./MobileMenu";
 const OPEN_DELAY = 90;
 const CLOSE_DELAY = 160;
 
+/**
+ * Scroll positions where the bar changes state, in pixels.
+ *
+ * Two values, not one: entering compact and leaving it happen at different
+ * points, so a reader hovering right on the boundary cannot flip the bar back
+ * and forth. The gap is wide enough to swallow trackpad drift and the rubber
+ * band at the top of the page.
+ *
+ * ENTER also sits well clear of the hero's own opening, so the change reads as
+ * "I have started reading" rather than as a twitch on the first nudge.
+ */
+const COMPACT_ENTER = 120;
+const COMPACT_EXIT = 70;
+
+/** Compact logo scale. Small enough to settle the bar, not so small it reads as a different mark. */
+const COMPACT_LOGO_SCALE = 0.93;
+
 // Tight contact shadow plus a short diffusion. Deliberately no wide ambient
 // pass, which is what made the panel read as a floating card.
 const PANEL_SHADOW =
@@ -35,10 +52,33 @@ export function Header() {
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setLifted(window.scrollY > 16);
-    onScroll();
+    let frame = 0;
+    let queued = false;
+
+    const measure = () => {
+      queued = false;
+      const y = window.scrollY;
+      // Hysteresis: which threshold applies depends on the state we are in.
+      // React bails out when the next value equals the current one, so this
+      // re-renders only on an actual crossing, not on every frame of scrolling.
+      setLifted((prev) => (prev ? y > COMPACT_EXIT : y > COMPACT_ENTER));
+    };
+
+    // Coalesced to one read per frame. Scroll fires far more often than that,
+    // and reading scrollY straight from the handler would sample layout at
+    // whatever rate the browser chooses to deliver events.
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      frame = requestAnimationFrame(measure);
+    };
+
+    measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+    };
   }, []);
 
   const clearTimers = useCallback(() => {
@@ -99,6 +139,17 @@ export function Header() {
   const megaEntry = nav.find((item) => item.children);
   const megaOpen = Boolean(megaEntry && openMenu === megaEntry.label);
 
+  // The bar carries a surface when the reader has scrolled, and also whenever
+  // the mega menu is open at the top of the page — the panel needs something
+  // to sit against rather than floating free over the hero.
+  const surfaced = lifted || megaOpen;
+
+  // Reduced motion still gets both states, it just arrives at them instantly:
+  // the brief is to remove the interpolation, not the behaviour.
+  const motionTransition = reduced
+    ? { duration: 0 }
+    : { duration: 0.3, ease: EASE };
+
   return (
     <>
       <motion.header
@@ -113,41 +164,65 @@ export function Header() {
           // so nothing inside reflows; the header is fixed, so the page never
           // shifts; and the mega menu is anchored to this shell's bottom edge,
           // so it tracks the compact state automatically.
-          className="shell relative flex items-center justify-between gap-8"
+          //
+          // Blur comes from classes rather than the animated style below, both
+          // because a filter is far too expensive to interpolate and because a
+          // class can carry a breakpoint: phones get a lighter blur than
+          // laptops, which is where the cost actually bites.
+          // The tighter gap is confined to 1024-1279, the only band where the
+          // lockup, six nav items and the number compete for the same row. At
+          // 1280 and above the approved spacing is untouched.
+          className={`shell relative flex items-center justify-between gap-8 lg:max-xl:gap-4 ${
+            surfaced
+              ? "backdrop-blur-[10px] backdrop-saturate-[1.6] lg:backdrop-blur-[14px]"
+              : ""
+          }`}
           animate={{
             paddingTop: lifted ? "0.625rem" : "1rem",
             paddingBottom: lifted ? "0.625rem" : "1rem",
-            backgroundColor:
-              lifted || megaOpen
-                ? "rgba(255,255,255,0.72)"
-                : "rgba(255,255,255,0)",
-            borderBottomColor:
-              lifted || megaOpen ? "rgba(18,19,26,0.07)" : "rgba(18,19,26,0)",
-            boxShadow:
-              lifted || megaOpen
-                ? "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(18,19,26,0.05)"
-                : "0 0 0 rgba(18,19,26,0)",
+            // Near-opaque, so navigation stays legible over the dark sections
+            // and over the hero's blues without the bar having to restyle
+            // itself per section. Still short of solid, so the page beneath
+            // reads through it and it never becomes a white slab.
+            backgroundColor: surfaced
+              ? "rgba(255,255,255,0.92)"
+              : "rgba(255,255,255,0)",
+            borderBottomColor: surfaced
+              ? "rgba(18,19,26,0.09)"
+              : "rgba(18,19,26,0)",
+            // The inset hairline is what keeps a near-white bar from looking
+            // flat against a white page; the drop is barely there on purpose.
+            boxShadow: surfaced
+              ? "0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 28px rgba(15,15,22,0.05)"
+              : "0 0 0 rgba(15,15,22,0)",
           }}
-          transition={{ duration: 0.4, ease: EASE }}
+          transition={motionTransition}
           style={{
             paddingTop: "1rem",
             paddingBottom: "1rem",
             borderBottomWidth: 1,
             borderBottomStyle: "solid",
-            backdropFilter:
-              lifted || megaOpen ? "blur(14px) saturate(1.6)" : "none",
-            WebkitBackdropFilter:
-              lifted || megaOpen ? "blur(14px) saturate(1.6)" : "none",
           }}
         >
-          <Link
-            href="/"
-            className="flex items-center gap-3.5"
-            aria-label={`${site.name} — home`}
+          {/* Scaled by transform rather than by font and icon size, so the
+              lockup keeps its exact proportions and, more importantly, takes
+              no layout with it — the nav beside it cannot shift as the bar
+              changes state. Anchored left so it shrinks toward the gutter
+              instead of drifting inward. */}
+          <motion.div
+            animate={{ scale: lifted ? COMPACT_LOGO_SCALE : 1 }}
+            transition={motionTransition}
+            style={{ originX: 0, originY: 0.5 }}
           >
-            <LogoMark className="h-8 w-8" />
-            <Wordmark className="text-[1.125rem]" />
-          </Link>
+            <Link
+              href="/"
+              className="flex items-center gap-3.5"
+              aria-label={`${site.name} — home`}
+            >
+              <LogoMark className="h-8 w-8" />
+              <Wordmark className="text-[1.125rem]" />
+            </Link>
+          </motion.div>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">
             {nav.map((item) => {
@@ -159,7 +234,7 @@ export function Header() {
                     key={item.href}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 ${EASE_CSS} ${
+                    className={`relative whitespace-nowrap rounded-full px-3.5 py-2 text-[0.9375rem] transition-colors duration-200 lg:max-xl:px-2.5 ${EASE_CSS} ${
                       active ? "text-accent" : "text-[var(--fg)] hover:text-accent"
                     }`}
                   >
@@ -220,7 +295,7 @@ export function Header() {
                         );
                       }
                     }}
-                    className="relative flex items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.9375rem]"
+                    className="relative flex items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-[0.9375rem] lg:max-xl:px-2.5"
                   >
                     {item.label}
                     <motion.svg
@@ -254,7 +329,7 @@ export function Header() {
                 steps up from 2xl to lg so the right side is not empty. */}
             <a
               href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="hidden text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent lg:block"
+              className="hidden whitespace-nowrap text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent lg:block"
             >
               {site.phone}
             </a>
