@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { EASE } from "@/lib/motion";
 import { dropdownCta, nav, primaryCta, site } from "@/lib/content";
 import { ArrowIcon, CloseIcon, LogoMark, PlusIcon } from "@/components/ui/Icons";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
@@ -97,9 +98,7 @@ export function MobileMenu({ open, onClose }: Props) {
           <div className="shell flex items-center justify-between py-4">
             <span className="flex items-center gap-2.5">
               <LogoMark className="h-7 w-7" />
-              <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
-                {site.name}
-              </span>
+              <Wordmark className="text-[1.0625rem]" />
             </span>
             <button
               ref={closeRef}

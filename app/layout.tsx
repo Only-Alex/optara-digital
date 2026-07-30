@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono, Jost } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { site } from "@/lib/content";
@@ -17,6 +17,15 @@ const jetbrainsMono = JetBrains_Mono({
   weight: "400",
   display: "swap",
   variable: "--font-jetbrains-mono",
+});
+
+// The wordmark's own face: a light geometric sans matching the logo
+// lockup. Used by the lockup only — body and headings stay Instrument Sans.
+const wordmark = Jost({
+  subsets: ["latin"],
+  weight: ["300", "400"],
+  display: "swap",
+  variable: "--font-wordmark",
 });
 
 export const metadata: Metadata = {
@@ -67,7 +76,7 @@ export default function RootLayout({
   return (
     <html
       lang="en-GB"
-      className={`${instrumentSans.variable} ${jetbrainsMono.variable}`}
+      className={`${instrumentSans.variable} ${jetbrainsMono.variable} ${wordmark.variable}`}
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>

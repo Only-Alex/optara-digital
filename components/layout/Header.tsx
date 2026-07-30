@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { dropdownCta, nav, site } from "@/lib/content";
 import { EASE, hoverTransition } from "@/lib/motion";
 import { ArrowIcon, LogoMark, MenuIcon } from "@/components/ui/Icons";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { MobileMenu } from "./MobileMenu";
@@ -145,9 +146,7 @@ export function Header() {
             aria-label={`${site.name} — home`}
           >
             <LogoMark className="h-7 w-7" />
-            <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
-              {site.name}
-            </span>
+            <Wordmark className="text-[1.0625rem]" />
           </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-1 lg:flex">

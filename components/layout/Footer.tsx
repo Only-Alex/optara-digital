@@ -5,6 +5,7 @@ import { footer, site } from "@/lib/content";
 import { hoverTransition } from "@/lib/motion";
 import { RevealGroup, RevealItem } from "@/components/ui/RevealText";
 import { LogoMark } from "@/components/ui/Icons";
+import { Wordmark } from "@/components/ui/Wordmark";
 
 const linkHover = { color: "var(--accent-fg)", x: 3 };
 
@@ -15,9 +16,7 @@ export function Footer() {
         <RevealItem className="lg:col-span-5">
           <span className="flex items-center gap-2.5">
             <LogoMark className="h-7 w-7" />
-            <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
-              {site.name}
-            </span>
+            <Wordmark className="text-[1.0625rem]" />
           </span>
           <p className="t-body mt-5 max-w-[36ch] text-[var(--muted)]">
             {footer.blurb}
