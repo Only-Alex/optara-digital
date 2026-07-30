@@ -2,9 +2,10 @@
 
 import { motion } from "motion/react";
 import { EASE } from "@/lib/motion";
-import { hero, scrollCue, site } from "@/lib/content";
+import { hero, scrollCue } from "@/lib/content";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { Button } from "@/components/ui/Button";
+import { Wordmark } from "@/components/ui/Wordmark";
 import { FluidCursor } from "@/components/ui/FluidCursor";
 
 export function Hero() {
@@ -26,15 +27,18 @@ export function Hero() {
     >
       <FluidCursor />
 
+      {/* Ghost wordmark, in the logo's own setting. Uppercase and widely
+          tracked, it runs far wider than the old lowercase version, so the
+          cap comes down to keep it inside the viewport at every breakpoint —
+          see the measurement in the sprint notes. */}
       <span
         aria-hidden="true"
-        // Sized so the full wordmark always fits. "optara digital" measures
-        // 5.7em of glyphs at this tracking, so the font caps at ~17.5% of
-        // the viewport width; 16.5vw keeps a margin at every breakpoint. The
-        // old 19vw was set for the shorter previous name and clipped it.
-        className="pointer-events-none absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-center font-semibold leading-none tracking-[-0.04em] text-ink/[0.045] text-[clamp(3rem,16.5vw,16rem)]"
+        className="pointer-events-none absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap text-center"
       >
-        {site.name.toLowerCase()}
+        <Wordmark
+          decorative
+          className="text-ink/[0.045] text-[clamp(1.4rem,7.2vw,7rem)]"
+        />
       </span>
 
       <span

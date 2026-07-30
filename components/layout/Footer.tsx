@@ -77,8 +77,11 @@ export function Footer() {
           paper; the footer closes with it in paper on ink. Decorative, and
           cropped by its own container so it can never cause horizontal scroll. */}
       <div aria-hidden="true" className="mt-14 overflow-hidden">
-        <p className="shell select-none whitespace-nowrap font-semibold leading-none tracking-[-0.04em] text-paper/[0.05] text-[clamp(3.5rem,12.5vw,11rem)]">
-          {site.name.toLowerCase()}
+        <p className="shell select-none whitespace-nowrap">
+          <Wordmark
+            decorative
+            className="text-paper/[0.05] text-[clamp(1.6rem,5.7vw,5rem)]"
+          />
         </p>
       </div>
 

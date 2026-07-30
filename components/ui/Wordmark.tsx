@@ -46,8 +46,18 @@ function Apex() {
  * from the screen-reader copy rather than a V where an A belongs. Where a
  * consumer already labels the link (the header lockup), that label wins and
  * this copy is simply ignored.
+ *
+ * `decorative` drops that copy, for the oversized ghost wordmarks that open
+ * the hero and close the footer: they are texture, and the name is already
+ * announced by the lockup on the same page.
  */
-export function Wordmark({ className = "" }: { className?: string }) {
+export function Wordmark({
+  className = "",
+  decorative = false,
+}: {
+  className?: string;
+  decorative?: boolean;
+}) {
   const chunks = site.name.toUpperCase().split("A");
 
   return (
@@ -67,7 +77,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
           </Fragment>
         ))}
       </span>
-      <span className="sr-only">{site.name}</span>
+      {!decorative && <span className="sr-only">{site.name}</span>}
     </>
   );
 }
