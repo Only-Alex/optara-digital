@@ -20,7 +20,7 @@ const initialState: ContactState = {
 // on colour alone against the field edge. aria-invalid picks up the accent
 // border so an errored field is findable before reading its message.
 const fieldClass =
-  "w-full rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-paper px-4 py-3.5 outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:shadow-[0_0_0_3px_rgba(59,30,255,0.12)] aria-[invalid=true]:border-accent";
+  "w-full rounded-[var(--radius-sm)] border border-[var(--hairline)] bg-paper px-4 py-3.5 outline-none transition-[border-color,box-shadow] duration-200 focus:border-accent focus:shadow-[0_0_0_3px_rgba(91, 61, 245,0.12)] aria-[invalid=true]:border-accent";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -29,7 +29,7 @@ function SubmitButton() {
       type="submit"
       disabled={pending}
       className="pill mt-2 justify-center bg-accent text-paper disabled:opacity-60"
-      whileHover={pending ? undefined : { backgroundColor: "#1B0FA8", y: -2 }}
+      whileHover={pending ? undefined : { backgroundColor: "#3A22C9", y: -2 }}
       whileTap={pending ? undefined : { scale: 0.98 }}
       transition={hoverTransition}
     >

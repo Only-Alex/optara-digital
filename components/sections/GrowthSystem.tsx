@@ -106,7 +106,7 @@ export function GrowthSystem() {
           the top edge, so the smoke's ground does not simply stop. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(55%_100%_at_50%_0%,rgba(59,30,255,0.05),transparent_72%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[radial-gradient(55%_100%_at_50%_0%,rgba(91, 61, 245,0.05),transparent_72%)]"
       />
       <div className="shell">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-10">
@@ -206,7 +206,7 @@ export function GrowthSystem() {
                 style={{
                   left: headLeft,
                   opacity: headOpacity,
-                  boxShadow: "0 0 14px 2px rgba(59,30,255,0.55)",
+                  boxShadow: "0 0 14px 2px rgba(91, 61, 245,0.55)",
                 }}
               />
             )}
@@ -268,7 +268,7 @@ export function GrowthSystem() {
                       className="absolute -inset-[9px] rounded-full transition-opacity duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
                       style={{
                         background:
-                          "radial-gradient(circle, rgba(59,30,255,0.30), transparent 66%)",
+                          "radial-gradient(circle, rgba(91, 61, 245,0.30), transparent 66%)",
                         opacity: active ? 1 : 0,
                       }}
                     />
@@ -281,8 +281,8 @@ export function GrowthSystem() {
                             : "var(--color-line)",
                           transform: active ? "scale(1.15)" : "scale(1)",
                           boxShadow: active
-                            ? "0 1px 4px rgba(59,30,255,0.55)"
-                            : "0 0 0 rgba(59,30,255,0)",
+                            ? "0 1px 4px rgba(91, 61, 245,0.55)"
+                            : "0 0 0 rgba(91, 61, 245,0)",
                         }}
                       >
                         <span
@@ -335,7 +335,7 @@ export function GrowthSystem() {
                       className="pointer-events-none relative select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
                       style={{
                         color: active
-                          ? "rgba(59,30,255,0.3)"
+                          ? "rgba(91, 61, 245,0.3)"
                           : "rgba(18,19,26,0.11)",
                         y: reduced ? 0 : ghostDrift,
                       }}
@@ -405,8 +405,8 @@ export function GrowthSystem() {
                               ? "var(--color-accent)"
                               : "var(--color-line)",
                             boxShadow: active
-                              ? "0 0 5px rgba(59,30,255,0.55)"
-                              : "0 0 0 rgba(59,30,255,0)",
+                              ? "0 0 5px rgba(91, 61, 245,0.55)"
+                              : "0 0 0 rgba(91, 61, 245,0)",
                           }}
                         />
                         {service}

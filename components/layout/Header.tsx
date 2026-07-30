@@ -144,8 +144,8 @@ export function Header() {
             className="flex items-center gap-2.5"
             aria-label={`${site.name} — home`}
           >
-            <LogoMark className="h-7 w-7 text-accent" />
-            <span className="text-lg font-semibold tracking-[-0.02em]">
+            <LogoMark className="h-7 w-7" />
+            <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
               {site.name}
             </span>
           </Link>
@@ -197,8 +197,8 @@ export function Header() {
                       // Faint halo while open — the trigger is the wand, the
                       // panel is what it conjured; the glow ties them together.
                       boxShadow: expanded
-                        ? "0 4px 20px rgba(59,30,255,0.2)"
-                        : "0 0 0 rgba(59,30,255,0)",
+                        ? "0 4px 20px rgba(91, 61, 245,0.2)"
+                        : "0 0 0 rgba(91, 61, 245,0)",
                       transition:
                         "background-color 200ms cubic-bezier(0.16,1,0.3,1), color 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 300ms cubic-bezier(0.16,1,0.3,1)",
                     }}
@@ -342,7 +342,7 @@ export function Header() {
                     className="pointer-events-none absolute -inset-4 top-0 rounded-[30px]"
                     style={{
                       background:
-                        "radial-gradient(55% 60% at 50% 0%, rgba(59,30,255,0.18), transparent 72%)",
+                        "radial-gradient(55% 60% at 50% 0%, rgba(91, 61, 245,0.18), transparent 72%)",
                       filter: "blur(16px)",
                     }}
                     initial={{ opacity: 0, scale: 0.92 }}

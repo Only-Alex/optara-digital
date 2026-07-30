@@ -23,7 +23,7 @@ const MAX_DPR = 1.75;
 // Draws are batched by quantised alpha so a frame costs a handful of fill
 // calls rather than a thousand fillStyle changes.
 const BUCKETS = [0.03, 0.06, 0.09, 0.12, 0.15];
-const FILLS = BUCKETS.map((a) => `rgba(59,30,255,${a})`);
+const FILLS = BUCKETS.map((a) => `rgba(91, 61, 245,${a})`);
 
 type P = { x: number; y: number; age: number; max: number; drift: number };
 

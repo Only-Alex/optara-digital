@@ -656,7 +656,7 @@ function Core({
           />
         )}
 
-        <LogoMark className="relative h-[30%] w-[30%] text-[var(--accent-fg)] [filter:drop-shadow(0_0_14px_rgba(142,123,255,0.55))]" />
+        <LogoMark className="relative h-[34%] w-[34%] [filter:drop-shadow(0_0_14px_rgba(142,123,255,0.55))]" />
         <span className="relative mt-[6%] text-center font-mono text-[0.6875rem] font-medium uppercase leading-[1.65] tracking-[0.22em] text-paper lg:text-[0.8125rem]">
           {connectedSystem.core.line1}
           <br />
@@ -1097,7 +1097,7 @@ function CompactSystem() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-[5%] rounded-full border border-paper/12"
           />
-          <LogoMark className="relative h-8 w-8 text-[var(--accent-fg)]" />
+          <LogoMark className="relative h-9 w-9" />
           <span className="relative mt-2 text-center font-mono text-[0.625rem] font-medium uppercase leading-[1.6] tracking-[0.2em] text-paper">
             {connectedSystem.core.line1}
             <br />

@@ -41,7 +41,7 @@ export function Sectors() {
                 whileHover="hover"
                 variants={{
                   rest: { y: 0, borderColor: "rgba(18,19,26,0.12)" },
-                  hover: { y: -5, borderColor: "#3B1EFF" },
+                  hover: { y: -5, borderColor: "#5B3DF5" },
                 }}
                 transition={hoverTransition}
               >

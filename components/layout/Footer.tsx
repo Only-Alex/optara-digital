@@ -14,8 +14,8 @@ export function Footer() {
       <RevealGroup className="shell grid gap-12 lg:grid-cols-12" stagger={0.08} soft>
         <RevealItem className="lg:col-span-5">
           <span className="flex items-center gap-2.5">
-            <LogoMark className="h-7 w-7 text-[var(--accent-fg)]" />
-            <span className="text-lg font-semibold tracking-[-0.02em]">
+            <LogoMark className="h-7 w-7" />
+            <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
               {site.name}
             </span>
           </span>

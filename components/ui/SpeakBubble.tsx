@@ -60,7 +60,7 @@ export function SpeakBubble() {
   return (
     <motion.a
       href={speakBubble.href}
-      className="group fixed bottom-5 right-5 z-40 block h-[5.25rem] w-[5.25rem] rounded-full bg-accent text-paper shadow-[0_10px_30px_rgba(59,30,255,0.28)] transition-colors duration-200 hover:bg-accent-deep md:bottom-7 md:right-7 md:h-[5.75rem] md:w-[5.75rem]"
+      className="group fixed bottom-5 right-5 z-40 block h-[5.25rem] w-[5.25rem] rounded-full bg-accent text-paper shadow-[0_10px_30px_rgba(91, 61, 245,0.28)] transition-colors duration-200 hover:bg-accent-deep md:bottom-7 md:right-7 md:h-[5.75rem] md:w-[5.75rem]"
       style={{ pointerEvents: retired ? "none" : "auto" }}
       tabIndex={retired ? -1 : 0}
       aria-hidden={retired || undefined}

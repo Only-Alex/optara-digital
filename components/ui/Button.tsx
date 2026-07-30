@@ -21,7 +21,7 @@ const styles = {
 } as const;
 
 const hover = {
-  solid: { backgroundColor: "#1B0FA8", y: -2 },
+  solid: { backgroundColor: "#3A22C9", y: -2 },
   outline: {
     borderColor: "var(--accent-fg)",
     color: "var(--accent-fg)",

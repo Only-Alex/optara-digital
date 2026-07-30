@@ -4,8 +4,13 @@
   --color-paper: #ffffff;
   --color-bone: #f4f2ed;
   --color-ink: #12131a;
-  --color-accent: #3b1eff;
-  --color-accent-deep: #1b0fa8;
+  /* Brand accent, taken from the logo mark's gradient: the violet end, the
+     blue end, and the tone between them that carries the identity as a flat
+     colour. 5.9:1 on paper, so it still clears AA as text. */
+  --color-accent: #5b3df5;
+  --color-accent-deep: #3a22c9;
+  --color-brand-violet: #7a4dff;
+  --color-brand-blue: #3d5aff;
   --color-line: #e4e1da;
 
   --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
@@ -28,6 +33,12 @@
   --hairline: var(--color-line);
   --muted: color-mix(in srgb, var(--color-ink) 58%, transparent);
   --accent-fg: var(--color-accent);
+
+  /* The mark paints itself from these, so it holds the brand gradient on
+     any ground rather than inheriting the local text colour. Defined once:
+     custom properties inherit, so every theme below picks them up. */
+  --brand-violet: var(--color-brand-violet);
+  --brand-blue: var(--color-brand-blue);
 }
 
 /* --accent-fg is the accent as *text*. The brand indigo only reaches 2.5:1

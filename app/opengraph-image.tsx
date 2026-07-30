@@ -28,14 +28,25 @@ export default function OpengraphImage() {
               width: 36,
               height: 36,
               borderRadius: 999,
-              background: "#3B1EFF",
+              // Satori has no CSS custom properties, so the brand gradient is
+              // written out; keep these in step with globals.css.
+              background: "linear-gradient(135deg, #7A4DFF, #3D5AFF)",
             }}
           />
-          <span style={{ fontSize: 30, fontWeight: 600 }}>{site.name}</span>
+          <span
+            style={{
+              fontSize: 26,
+              fontWeight: 400,
+              letterSpacing: 6,
+              textTransform: "uppercase",
+            }}
+          >
+            {site.name}
+          </span>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", fontSize: 76, lineHeight: 1.05 }}>
-          <span style={{ color: "#3B1EFF", fontWeight: 600 }}>
+          <span style={{ color: "#5B3DF5", fontWeight: 600 }}>
             {hero.headline.accent}
           </span>
           <span style={{ fontWeight: 600 }}>{hero.headline.rest}</span>

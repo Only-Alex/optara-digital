@@ -1,11 +1,60 @@
 type IconProps = { className?: string };
 
+/**
+ * The Optara mark: two broken concentric rings opening at the upper right,
+ * where a linked node pair breaks out — the connection motif the whole
+ * identity runs on. Painted in the brand gradient rather than
+ * `currentColor`, so it reads the same on paper and on ink.
+ *
+ * The gradient id is fixed rather than generated: every instance defines an
+ * identical gradient, so `url(#…)` resolving to whichever copy comes first
+ * in the document paints correctly, and the component stays server-safe
+ * (no hook, no client boundary).
+ */
 export function LogoMark({ className }: IconProps) {
   return (
-    <svg viewBox="0 0 28 28" className={className} aria-hidden="true" focusable="false">
-      <circle cx="14" cy="14" r="13" fill="currentColor" />
-      <circle cx="14" cy="14" r="7.5" fill="none" stroke="#fff" strokeWidth="2" />
-      <circle cx="14" cy="14" r="2" fill="#fff" />
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <defs>
+        <linearGradient
+          id="optara-mark"
+          x1="0"
+          y1="0.85"
+          x2="1"
+          y2="0.1"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="0" stopColor="var(--brand-violet)" />
+          <stop offset="1" stopColor="var(--brand-blue)" />
+        </linearGradient>
+      </defs>
+      <g
+        fill="none"
+        stroke="url(#optara-mark)"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      >
+        {/* Outer ring, open at the upper right */}
+        <path d="M 18.6 6.22 A 12 12 0 1 0 25.78 13.4" strokeWidth="2" />
+        {/* Fine dashes under the outer ring's lower left */}
+        <path
+          d="M 2.68 19.58 A 12 12 0 0 0 12.42 29.32"
+          strokeWidth="2"
+          strokeDasharray="1.6 2.8"
+        />
+        {/* Inner ring, opening on the same diagonal */}
+        <path d="M 16.44 10.26 A 7.5 7.5 0 1 0 21.74 15.56" strokeWidth="2.4" />
+        {/* The link that breaks out of the opening */}
+        <path d="M 21.6 10.4 L 26.2 5.8" strokeWidth="1.6" />
+      </g>
+      <g fill="url(#optara-mark)">
+        <circle cx="21.6" cy="10.4" r="1.9" />
+        <circle cx="26.2" cy="5.8" r="2.6" />
+      </g>
     </svg>
   );
 }

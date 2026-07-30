@@ -44,8 +44,8 @@ export function Cursor() {
         height: active ? 44 : 18,
         marginLeft: active ? -22 : -9,
         marginTop: active ? -22 : -9,
-        borderColor: active ? "#3B1EFF" : "rgba(18,19,26,0.4)",
-        backgroundColor: active ? "rgba(59,30,255,0.10)" : "transparent",
+        borderColor: active ? "#5B3DF5" : "rgba(18,19,26,0.4)",
+        backgroundColor: active ? "rgba(91, 61, 245,0.10)" : "transparent",
       }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
     />

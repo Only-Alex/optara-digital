@@ -134,7 +134,7 @@ export function FluidCursor() {
     return (
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(58%_48%_at_54%_30%,rgba(59,30,255,0.16),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(58%_48%_at_54%_30%,rgba(91, 61, 245,0.16),transparent_70%)]"
       />
     );
   }

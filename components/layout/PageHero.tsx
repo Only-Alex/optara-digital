@@ -11,7 +11,7 @@ export function PageHero({ eyebrow, title, standfirst }: Props) {
     <section data-theme="paper" className="relative overflow-hidden bg-[var(--bg)] pb-16 pt-36 md:pt-44">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[70rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(59,30,255,0.10),transparent_65%)]"
+        className="pointer-events-none absolute left-1/2 top-0 h-[30rem] w-[70rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(91, 61, 245,0.10),transparent_65%)]"
       />
       <div className="shell relative">
         <RevealText>

@@ -96,8 +96,8 @@ export function MobileMenu({ open, onClose }: Props) {
         >
           <div className="shell flex items-center justify-between py-4">
             <span className="flex items-center gap-2.5">
-              <LogoMark className="h-7 w-7 text-accent" />
-              <span className="text-lg font-semibold tracking-[-0.02em]">
+              <LogoMark className="h-7 w-7" />
+              <span className="text-[0.9375rem] font-normal uppercase tracking-[0.24em]">
                 {site.name}
               </span>
             </span>

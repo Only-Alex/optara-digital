@@ -24,7 +24,7 @@ export function MenuVapour() {
         className="absolute left-1/2 top-1 h-24 w-[68%] -translate-x-1/2 rounded-full"
         style={{
           background:
-            "radial-gradient(52% 62% at 50% 100%, rgba(59,30,255,0.20), transparent 74%)",
+            "radial-gradient(52% 62% at 50% 100%, rgba(91, 61, 245,0.20), transparent 74%)",
           filter: "blur(20px)",
         }}
         animate={{
@@ -40,7 +40,7 @@ export function MenuVapour() {
         className="absolute left-0 top-6 h-40 w-28 rounded-full"
         style={{
           background:
-            "radial-gradient(60% 55% at 80% 40%, rgba(122,126,142,0.16), rgba(59,30,255,0.10) 55%, transparent 78%)",
+            "radial-gradient(60% 55% at 80% 40%, rgba(122,126,142,0.16), rgba(91, 61, 245,0.10) 55%, transparent 78%)",
           filter: "blur(18px)",
         }}
         animate={{ opacity: [0.35, 0.6, 0.35], x: [-4, -11, -4], y: [2, -5, 2] }}
@@ -50,7 +50,7 @@ export function MenuVapour() {
         className="absolute right-0 top-10 h-40 w-28 rounded-full"
         style={{
           background:
-            "radial-gradient(60% 55% at 20% 40%, rgba(122,126,142,0.16), rgba(59,30,255,0.10) 55%, transparent 78%)",
+            "radial-gradient(60% 55% at 20% 40%, rgba(122,126,142,0.16), rgba(91, 61, 245,0.10) 55%, transparent 78%)",
           filter: "blur(18px)",
         }}
         animate={{ opacity: [0.3, 0.58, 0.3], x: [4, 11, 4], y: [-3, 4, -3] }}
@@ -67,7 +67,7 @@ export function MenuVapour() {
         className="absolute bottom-0 left-1/2 h-20 w-[85%] -translate-x-1/2 rounded-full"
         style={{
           background:
-            "radial-gradient(55% 58% at 50% 0%, rgba(59,30,255,0.13), rgba(122,126,142,0.10) 50%, transparent 76%)",
+            "radial-gradient(55% 58% at 50% 0%, rgba(91, 61, 245,0.13), rgba(122,126,142,0.10) 50%, transparent 76%)",
           filter: "blur(22px)",
         }}
         animate={{
@@ -104,9 +104,9 @@ export function MenuVapour() {
             <feDisplacementMap in="SourceGraphic" in2="noise" scale="34" />
           </filter>
           <linearGradient id="mv-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stopColor="rgba(59,30,255,0)" />
-            <stop offset="0.5" stopColor="rgba(59,30,255,0.30)" />
-            <stop offset="1" stopColor="rgba(59,30,255,0)" />
+            <stop offset="0" stopColor="rgba(91, 61, 245,0)" />
+            <stop offset="0.5" stopColor="rgba(91, 61, 245,0.30)" />
+            <stop offset="1" stopColor="rgba(91, 61, 245,0)" />
           </linearGradient>
         </defs>
         <motion.rect

@@ -58,7 +58,7 @@ export function Hero() {
             className="t-display-xl mt-8 max-w-[22ch] text-balance"
             {...rise(0.2)}
           >
-            <span className="bg-[linear-gradient(96deg,#3B1EFF_0%,#7A4BFF_38%,#3B1EFF_72%,#1B0FA8_100%)] bg-[length:220%_100%] bg-clip-text text-transparent [animation:hue-drift_9s_ease-in-out_infinite]">
+            <span className="bg-[linear-gradient(96deg,#5B3DF5_0%,#7A4BFF_38%,#5B3DF5_72%,#3A22C9_100%)] bg-[length:220%_100%] bg-clip-text text-transparent [animation:hue-drift_9s_ease-in-out_infinite]">
               {hero.headline.accent}
             </span>{" "}
             <span>{hero.headline.rest}</span>
