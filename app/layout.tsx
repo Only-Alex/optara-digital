@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 // lockup. Used by the lockup only — body and headings stay Instrument Sans.
 const wordmark = Jost({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["500", "600"],
   display: "swap",
   variable: "--font-wordmark",
 });

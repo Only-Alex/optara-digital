@@ -9,7 +9,7 @@ import { site } from "@/lib/content";
  * TRACKING is shared with the apex below, which has to reproduce it as a
  * margin — see there for why. Keeping one constant stops the two drifting.
  */
-const TRACKING = 0.42;
+const TRACKING = 0.39;
 const WORD_SPACING = 0.08;
 
 /**
@@ -64,7 +64,7 @@ export function Wordmark({
     <>
       <span
         aria-hidden="true"
-        className={`font-[family-name:var(--font-wordmark)] font-light uppercase leading-none ${className}`}
+        className={`font-[family-name:var(--font-wordmark)] font-medium uppercase leading-none ${className}`}
         style={{
           letterSpacing: `${TRACKING}em`,
           wordSpacing: `${WORD_SPACING}em`,
