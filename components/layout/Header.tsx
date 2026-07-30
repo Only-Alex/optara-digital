@@ -32,10 +32,10 @@ const COMPACT_EXIT = 70;
 /** Compact logo scale. Small enough to settle the bar, not so small it reads as a different mark. */
 const COMPACT_LOGO_SCALE = 0.93;
 
-// Tight contact shadow plus a short diffusion. Deliberately no wide ambient
-// pass, which is what made the panel read as a floating card.
+// A tight contact line and one soft diffusion — enough for the panel to stand
+// clear of whatever section is behind it without reading as elevation.
 const PANEL_SHADOW =
-  "0 1px 2px rgba(18,19,26,0.05), 0 6px 16px rgba(18,19,26,0.06), 0 18px 36px rgba(18,19,26,0.07)";
+  "0 1px 2px rgba(15,15,22,0.04), 0 18px 50px rgba(15,15,22,0.08)";
 
 const EASE_CSS = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 
@@ -353,145 +353,53 @@ export function Header() {
                 ref={panelRef}
                 id="services-mega-menu"
                 className="absolute left-1/2 top-full hidden w-[min(58rem,calc(100vw-3rem))] -translate-x-1/2 pt-3 lg:block"
-                // Vapour condensing into a surface: a long soft-blur resolve,
-                // a slow top-to-bottom unroll, and only a hint of perspective
-                // so it drifts down rather than hinging like a door. The
-                // magic is in the resolve being slower than the movement.
-                //
-                // The unroll clip lives on the inner card, not here — clipping
-                // this wrapper would shear off the vapour and bloom that hug
-                // the card's borders from outside.
-                initial={
-                  reduced
-                    ? undefined
-                    : {
-                        opacity: 0,
-                        rotateX: -8,
-                        y: 12,
-                        scale: 0.98,
-                        filter: "blur(14px)",
-                      }
-                }
-                animate={
-                  reduced
-                    ? undefined
-                    : {
-                        opacity: 1,
-                        rotateX: 0,
-                        y: 0,
-                        scale: 1,
-                        filter: "blur(0px)",
-                      }
-                }
+                // A drop of a few pixels and a fade, nothing else: a menu is a
+                // tool the reader reaches for mid-task, so it should feel
+                // immediate rather than staged. Closing runs faster than
+                // opening — dismissal should never linger. Under reduced
+                // motion the variants collapse to plain visibility.
+                initial={reduced ? undefined : { opacity: 0, y: -5 }}
+                animate={reduced ? undefined : { opacity: 1, y: 0 }}
                 exit={
                   reduced
                     ? undefined
                     : {
                         opacity: 0,
-                        rotateX: -4,
-                        y: 6,
-                        filter: "blur(8px)",
-                        transition: { duration: 0.22, ease: EASE },
+                        y: -3,
+                        transition: { duration: 0.16, ease: EASE },
                       }
                 }
-                transition={{
-                  duration: 0.5,
-                  ease: EASE,
-                  filter: { duration: 0.56, ease: EASE },
-                }}
-                style={{
-                  transformOrigin: "top center",
-                  transformPerspective: 1100,
-                  willChange: "transform, opacity, filter",
-                }}
+                transition={{ duration: 0.22, ease: EASE }}
                 onMouseEnter={clearTimers}
                 onMouseLeave={scheduleClose}
               >
-                {/* One-off bloom of accent light while the panel condenses —
-                    it flares and dies, never persists. Light is what sells
-                    materialisation; the flat accent, not a hue ramp. */}
-                {!reduced && (
-                  <motion.div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute -inset-4 top-0 rounded-[30px]"
-                    style={{
-                      background:
-                        "radial-gradient(55% 60% at 50% 0%, rgba(91, 61, 245,0.18), transparent 72%)",
-                      filter: "blur(16px)",
-                    }}
-                    initial={{ opacity: 0, scale: 0.92 }}
-                    animate={{ opacity: [0, 0.85, 0], scale: [0.92, 1.02, 1] }}
-                    transition={{ duration: 1.0, ease: EASE, times: [0, 0.35, 1] }}
-                  />
-                )}
-
-                <motion.div
-                  className="relative rounded-[22px] border border-[rgba(18,19,26,0.07)] bg-paper/[0.985] p-2.5 backdrop-blur-sm md:p-3"
+                {/* Near-opaque, no backdrop blur: at this opacity a blur costs
+                    compositing and shows nothing, and the page behind must
+                    never interfere with the menu's own text. */}
+                <div className="relative rounded-[22px] border border-[rgba(15,15,22,0.08)] bg-paper/[0.985] p-2.5 md:p-3"
                   style={{ boxShadow: PANEL_SHADOW }}
-                  initial={
-                    reduced
-                      ? undefined
-                      : { clipPath: "inset(0 0 88% 0 round 22px)" }
-                  }
-                  animate={
-                    reduced
-                      ? undefined
-                      : { clipPath: "inset(0 0 0% 0 round 22px)" }
-                  }
-                  exit={
-                    reduced
-                      ? undefined
-                      : {
-                          clipPath: "inset(0 0 22% 0 round 22px)",
-                          transition: { duration: 0.22, ease: EASE },
-                        }
-                  }
-                  transition={{ duration: 0.56, ease: EASE }}
                 >
                   {/* Six services, an even two-by-three grid — no spanning
                       special cases, which is most of what makes it clean. */}
                   <ul className="grid gap-1 md:grid-cols-2">
-                    {megaEntry.children?.map((child, index) => {
+                    {megaEntry.children?.map((child) => {
                       const current = pathname === child.href;
 
                       return (
-                        // Rows condense in just behind the unroll, top pair
-                        // first — the cascade is what sells the scroll. No
-                        // exit: the panel's own exit carries the close.
-                        <motion.li
-                          key={child.href}
-                          initial={
-                            reduced
-                              ? undefined
-                              : {
-                                  opacity: 0,
-                                  y: 12,
-                                  scale: 0.97,
-                                  filter: "blur(6px)",
-                                }
-                          }
-                          animate={
-                            reduced
-                              ? undefined
-                              : {
-                                  opacity: 1,
-                                  y: 0,
-                                  scale: 1,
-                                  filter: "blur(0px)",
-                                }
-                          }
-                          transition={{
-                            duration: 0.45,
-                            ease: EASE,
-                            delay: 0.12 + Math.floor(index / 2) * 0.06,
-                          }}
-                        >
+                        // Plain rows: they arrive with the panel. The stagger
+                        // was theatre, and a menu re-opened four times a visit
+                        // cannot afford theatre.
+                        <li key={child.href}>
                           <Link
                             href={child.href}
                             onClick={() => closeMenu()}
                             aria-current={current ? "page" : undefined}
-                            className={`group flex h-full items-start gap-4 rounded-[16px] p-4 transition-[background-color,transform] duration-[240ms] ${EASE_CSS} will-change-transform hover:-translate-y-[2px] hover:bg-accent/[0.045] ${
-                              current ? "bg-accent/[0.045]" : ""
+                            // Hover is a tint, not a lift — the row answers
+                            // without the grid appearing to move. Focus gets
+                            // the same tint plus the global accent ring, so
+                            // keyboard reads as deliberate, not as hover.
+                            className={`group flex h-full items-start gap-4 rounded-[16px] p-4 transition-colors duration-[220ms] ${EASE_CSS} hover:bg-accent/[0.055] focus-visible:bg-accent/[0.055] focus-visible:outline-offset-[-2px] ${
+                              current ? "bg-accent/[0.055]" : ""
                             }`}
                           >
                             <span
@@ -515,17 +423,21 @@ export function Header() {
                               >
                                 {child.label}
                               </span>
-                              <span className="mt-1.5 block max-w-[40ch] text-[0.8125rem] leading-[1.55] text-ink/60 transition-colors duration-[240ms] group-hover:text-ink/75">
+                              {/* 14px at ink/70 — the step up from 13px/60
+                                  that makes blurbs readable on an ordinary
+                                  laptop while staying clearly beneath the
+                                  titles. */}
+                              <span className="mt-1.5 block max-w-[40ch] text-[0.875rem] leading-[1.55] text-ink/70 transition-colors duration-[220ms] group-hover:text-ink/80">
                                 {child.blurb}
                               </span>
                             </span>
 
                             <ArrowIcon
                               aria-hidden="true"
-                              className={`mt-1 h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[240ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100`}
+                              className={`mt-1 h-4 w-4 shrink-0 text-accent opacity-0 transition-all duration-[220ms] ${EASE_CSS} group-hover:translate-x-1 group-hover:opacity-100 group-focus-visible:translate-x-1 group-focus-visible:opacity-100`}
                             />
                           </Link>
-                        </motion.li>
+                        </li>
                       );
                     })}
                   </ul>
@@ -535,13 +447,13 @@ export function Header() {
                   <Link
                     href={dropdownCta.href}
                     onClick={() => closeMenu()}
-                    className={`group flex flex-col gap-2 rounded-[16px] px-4 py-3 transition-colors duration-[240ms] ${EASE_CSS} hover:bg-bone/60 sm:flex-row sm:items-center sm:justify-between sm:gap-6`}
+                    className={`group flex flex-col gap-2 rounded-[16px] px-4 py-3 transition-colors duration-[220ms] ${EASE_CSS} hover:bg-bone/60 focus-visible:bg-bone/60 focus-visible:outline-offset-[-2px] sm:flex-row sm:items-center sm:justify-between sm:gap-6`}
                   >
                     <span className="block">
                       <span className="block text-[0.875rem] font-medium leading-tight">
                         {dropdownCta.prompt}
                       </span>
-                      <span className="mt-1 block text-[0.8125rem] leading-[1.5] text-ink/60">
+                      <span className="mt-1 block text-[0.8125rem] leading-[1.5] text-ink/70">
                         {dropdownCta.sub}
                       </span>
                     </span>
@@ -553,7 +465,7 @@ export function Header() {
                       />
                     </span>
                   </Link>
-                </motion.div>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
