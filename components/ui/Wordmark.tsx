@@ -2,42 +2,48 @@ import { Fragment } from "react";
 import { site } from "@/lib/content";
 
 /**
- * The apex that stands in for a capital A in the lockup. The logo's A has no
- * crossbar, and no web face ships one, so it is drawn: two strokes meeting at
- * the apex, sized in em off the surrounding type and sitting on the baseline,
- * so it tracks the wordmark's size and colour exactly.
+ * Spacing taken from the logo, measured against its cap height so the ratio
+ * holds at any size: the wordmark runs about 18.5 cap heights wide, and the
+ * gap between its two words is about twice a letter gap.
  *
- * Stroke is 0.95 units against a 14-unit cap height — the stem-to-cap ratio of
- * the light geometric face the rest of the wordmark is set in.
+ * TRACKING is shared with the apex below, which has to reproduce it as a
+ * margin — see there for why. Keeping one constant stops the two drifting.
+ */
+const TRACKING = 0.42;
+const WORD_SPACING = 0.08;
+
+/**
+ * The apex that stands in for a capital A in the lockup. The logo's A has no
+ * crossbar, so it is the face's own V turned through 180 degrees — which is
+ * how the logo itself is drawn.
+ *
+ * Using the real glyph rather than a drawn shape means stroke weight, width
+ * and cap height match the surrounding letters exactly, for free: in this
+ * face V and A share an advance of 0.636em and an ink width of 0.618em. The
+ * rotation happens about the box centre, and with a line-height of 1 that
+ * lands the flipped ink within 0.005em of where a real A sits on the baseline.
  */
 function Apex() {
   return (
-    <svg
-      viewBox="0 0 10 14"
-      className="inline-block h-[0.72em] w-[0.62em] align-baseline"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="0.95"
-      strokeLinecap="butt"
-      aria-hidden="true"
-      focusable="false"
+    <span
+      className="inline-block rotate-180 leading-none"
+      // letter-spacing sits *inside* the box, so a 180 degree rotation swings
+      // that trailing gap round to the left — putting space before the A and
+      // butting it against the next letter. Zero it and re-add the gap as a
+      // margin, which the transform cannot move.
+      style={{ letterSpacing: 0, marginInlineEnd: `${TRACKING}em` }}
     >
-      <path d="M0.7 14 L5 0.5 L9.3 14" />
-    </svg>
+      V
+    </span>
   );
 }
 
 /**
  * The company wordmark: the site name in the lockup's light geometric face,
- * uppercase and widely tracked, with every A replaced by the drawn apex.
- *
- * Tracking and word spacing are set from the logo's own proportions, measured
- * against its cap height so the ratio holds at any size: the wordmark runs
- * about 18.5 cap heights wide, and the gap between the two words is about
- * twice a letter gap.
+ * uppercase and widely tracked, with every A replaced by the flipped V.
  *
  * The visible run is decorative, so assistive technology reads the real name
- * from the screen-reader copy instead of a string peppered with SVGs. Where a
+ * from the screen-reader copy rather than a V where an A belongs. Where a
  * consumer already labels the link (the header lockup), that label wins and
  * this copy is simply ignored.
  */
@@ -48,7 +54,11 @@ export function Wordmark({ className = "" }: { className?: string }) {
     <>
       <span
         aria-hidden="true"
-        className={`font-[family-name:var(--font-wordmark)] font-light uppercase leading-none tracking-[0.57em] [word-spacing:0.31em] ${className}`}
+        className={`font-[family-name:var(--font-wordmark)] font-light uppercase leading-none ${className}`}
+        style={{
+          letterSpacing: `${TRACKING}em`,
+          wordSpacing: `${WORD_SPACING}em`,
+        }}
       >
         {chunks.map((chunk, index) => (
           <Fragment key={index}>
