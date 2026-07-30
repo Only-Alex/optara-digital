@@ -9,8 +9,8 @@
      colour. 5.9:1 on paper, so it still clears AA as text. */
   --color-accent: #5b3df5;
   --color-accent-deep: #3a22c9;
-  --color-brand-violet: #7a4dff;
-  --color-brand-blue: #3d5aff;
+  --color-brand-violet: #7b2ff7;
+  --color-brand-blue: #2b7fff;
   --color-line: #e4e1da;
 
   --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;

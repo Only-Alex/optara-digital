@@ -22,10 +22,10 @@ export function LogoMark({ className }: IconProps) {
       <defs>
         <linearGradient
           id="optara-mark"
-          x1="0"
-          y1="0.85"
-          x2="1"
-          y2="0.1"
+          x1="0.05"
+          y1="0.72"
+          x2="0.95"
+          y2="0.22"
           gradientUnits="objectBoundingBox"
         >
           <stop offset="0" stopColor="var(--brand-violet)" />
@@ -40,11 +40,11 @@ export function LogoMark({ className }: IconProps) {
       >
         {/* Outer ring, open at the upper right */}
         <path d="M 18.6 6.22 A 12 12 0 1 0 25.78 13.4" strokeWidth="2" />
-        {/* Fine dashes under the outer ring's lower left */}
+        {/* Fine dashes along the bottom of the outer ring */}
         <path
-          d="M 2.68 19.58 A 12 12 0 0 0 12.42 29.32"
+          d="M 7.62 27.33 A 12 12 0 0 0 21.38 27.33"
           strokeWidth="2"
-          strokeDasharray="1.6 2.8"
+          strokeDasharray="1.5 2.6"
         />
         {/* Inner ring, opening on the same diagonal */}
         <path d="M 16.44 10.26 A 7.5 7.5 0 1 0 21.74 15.56" strokeWidth="2.4" />
