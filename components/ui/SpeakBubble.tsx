@@ -51,7 +51,10 @@ export function SpeakBubble() {
         }
         setRetired(visible.size > 0);
       },
-      { threshold: 0.12 },
+      // A quarter of Contact (or the footer) on screen, rather than a tenth:
+      // at 0.12 the button retired while Contact was still only a sliver at
+      // the bottom edge, which read as it vanishing for no reason.
+      { threshold: 0.25 },
     );
     targets.forEach((t) => observer.observe(t));
     return () => observer.disconnect();

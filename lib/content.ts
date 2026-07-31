@@ -302,11 +302,16 @@ export const contact = {
     "£10,000+ / month",
     "Not sure yet",
   ],
+  // The same six the mega menu, the Services section and the footer list.
+  // These were still the four old discipline names, so a visitor was picking
+  // from a menu of services the rest of the site no longer offers.
   services: [
-    "SEO",
-    "Paid advertising",
-    "Web design & development",
-    "Conversion & analytics",
+    "Branding",
+    "SEO & GEO",
+    "Google Ads",
+    "Social Media",
+    "Website Design",
+    "App Development",
     "Not sure yet",
   ],
 };
