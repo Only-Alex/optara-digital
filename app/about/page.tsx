@@ -206,16 +206,10 @@ const FIT = [
 
 const FAQS: AccordionItem[] = [
   {
-    question: "What type of agency is Optara Digital?",
+    question: "What type of agency is Optara Digital, and where are you based?",
     answer: [
-      "A digital growth agency. We connect Branding, SEO & GEO, Google Ads, Social Media, Website Design and App Development around a wider commercial objective rather than running each as a separate service line.",
+      "A digital growth agency, UK-based, working remotely. We connect Branding, SEO & GEO, Google Ads, Social Media, Website Design and App Development around a wider commercial objective rather than running each as a separate service line.",
       "The distinction that matters in practice is that decisions in one discipline get made with the others in view — what happens before someone arrives, and what happens after.",
-    ],
-  },
-  {
-    question: "Where is Optara Digital based?",
-    answer: [
-      "Optara Digital is UK-based, and the work is delivered remotely.",
       "We are not going to list an office address or a row of city names for the look of it. Where the work happens matters considerably less than who is doing it and whether it is any good.",
     ],
   },
