@@ -539,7 +539,11 @@ export const faqs = {
 
 export const speakBubble = {
   label: "Speak to us",
-  href: "/contact",
+  // The anchor, not the /contact route: this button only renders on the
+  // homepage, which carries the full enquiry form further down the same page.
+  // Sending the reader on a page load to reach a form they were already
+  // scrolling towards is a round trip for nothing. Lenis handles the scroll.
+  href: "#contact",
 };
 
 export const scrollCue = "Scroll down";
