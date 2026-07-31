@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { serviceNav } from "@/lib/content";
 import { getPublishedPosts } from "@/lib/blog";
+import { legalDates, legalPagesApproved } from "@/lib/legal";
 import { siteOrigin } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -44,5 +45,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.5,
   }));
 
-  return [...staticEntries, ...articleEntries];
+  /**
+   * The legal pages join the sitemap only once approved — while drafts they
+   * are noindexed and unlinked, and advertising them here would contradict
+   * that. lastModified uses each document's own revision date, never the
+   * build time.
+   */
+  const legalEntries = legalPagesApproved
+    ? (
+        [
+          ["/privacy", legalDates.privacy],
+          ["/cookies", legalDates.cookies],
+          ["/terms", legalDates.terms],
+        ] as const
+      ).map(([path, date]) => ({
+        url: `${siteOrigin}${path}`,
+        lastModified: new Date(`${date}T00:00:00Z`),
+        changeFrequency: "yearly" as const,
+        priority: 0.3,
+      }))
+    : [];
+
+  return [...staticEntries, ...articleEntries, ...legalEntries];
 }

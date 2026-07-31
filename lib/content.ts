@@ -1,3 +1,5 @@
+import { legalNav, legalPagesApproved } from "./legal";
+
 export type NavItem = { label: string; href: string };
 
 export type ServiceIcon =
@@ -339,11 +341,11 @@ export const footer = {
       ] as NavItem[],
     },
   ],
-  // Deliberately empty until real Privacy and Terms pages exist. Dead "#"
-  // links are worse than absent ones — they promise a policy and deliver a
-  // scroll-to-top. Reinstate with real routes only. Launch blocker either
-  // way: a public site still needs the actual pages (design system §15).
-  legal: [] as NavItem[],
+  // Gated on the single approval switch in lib/legal.ts: the legal routes
+  // exist as drafts, and the moment the business approves them this row
+  // populates with no further code change. While unapproved the row stays
+  // empty — a footer link to a draft policy would publish it by navigation.
+  legal: (legalPagesApproved ? [...legalNav] : []) as NavItem[],
 };
 
 export const intro = {
