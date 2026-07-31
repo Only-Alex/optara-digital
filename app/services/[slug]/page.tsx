@@ -18,7 +18,7 @@ const slugOf = (href: string) => href.replace("/services/", "");
  * takes precedence over this dynamic one at request time. It is excluded here
  * so the two cannot both prerender the same path at build time.
  */
-const HAS_OWN_ROUTE = ["branding", "seo-geo"];
+const HAS_OWN_ROUTE = ["branding", "seo-geo", "google-ads"];
 
 export function generateStaticParams() {
   return serviceNav
