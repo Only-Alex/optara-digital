@@ -13,8 +13,18 @@ type Params = { params: Promise<{ slug: string }> };
 
 const slugOf = (href: string) => href.replace("/services/", "");
 
+/**
+ * Branding has its own route at app/services/branding, and a static segment
+ * takes precedence over this dynamic one at request time. It is excluded here
+ * so the two cannot both prerender the same path at build time.
+ */
+const HAS_OWN_ROUTE = ["branding"];
+
 export function generateStaticParams() {
-  return serviceNav.map((service) => ({ slug: slugOf(service.href) }));
+  return serviceNav
+    .map((service) => slugOf(service.href))
+    .filter((slug) => !HAS_OWN_ROUTE.includes(slug))
+    .map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
