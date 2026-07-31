@@ -14,9 +14,15 @@ type Params = { params: Promise<{ slug: string }> };
 const slugOf = (href: string) => href.replace("/services/", "");
 
 /**
- * Branding has its own route at app/services/branding, and a static segment
- * takes precedence over this dynamic one at request time. It is excluded here
- * so the two cannot both prerender the same path at build time.
+ * Each service has its own route at app/services/<slug>, and a static segment
+ * takes precedence over this dynamic one at request time. They are excluded
+ * here so the two cannot both prerender the same path at build time.
+ *
+ * All six services are now bespoke, so this list covers serviceNav entirely
+ * and generateStaticParams returns nothing. The route is kept rather than
+ * deleted because it still answers /services/<anything-else> with a 404 via
+ * notFound(), and it is where a seventh service would land before its own
+ * page exists.
  */
 const HAS_OWN_ROUTE = [
   "branding",
@@ -24,6 +30,7 @@ const HAS_OWN_ROUTE = [
   "google-ads",
   "social-media",
   "website-design",
+  "app-development",
 ];
 
 export function generateStaticParams() {
