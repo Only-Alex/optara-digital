@@ -779,32 +779,13 @@ export const blogPage = {
   title: { lead: "Notes on search,", accent: "spend and growth." },
   standfirst:
     "Practical writing on SEO, generative search, paid media and the measurement that makes them accountable.",
-  posts: [
-    {
-      slug: "geo-vs-seo",
-      title: "GEO vs SEO: what changes when AI answers the question",
-      category: "SEO & GEO",
-      readingTime: "6 min read",
-      excerpt:
-        "Generative search rewards clear sourcing and answer-shaped structure far more than keyword density ever did. What that means for how you write pages.",
-    },
-    {
-      slug: "cost-per-qualified-lead",
-      title: "Why cost per qualified lead is the only number that matters",
-      category: "Paid media",
-      readingTime: "5 min read",
-      excerpt:
-        "Impressions and clicks always go up. Here is how to define a qualified lead for your business and build reporting that cannot flatter itself.",
-    },
-    {
-      slug: "tracking-you-can-trust",
-      title: "Rebuilding tracking before you spend another pound",
-      category: "Analytics",
-      readingTime: "7 min read",
-      excerpt:
-        "Most underperforming ad accounts are badly measured rather than badly optimised. A practical order of operations for fixing attribution first.",
-    },
-  ],
+  // The `posts` array that used to sit here held three outlines — a title, a
+  // category, an excerpt and a hardcoded reading time, with no body, no
+  // publication date and no author, and no article route for their slugs to
+  // reach. They rendered on /blog as though they were articles, beneath a note
+  // admitting they were not. Articles, categories, validation and reading time
+  // now live in lib/blog.ts; the three titles are recorded there as planned
+  // topics and are no longer rendered anywhere.
 };
 
 export const contactPage = {
