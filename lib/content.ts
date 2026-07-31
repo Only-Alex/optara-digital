@@ -479,44 +479,52 @@ export const phases = {
 export const faqs = {
   eyebrow: "Questions",
   title: { lead: "Frequently asked", accent: "questions." },
+  // Answers are arrays of paragraphs rather than one string. Every sentence is
+  // unchanged and in its original order; the breaks fall at the subject change
+  // the answer already made. The shortest answer stays a single paragraph.
   items: [
     {
       question: "How long before we see results?",
-      answer:
-        "Paid advertising can produce enquiries in the first week, because you are buying visibility directly. SEO is slower: expect early technical gains within four to six weeks, meaningful ranking movement from three months, and compounding results from six months onwards. We set expectations per channel in the plan rather than promising a single blanket timescale.",
+      answer: [
+        "Paid advertising can produce enquiries in the first week, because you are buying visibility directly.",
+        "SEO is slower: expect early technical gains within four to six weeks, meaningful ranking movement from three months, and compounding results from six months onwards. We set expectations per channel in the plan rather than promising a single blanket timescale.",
+      ],
     },
     {
       question: "Do you work with businesses outside your usual sectors?",
-      answer:
-        "Often, yes. The common thread in our work is a considered, high-value purchase where the buyer researches before making contact. If your sales cycle looks like that, the approach transfers. If you sell low-value products at high volume, we will tell you honestly that a specialist ecommerce agency is a better fit.",
+      answer: [
+        "Often, yes. The common thread in our work is a considered, high-value purchase where the buyer researches before making contact.",
+        "If your sales cycle looks like that, the approach transfers. If you sell low-value products at high volume, we will tell you honestly that a specialist ecommerce agency is a better fit.",
+      ],
     },
     {
       question: "What do you need from us to get started?",
-      answer:
-        "Access to your analytics, search console and ad accounts, a conversation about which enquiries are genuinely valuable, and one person on your side who can approve content and sign off changes. Beyond that we try to keep the demands on your team light, because slow approvals are the most common cause of slow results.",
+      answer: [
+        "Access to your analytics, search console and ad accounts, a conversation about which enquiries are genuinely valuable, and one person on your side who can approve content and sign off changes.",
+        "Beyond that we try to keep the demands on your team light, because slow approvals are the most common cause of slow results.",
+      ],
     },
     {
       question: "Do we own the work you produce?",
-      answer:
+      answer: [
         "Yes. Content, campaign structures, tracking configuration and any website we build belong to you. Accounts are set up in your name wherever possible, so if we ever part company you keep the assets and the history rather than starting again.",
+      ],
     },
     {
       question: "How is reporting handled?",
-      answer:
-        "A monthly report covering qualified enquiries, cost per lead and channel performance, plus a live dashboard you can check whenever you want. Reports are written to be read by people who do not work in marketing, and we talk through them rather than emailing a PDF and disappearing.",
+      answer: [
+        "A monthly report covering qualified enquiries, cost per lead and channel performance, plus a live dashboard you can check whenever you want.",
+        "Reports are written to be read by people who do not work in marketing, and we talk through them rather than emailing a PDF and disappearing.",
+      ],
     },
     {
       question: "What happens if it is not working?",
-      answer:
-        "We raise it before you do. If a channel is not producing enquiries at a viable cost we recommend reducing or stopping it, even when that means a smaller budget under our management. Rolling agreements after the initial term mean you are never locked into something that is not performing.",
+      answer: [
+        "We raise it before you do. If a channel is not producing enquiries at a viable cost we recommend reducing or stopping it, even when that means a smaller budget under our management.",
+        "Rolling agreements after the initial term mean you are never locked into something that is not performing.",
+      ],
     },
   ],
-  helpful: {
-    prompt: "Did this answer your question?",
-    yes: "Glad that helped.",
-    no: "No problem — ask us directly and we will answer properly.",
-    cta: { label: "Ask our team", href: "/contact" },
-  },
 };
 
 export const speakBubble = {
