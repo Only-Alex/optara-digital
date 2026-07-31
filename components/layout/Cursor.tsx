@@ -45,7 +45,10 @@ export function Cursor() {
         marginLeft: active ? -22 : -9,
         marginTop: active ? -22 : -9,
         borderColor: active ? "#5B3DF5" : "rgba(18,19,26,0.4)",
-        backgroundColor: active ? "rgba(91, 61, 245,0.10)" : "transparent",
+        // Zero-alpha accent rather than the `transparent` keyword: Motion
+        // cannot interpolate a keyword against an rgba() value, and warned on
+        // every state change. Renders identically.
+        backgroundColor: active ? "rgba(91,61,245,0.10)" : "rgba(91,61,245,0)",
       }}
       transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
     />
