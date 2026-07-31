@@ -301,7 +301,7 @@ export default async function ArticlePage({ params }: Params) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         {/* ── Article hero ─────────────────────────────────────────────── */}
         <section
           data-theme="paper"

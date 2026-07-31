@@ -67,7 +67,7 @@ export default async function ServiceDetailPage({ params }: Params) {
   return (
     <>
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         <PageHero
           eyebrow="Services"
           title={{ lead: service.label, accent: "" }}

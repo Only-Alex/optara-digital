@@ -264,12 +264,11 @@ export function MobileMenu({ open, onClose }: Props) {
             >
               {primaryCta.label}
             </Button>
-            <a
-              href={`tel:${site.phone.replace(/\s/g, "")}`}
-              className="t-body text-ink/70"
-            >
-              {site.phone}
-            </a>
+            {/* The telephone number is deliberately absent. The one in the
+                content file sits in Ofcom's 020 7946 0xxx range, which is
+                reserved for fiction and can never connect to anyone, so a
+                clickable tel: link is a dead end dressed as a contact route.
+                Reinstate once a real line exists. */}
             <a href={`mailto:${site.email}`} className="t-body text-ink/50">
               {site.email}
             </a>

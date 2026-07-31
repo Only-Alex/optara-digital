@@ -8,6 +8,54 @@ import { Capabilities } from "@/components/sections/Capabilities";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { SpeakBubble } from "@/components/ui/SpeakBubble";
+import { site } from "@/lib/content";
+import { siteOrigin } from "@/lib/site-url";
+
+/**
+ * The canonical Organization definition for the whole site.
+ *
+ * Every internal page emits an Organization node carrying the same
+ * `#organization` @id and references it from its own page schema, but the
+ * homepage previously emitted no structured data at all — so the identity the
+ * rest of the site pointed at was never actually declared on the page that
+ * owns it.
+ *
+ * Verified facts only: name, url, description and the logo already served from
+ * this origin. No founder, no employee count, no founding date, no postal
+ * address, no telephone, no sameAs — none of those is verified, and the
+ * telephone in the content file is an Ofcom fiction range.
+ */
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${siteOrigin}#organization`,
+      name: site.name,
+      url: siteOrigin,
+      description: site.description,
+      logo: `${siteOrigin}/opengraph-image`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteOrigin}#website`,
+      url: siteOrigin,
+      name: site.name,
+      description: site.description,
+      publisher: { "@id": `${siteOrigin}#organization` },
+      inLanguage: "en-GB",
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${siteOrigin}#webpage`,
+      url: siteOrigin,
+      name: `${site.name} — ${site.tagline}`,
+      description: site.description,
+      isPartOf: { "@id": `${siteOrigin}#website` },
+      about: { "@id": `${siteOrigin}#organization` },
+    },
+  ],
+};
 
 // Deliberately short. On 2026-07-28 the homepage was cut from eleven sections
 // to seven: Work, Difference, Process, Sectors and Testimonials came off. The
@@ -21,9 +69,13 @@ import { SpeakBubble } from "@/components/ui/SpeakBubble";
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Cursor />
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         <Hero />
         <GrowthSystem />
         <ConnectedSystem />

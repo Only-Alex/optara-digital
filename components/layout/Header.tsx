@@ -325,14 +325,18 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Get Started removed on request (2026-07-28). The phone number
-                steps up from 2xl to lg so the right side is not empty. */}
-            <a
-              href={`tel:${site.phone.replace(/\s/g, "")}`}
+            {/* Get Started removed on request (2026-07-28). The telephone
+                number that used to sit here is deliberately absent: it is in
+                Ofcom's 020 7946 0xxx range, reserved for fiction, so a
+                clickable tel: link to it is a dead end dressed as a contact
+                route. Contact takes its place. Reinstate once a real line
+                exists. */}
+            <Link
+              href="/contact"
               className="hidden whitespace-nowrap text-[0.9375rem] text-ink/70 transition-colors duration-200 hover:text-accent lg:block"
             >
-              {site.phone}
-            </a>
+              Contact
+            </Link>
             <button
               type="button"
               onClick={() => setOpen(true)}

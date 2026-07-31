@@ -53,10 +53,13 @@ export default function OpengraphImage() {
         </div>
 
         <div style={{ display: "flex", gap: 40, fontSize: 24, color: "#5A5B63" }}>
-          <span>SEO</span>
-          <span>Paid advertising</span>
-          <span>Web design</span>
-          <span>Conversion</span>
+          {/* Service names exactly as the navigation, mega menu and footer use
+              them. This image is the site's social preview, so labels that
+              drift here contradict every page it represents. */}
+          <span>SEO &amp; GEO</span>
+          <span>Google Ads</span>
+          <span>Website Design</span>
+          <span>Branding</span>
         </div>
       </div>
     ),

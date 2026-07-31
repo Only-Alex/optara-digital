@@ -548,12 +548,6 @@ export const speakBubble = {
 
 export const scrollCue = "Scroll down";
 
-export const servicesIndex = {
-  eyebrow: "Services",
-  title: { lead: "Six disciplines,", accent: "one revenue target." },
-  standfirst:
-    "Engaged individually or as one programme. Whichever you pick, the reporting leads on qualified enquiries and what each one cost.",
-};
 
 /**
  * The Services overview page.
@@ -737,35 +731,6 @@ export const servicesPage = {
   },
 };
 
-export const aboutPage = {
-  eyebrow: "About",
-  title: { lead: "An agency judged on", accent: "enquiries." },
-  standfirst:
-    "Optara Digital is a UK digital marketing agency working with businesses where a single new client is worth having, and where search decides the shortlist.",
-  body: [
-    "Optara Digital exists to do one thing: make search work commercially for firms whose buyers research for weeks before making contact. The channels around that keep changing. The problem does not.",
-    "The through line is measurement. We rebuild tracking before we touch a campaign, define what a qualified enquiry actually means for your business, and report against cost per lead in language you can take to a board.",
-    "We keep the client list deliberately short, so the senior person who audits an account is the person who runs it.",
-  ],
-  values: [
-    {
-      title: "Straight answers",
-      body: "If a channel is not producing enquiries at a viable cost, we say so before you have to ask, even when that shrinks the budget we manage.",
-    },
-    {
-      title: "Measured properly",
-      body: "Analytics and call tracking are rebuilt first. Without that, every number that follows is a guess dressed up as a report.",
-    },
-    {
-      title: "Senior attention",
-      body: "The person who audits your account is the person who runs it. You always know exactly who is doing the work.",
-    },
-    {
-      title: "No long lock-ins",
-      body: "Rolling agreements after the initial term. Staying should be a monthly decision based on results, not a clause.",
-    },
-  ],
-};
 
 export const caseStudiesPage = {
   eyebrow: "Illustrative work",
@@ -774,26 +739,7 @@ export const caseStudiesPage = {
     "The projects below are concepts. They are written to show how we read a commercial problem and what we would build in response, and they carry no performance figures because none has been earned yet. Client work will be published here as it clears approval.",
 };
 
-export const blogPage = {
-  eyebrow: "Blog",
-  title: { lead: "Notes on search,", accent: "spend and growth." },
-  standfirst:
-    "Practical writing on SEO, generative search, paid media and the measurement that makes them accountable.",
-  // The `posts` array that used to sit here held three outlines — a title, a
-  // category, an excerpt and a hardcoded reading time, with no body, no
-  // publication date and no author, and no article route for their slugs to
-  // reach. They rendered on /blog as though they were articles, beneath a note
-  // admitting they were not. Articles, categories, validation and reading time
-  // now live in lib/blog.ts; the three titles are recorded there as planned
-  // topics and are no longer rendered anywhere.
-};
 
-export const contactPage = {
-  eyebrow: "Contact",
-  title: { lead: "Tell us where you want to be", accent: "in twelve months." },
-  standfirst:
-    "Send a short brief and we will tell you honestly whether we can get you there, roughly what it would cost, and what we would do first.",
-};
 
 export const ctaBand = {
   title: { lead: "Want this approach", accent: "applied to yours?" },

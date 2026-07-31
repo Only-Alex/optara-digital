@@ -27,7 +27,7 @@ export default function CaseStudiesPage() {
   return (
     <>
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         <PageHero
           eyebrow={caseStudiesPage.eyebrow}
           title={caseStudiesPage.title}

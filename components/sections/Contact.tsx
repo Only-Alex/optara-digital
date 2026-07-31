@@ -334,12 +334,11 @@ export function Contact() {
                 <a href={`mailto:${site.email}`} className="t-body-lg font-medium">
                   {site.email}
                 </a>
-                <a
-                  href={`tel:${site.phone.replace(/\s/g, "")}`}
-                  className="t-body text-[var(--muted)]"
-                >
-                  {site.phone}
-                </a>
+                {/* The telephone number is deliberately absent. The one in the
+                content file sits in Ofcom's 020 7946 0xxx range, which is
+                reserved for fiction and can never connect to anyone, so a
+                clickable tel: link is a dead end dressed as a contact route.
+                Reinstate once a real line exists. */}
               </div>
             </RevealText>
           </div>

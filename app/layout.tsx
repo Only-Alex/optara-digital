@@ -44,9 +44,9 @@ export const metadata: Metadata = {
   keywords: [
     "digital marketing agency UK",
     "SEO agency",
-    "PPC agency",
+    "Google Ads agency",
     "lead generation",
-    "web design agency",
+    "website design agency",
   ],
   authors: [{ name: site.name }],
   openGraph: {
@@ -79,6 +79,16 @@ export default function RootLayout({
       className={`${instrumentSans.variable} ${jetbrainsMono.variable} ${wordmark.variable}`}
     >
       <body>
+        {/* Skip link. Visually hidden until focused, then the first tab stop on
+            every route. Targets the <main id="main" tabIndex={-1}> each page
+            renders, which carries scroll-mt so the sticky header cannot cover
+            the destination. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-[var(--radius-sm)] focus:bg-accent focus:px-5 focus:py-3 focus:text-[0.9375rem] focus:font-medium focus:text-paper focus:shadow-[0_10px_30px_rgba(18,19,26,0.18)]"
+        >
+          Skip to content
+        </a>
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

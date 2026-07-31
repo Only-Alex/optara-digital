@@ -373,7 +373,7 @@ export default function SocialMediaPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         {/* ── Hero ─────────────────────────────────────────────────────── */}
         <section
           data-theme="paper"

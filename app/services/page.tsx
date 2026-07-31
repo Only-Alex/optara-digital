@@ -72,7 +72,7 @@ export default function ServicesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <Header />
-      <main>
+      <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         {/* ── Hero ─────────────────────────────────────────────────────────
             Related to the homepage without repeating it: no smoke, no dark
             orbital. A light plane, six markers on fine paths around the real
