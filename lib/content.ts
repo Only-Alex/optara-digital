@@ -555,6 +555,188 @@ export const servicesIndex = {
     "Engaged individually or as one programme. Whichever you pick, the reporting leads on qualified enquiries and what each one cost.",
 };
 
+/**
+ * The Services overview page.
+ *
+ * Six services in the same order and under the same names as the mega menu,
+ * the homepage and the footer. Capabilities are what the work involves, never
+ * products in their own right, and nothing here claims a result.
+ */
+export const servicesPage = {
+  hero: {
+    eyebrow: "Our services",
+    title: { lead: "Six disciplines.", accent: "One connected system for growth." },
+    standfirst:
+      "Optara brings brand, search, paid media, social, websites and apps together around one commercial objective: helping ambitious businesses earn attention, convert demand and build stronger momentum.",
+    actions: {
+      primary: { label: "Explore the services", href: "#showcase" },
+      secondary: { label: "Speak to us", href: "/contact" },
+    },
+  },
+  intro: {
+    eyebrow: "Why connection matters",
+    title: { lead: "Individual channels can perform.", accent: "Connected channels compound." },
+    body: "A strong brand earns recognition. Search and paid media capture demand. Social keeps the business visible. Websites and apps turn that attention into valuable action. When those elements share one strategy, every decision has more context and every improvement strengthens the wider system.",
+  },
+  showcase: {
+    eyebrow: "The six services",
+    services: [
+      {
+        number: "01",
+        name: "Branding",
+        href: "/services/branding",
+        icon: "branding",
+        positioning: "Build a brand people recognise, trust and remember.",
+        description:
+          "Clear positioning and a distinctive identity give customers a stronger reason to choose you. We create brand systems that bring strategy, visual identity and communication together with consistency across every touchpoint.",
+        capabilities: [
+          "Brand strategy",
+          "Positioning",
+          "Visual identity",
+          "Verbal identity",
+          "Brand guidelines",
+          "Campaign creative direction",
+        ],
+      },
+      {
+        number: "02",
+        name: "SEO & GEO",
+        href: "/services/seo-geo",
+        icon: "seo",
+        positioning: "Be visible wherever your customers search for answers.",
+        description:
+          "We connect technical SEO, content strategy and generative search optimisation to improve visibility across traditional search engines and AI-powered discovery. The objective is not simply more traffic, but stronger visibility when intent matters.",
+        capabilities: [
+          "Technical SEO",
+          "Content strategy",
+          "On-page optimisation",
+          "Authority development",
+          "Local and national search",
+          "Generative engine optimisation",
+        ],
+      },
+      {
+        number: "03",
+        name: "Google Ads",
+        href: "/services/google-ads",
+        icon: "ads",
+        positioning: "Capture high-intent demand and turn it into opportunity.",
+        description:
+          "Focused targeting, relevant messaging and connected landing pages help paid-search campaigns generate more valuable enquiries. We continuously refine the complete journey so investment follows the strongest commercial opportunities.",
+        capabilities: [
+          "Search campaigns",
+          "Keyword and audience strategy",
+          "Campaign structure",
+          "Ad messaging",
+          "Landing-page alignment",
+          "Conversion tracking",
+        ],
+      },
+      {
+        number: "04",
+        name: "Social Media",
+        href: "/services/social-media",
+        icon: "social",
+        positioning: "Stay visible with content built around a clear purpose.",
+        description:
+          "Strategic social media strengthens brand recognition, audience engagement and wider campaign performance. We create connected content systems that maintain consistency while adapting to the behaviour of each platform and audience.",
+        capabilities: [
+          "Social strategy",
+          "Content planning",
+          "Creative direction",
+          "Organic content",
+          "Paid social support",
+          "Reporting and optimisation",
+        ],
+      },
+      {
+        number: "05",
+        name: "Website Design",
+        href: "/services/website-design",
+        icon: "web",
+        positioning: "Turn attention into action through a better digital experience.",
+        description:
+          "We design fast, intuitive websites that make complex businesses easier to understand and easier to choose. Clear messaging, thoughtful user journeys and premium visual design work together to support meaningful conversion.",
+        capabilities: [
+          "Digital strategy",
+          "UX and information architecture",
+          "UI design",
+          "Responsive web design",
+          "Conversion-focused journeys",
+          "Performance optimisation",
+        ],
+      },
+      {
+        number: "06",
+        name: "App Development",
+        href: "/services/app-development",
+        icon: "app",
+        positioning: "Create useful digital products built around real needs.",
+        description:
+          "From customer-facing applications to internal business platforms, we design and build digital products that are clear, scalable and straightforward to use. Every interaction is shaped around the people using it and the objectives behind it.",
+        capabilities: [
+          "Product strategy",
+          "UX and interface design",
+          "Web applications",
+          "Internal platforms",
+          "Prototyping",
+          "API integration",
+        ],
+      },
+      // Narrows each `icon` to the ServiceIcon union rather than string, so
+      // the shared ServiceIcon component accepts them without a cast.
+    ] as {
+      number: string;
+      name: string;
+      href: string;
+      icon: ServiceIcon;
+      positioning: string;
+      description: string;
+      capabilities: string[];
+    }[],
+  },
+  connection: {
+    eyebrow: "Built to work together",
+    title: { lead: "Start with the priority.", accent: "Build with the complete journey in mind." },
+    body: "Some businesses need stronger visibility. Others need a better website, sharper positioning or a digital product that removes friction. We begin with the most valuable opportunity, then make sure each decision supports the wider customer journey.",
+    // One possible sequence, not a required order — the copy above says so.
+    stages: [
+      { stage: "Recognition", service: "Branding" },
+      { stage: "Discovery", service: "SEO & GEO" },
+      { stage: "Demand", service: "Google Ads" },
+      { stage: "Engagement", service: "Social Media" },
+      { stage: "Conversion", service: "Website Design" },
+      { stage: "Product value", service: "App Development" },
+    ],
+  },
+  approach: {
+    eyebrow: "How we work",
+    title: { lead: "Clear priorities. Connected thinking.", accent: "Continuous improvement." },
+    principles: [
+      {
+        number: "01",
+        title: "Begin with the commercial objective",
+        body: "We identify what the business needs to change and focus the initial work around the most valuable opportunity.",
+      },
+      {
+        number: "02",
+        title: "Connect every customer touchpoint",
+        body: "Brand, campaigns, content and digital experiences are considered as one journey rather than separate assignments.",
+      },
+      {
+        number: "03",
+        title: "Improve with evidence",
+        body: "We use audience behaviour, performance data and qualitative insight to sharpen decisions over time.",
+      },
+    ],
+  },
+  closing: {
+    title: { lead: "Not sure where the greatest", accent: "opportunity sits?" },
+    body: "Tell us what you are trying to achieve. We will help identify the most valuable place to begin and how the wider system should support it.",
+    action: { label: "Speak to us", href: "/contact" },
+  },
+};
+
 export const aboutPage = {
   eyebrow: "About",
   title: { lead: "An agency judged on", accent: "enquiries." },
