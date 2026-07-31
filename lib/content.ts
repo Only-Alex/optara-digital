@@ -317,8 +317,13 @@ export const contact = {
 };
 
 export const footer = {
+  // "UK-based" rather than "a UK agency": the old wording read as a limit on
+  // who Optara works with rather than a statement of where it works from.
   blurb:
-    "A UK digital marketing agency generating qualified leads through search, paid media and websites built to convert.",
+    "A UK-based digital growth agency helping ambitious brands generate qualified demand through search, paid media and digital experiences built to convert.",
+  // Where the work happens, without inventing an office. No street address,
+  // no registered office, no second location — none of that is verified.
+  location: "UK-based, working with ambitious brands worldwide.",
   columns: [
     {
       title: "Services",
