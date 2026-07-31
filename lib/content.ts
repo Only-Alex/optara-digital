@@ -382,67 +382,42 @@ export const sectors = {
 
 export const capabilities = {
   eyebrow: "What we do best",
-  title: { lead: "Four disciplines,", accent: "run as one." },
+  title: { lead: "Six disciplines,", accent: "run as one." },
+  intro:
+    "Optara brings brand, search, paid media, social, websites and apps together as one connected growth system. Each discipline is shaped to strengthen the others, creating clearer journeys, stronger performance and more valuable outcomes.",
+  // Same six services, same order, as the mega menu and the footer. The
+  // section used to carry four differently-named disciplines, which read as a
+  // different agency depending on where you landed.
   groups: [
     {
-      name: "Search engine optimisation",
-      body: [
-        "We start with the technical foundations, because content and links rarely perform on a site search engines struggle to crawl. Once the base is sound we build topical authority around the terms your buyers actually use at the point of enquiry.",
-        "Reporting covers rankings, but it leads on the enquiries those rankings produced and what each one cost.",
-      ],
-      features: [
-        "Technical audit & fixes",
-        "Keyword & intent mapping",
-        "Content strategy",
-        "Local & multi-location SEO",
-        "Link acquisition",
-        "Monthly rank & lead reporting",
-      ],
+      number: "01",
+      name: "Branding",
+      body: "Create a distinctive brand with clear positioning, memorable identity and a consistent voice. We build the foundations that help businesses earn attention, establish trust and become easier to choose.",
     },
     {
-      name: "Paid advertising",
-      body: [
-        "Search, shopping and paid social campaigns structured around what a qualified lead is worth to you, not around impression share. Wasted spend is cut in the first fortnight, which usually funds the rest of the work.",
-        "We manage Google Ads, Microsoft Ads, Meta and LinkedIn in house, with weekly optimisation against cost per lead.",
-      ],
-      features: [
-        "Google & Microsoft Ads",
-        "Paid social",
-        "Remarketing",
-        "Landing page testing",
-        "Bid & budget management",
-        "Call & form tracking",
-      ],
+      number: "02",
+      name: "SEO & GEO",
+      body: "Increase visibility across traditional search and AI-powered discovery. We connect technical SEO, content strategy and generative search optimisation to help the right audiences find your business when intent is strongest.",
     },
     {
-      name: "Web design & development",
-      body: [
-        "Most sites lose more revenue in the gap between click and enquiry than they ever lose in the ad auction. We design and build fast, accessible sites that make the next step obvious.",
-        "Built to be edited by your team, measured properly from day one, and quick enough to pass Core Web Vitals on a mid-range phone.",
-      ],
-      features: [
-        "Bespoke design",
-        "Accessible build",
-        "CMS & content editing",
-        "Core Web Vitals",
-        "Ecommerce",
-        "Hosting & support",
-      ],
+      number: "03",
+      name: "Google Ads",
+      body: "Turn active demand into qualified opportunities through focused paid-search campaigns. We connect targeting, creative, landing pages and continuous optimisation to improve efficiency and commercial performance.",
     },
     {
-      name: "Conversion & analytics",
-      body: [
-        "Before optimising anything we make the numbers trustworthy: analytics rebuilt, goals defined, calls and forms attributed to source. Without that, every other report is guesswork.",
-        "Then a continuous testing programme on the pages that carry the most commercial weight.",
-      ],
-      features: [
-        "GA4 & tracking rebuild",
-        "Call tracking",
-        "Conversion rate testing",
-        "Heatmaps & session review",
-        "Dashboard reporting",
-        "Lead quality scoring",
-      ],
+      number: "04",
+      name: "Social Media",
+      body: "Build meaningful visibility through strategic content and connected social campaigns. We create systems that strengthen brand recognition, engage the right audiences and support wider marketing objectives.",
+    },
+    {
+      number: "05",
+      name: "Website Design",
+      body: "Create a fast, intuitive and conversion-focused digital experience. We combine clear messaging, thoughtful user journeys and premium visual design to turn interest into meaningful action.",
+    },
+    {
+      number: "06",
+      name: "App Development",
+      body: "Design and build digital products that are useful, scalable and easy to use. From customer-facing applications to internal platforms, every interaction is shaped around real user needs and business objectives.",
     },
   ],
 };
