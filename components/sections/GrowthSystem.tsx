@@ -163,11 +163,12 @@ export function GrowthSystem() {
               tile, and is cheaper besides. */}
 
           {/* The stem: the route descending out of the hero's ground before
-              it turns and runs the four stages. Desktop only — mobile's rail
-              is already vertical. */}
+              it turns and runs the four stages. Four-column widths only —
+              below xl the stages sit two-by-two and mobile's rail is already
+              vertical. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-[7px] top-[-84px] hidden h-[84px] w-px lg:block"
+            className="pointer-events-none absolute left-[7px] top-[-84px] hidden h-[84px] w-px xl:block"
           >
             <div className="absolute inset-0 bg-[var(--color-line)]" />
             <motion.div
@@ -180,12 +181,13 @@ export function GrowthSystem() {
             />
           </div>
 
-          {/* Continuous horizontal route, desktop only. At tablet the stages
-              wrap to 2x2, where a single full-width line would be misleading,
-              so each stage carries its own rule instead. */}
+          {/* Continuous horizontal route, four-column widths only. From md to
+              xl the stages wrap to 2x2, where a single full-width line would
+              read as connecting just the top row, so each stage carries its
+              own rule instead. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-[7px] hidden h-px lg:block"
+            className="pointer-events-none absolute inset-x-0 top-[7px] hidden h-px xl:block"
           >
             <div className="absolute inset-0 bg-[var(--color-line)]" />
             {/* Glow beneath the drawn length gives the rail body without a
@@ -228,32 +230,35 @@ export function GrowthSystem() {
             />
           </div>
 
-          {/* From 1600px the last column takes a wider share so its one-line
-              pill pair ends inside the column rather than leaning on the
-              card's padding; stage one, with a single short pill, gives up
-              the width. Variants are max-bounded so none can out-cascade
-              another. */}
-          <ol className="relative grid grid-cols-1 gap-y-12 md:max-lg:grid-cols-2 md:gap-x-10 md:gap-y-16 lg:max-[1600px]:grid-cols-4 lg:gap-x-8 min-[1600px]:grid-cols-[0.87fr_1fr_1fr_1.13fr]">
+          {/* Two-by-two holds through the lg band: four columns at 1024 could
+              only be paid for by shrinking the pills to an 8px caption, which
+              is below any readable floor. Four columns begin at 1280, where
+              the capsules keep their full size. From 1600px the last column
+              takes a wider share so its one-line pill pair ends inside the
+              column rather than leaning on the card's padding; stage one,
+              with a single short pill, gives up the width. Variants are
+              max-bounded so none can out-cascade another. */}
+          <ol className="relative grid grid-cols-1 gap-y-12 md:max-xl:grid-cols-2 md:gap-x-10 md:gap-y-16 xl:max-[1600px]:grid-cols-4 xl:gap-x-8 min-[1600px]:grid-cols-[0.87fr_1fr_1fr_1.13fr]">
             {growthSystem.stages.map((stage, index) => {
               const active = isActive(index);
 
               return (
                 <li
                   key={stage.number}
-                  // Reached stages sit a little forward of the ones still to
-                  // come — depth carrying the meaning, not just decorating it.
-                  // last:lg:pr-9 keeps stage 04's longer description clear of
-                  // the floating contact button at laptop widths — measured
-                  // 20px of text under the disc at 1280 without it.
-                  className="group relative pl-9 transition-transform duration-[420ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:border-t md:pl-0 md:pt-9 lg:border-t-0 lg:px-2 last:lg:pr-12 last:xl:pr-11 last:2xl:pr-2"
+                  // No whole-column lift on activation. Every stage ends
+                  // active, so the old -6px "reached" shift became the
+                  // permanent resting state — and it carried each node up
+                  // with it, leaving all four floating 5px off the rail they
+                  // are supposed to sit on. Activation is carried by colour,
+                  // the node bloom and the title settle instead; the geometry
+                  // stays put and the nodes stay centred on the line.
+                  className="group relative pl-9 md:border-t md:pl-0 md:pt-9 xl:border-t-0 xl:px-2 last:xl:pr-11 last:2xl:pr-2"
                   style={{
                     borderTopColor: active
                       ? "var(--color-accent)"
                       : "var(--color-line)",
-                    transform:
-                      active && !reduced ? "translateY(-6px)" : "translateY(0)",
                     transition:
-                      "border-color 240ms cubic-bezier(0.16,1,0.3,1), transform 420ms cubic-bezier(0.16,1,0.3,1)",
+                      "border-color 240ms cubic-bezier(0.16,1,0.3,1)",
                   }}
                 >
                   {/* Node as a lit sphere: a halo that blooms on activation,
@@ -262,7 +267,7 @@ export function GrowthSystem() {
                       highlight is lightness only — no hue ramp, per §4. */}
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 top-[1px] block h-[15px] w-[15px] md:-top-[7px] lg:top-0"
+                    className="absolute left-0 top-[1px] block h-[15px] w-[15px] md:-top-[7px] xl:top-0"
                   >
                     <span
                       className="absolute -inset-[9px] rounded-full transition-opacity duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -302,7 +307,7 @@ export function GrowthSystem() {
                       activation styles. */}
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute -inset-x-3 -inset-y-2 rounded-2xl bg-accent/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100 lg:-inset-x-2"
+                    className="pointer-events-none absolute -inset-x-3 -inset-y-2 rounded-2xl bg-accent/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100 xl:-inset-x-2"
                   />
 
                   {/* Fine vertical connection from the rail's node down into
@@ -310,7 +315,7 @@ export function GrowthSystem() {
                       hover, so number and node read as one joined fixture. */}
                   <span
                     aria-hidden="true"
-                    className={`absolute left-[7px] top-[17px] hidden h-8 w-px origin-top bg-gradient-to-b from-accent/70 to-accent/0 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 lg:block ${
+                    className={`absolute left-[7px] top-[17px] hidden h-8 w-px origin-top bg-gradient-to-b from-accent/70 to-accent/0 transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:opacity-100 xl:block ${
                       active ? "scale-y-100 opacity-70" : "scale-y-0 opacity-0"
                     }`}
                   />
@@ -329,14 +334,24 @@ export function GrowthSystem() {
                       numeral is the element that reaches furthest into it.
                       Nudging only the numeral keeps the pills and copy on the
                       full column width they need to stay on one line. */}
-                  <div className="relative flex justify-end xl:group-last:pr-3 2xl:group-last:pr-0">
+                  {/* In the two-by-two band stage 04 is the bottom-right
+                      cell, and its right-aligned numeral was the one element
+                      reaching into the floating button's corner zone — the
+                      description already stops short via its measure cap. The
+                      pr-20 pulls just the numeral clear; copy and pills keep
+                      the full column. */}
+                  <div className="relative flex justify-end md:max-xl:group-last:pr-20 xl:group-last:pr-3 2xl:group-last:pr-0">
                     <motion.span
                       aria-hidden="true"
                       className="pointer-events-none relative select-none font-semibold leading-[0.78] tracking-[-0.05em] transition-colors duration-[500ms] ease-[cubic-bezier(0.16,1,0.3,1)] text-[3.5rem] tabular-nums md:text-[4.5rem]"
+                      // Lifted ~15% on both states (0.30/0.11 before): the
+                      // numerals were falling below legibility on ordinary
+                      // laptop panels. Still translucent — they are a layer
+                      // behind the titles, not a competitor to them.
                       style={{
                         color: active
-                          ? "rgba(91, 61, 245,0.3)"
-                          : "rgba(18,19,26,0.11)",
+                          ? "rgba(91, 61, 245,0.35)"
+                          : "rgba(18,19,26,0.13)",
                         y: reduced ? 0 : ghostDrift,
                       }}
                     >
@@ -347,11 +362,11 @@ export function GrowthSystem() {
                   {/* Unreached stages are quieter, never disabled: a stage the
                       reader has not arrived at yet still has to look finished,
                       so the contrast step is emphasis, not an on/off switch. */}
-                  {/* Title region reserves two lines at desktop (2 × the
-                      1.15 line-height, in em so it tracks the clamp()ed font
-                      size). "Scale growth" is the only one-line title; without
-                      the reservation its chips and description sat higher than
-                      the other three columns. Mobile/tablet flow naturally. */}
+                  {/* Titles are a single non-wrapping line from lg up, sized
+                      by clamp() so the guarantee holds at every four-column
+                      width — which is what keeps all four title regions, and
+                      everything below them, level. Mobile and tablet flow
+                      naturally. */}
                   <h3
                     className="t-display-md mt-4 transition-[color,transform] duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] lg:whitespace-nowrap lg:text-[clamp(1.25rem,1.95vw,1.75rem)]"
                     style={{
@@ -368,16 +383,16 @@ export function GrowthSystem() {
                   </h3>
 
                   {/* Full-size pills, per the approved visual: readable
-                      12px mono in a tinted capsule. At this size the wide
-                      pairs wrap to a second row inside a quarter-width
-                      column, so the label region reserves two pill rows —
-                      first pills all sit on one shared line and every
-                      description starts level. The 1024–1279 band alone
-                      keeps the previous compact size: stage 04's column is
-                      only ~135px there after the floating-button clearance,
-                      which cannot hold a 12px capsule at all. */}
+                      12px mono in a tinted capsule at every width — the old
+                      8px squeeze existed only to prop up four columns at
+                      1024, and that band is two-by-two now. In the
+                      1280–1599 four-column band the wide pairs wrap to a
+                      second row, so the region reserves two pill rows there:
+                      first pills all share one line and every description
+                      starts level, including stage 01's behind its single
+                      capsule. Pills align to the top of the region. */}
                   <motion.ul
-                    className="mt-5 flex flex-wrap content-start gap-1.5 md:max-lg:flex-nowrap lg:max-xl:gap-[3px] lg:max-xl:min-h-[3.25rem] xl:max-[1600px]:min-h-[4.25rem] min-[1600px]:flex-nowrap min-[1600px]:gap-1"
+                    className="mt-5 flex flex-wrap content-start gap-1.5 md:max-xl:flex-nowrap xl:max-[1600px]:min-h-[4.25rem] min-[1600px]:flex-nowrap min-[1600px]:gap-1"
                     initial={false}
                     animate={
                       reduced
@@ -391,7 +406,7 @@ export function GrowthSystem() {
                         key={service}
                         // Dot plus label in a small pill — the hero eyebrow's
                         // vocabulary at caption scale.
-                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-2 pr-2 font-mono text-[0.75rem] leading-none uppercase tracking-normal md:max-lg:text-[0.6875rem] lg:max-xl:gap-[2px] lg:max-xl:py-[3px] lg:max-xl:pl-[3px] lg:max-xl:pr-[3px] lg:max-xl:text-[0.5rem] min-[1600px]:gap-1 min-[1600px]:pl-1.5 min-[1600px]:pr-1.5 min-[1600px]:text-[0.6875rem] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
+                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border py-[7px] pl-2 pr-2 font-mono text-[0.75rem] leading-none uppercase tracking-normal md:max-lg:text-[0.6875rem] min-[1600px]:gap-1 min-[1600px]:pl-1.5 min-[1600px]:pr-1.5 min-[1600px]:text-[0.6875rem] transition-[background-color,border-color,color] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:border-accent/40 ${
                           active
                             ? "border-accent/35 bg-accent/[0.08] text-ink/85"
                             : "border-[var(--hairline)] bg-accent/[0.03] text-ink/70"
@@ -399,7 +414,7 @@ export function GrowthSystem() {
                       >
                         <span
                           aria-hidden="true"
-                          className="block h-[5px] w-[5px] shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] lg:max-xl:h-[3px] lg:max-xl:w-[3px] min-[1600px]:h-1 min-[1600px]:w-1"
+                          className="block h-[5px] w-[5px] shrink-0 rounded-full transition-[background-color,box-shadow] duration-[280ms] min-[1600px]:h-1 min-[1600px]:w-1"
                           style={{
                             backgroundColor: active
                               ? "var(--color-accent)"
@@ -414,10 +429,16 @@ export function GrowthSystem() {
                     ))}
                   </motion.ul>
 
-                  {/* Refinement brief: darker body at 17px, tighter to the
-                      tags above, and never heavily faded when unreached. */}
+                  {/* 17px at ink/80 — one step darker than before, still well
+                      short of the titles' full ink so the hierarchy holds.
+                      Never heavily faded when unreached. */}
+                  {/* Stage 04's measure tightens by 4ch in the two-by-two
+                      band, where it is the bottom-right cell and its last
+                      lines would otherwise run into the floating button's
+                      corner zone. 34ch is still a comfortable reading line;
+                      nothing else in the row moves. */}
                   <p
-                    className="mt-3.5 max-w-[38ch] text-[1.0625rem] leading-[1.62] text-ink/75 transition-opacity duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
+                    className="mt-3.5 max-w-[38ch] text-[1.0625rem] leading-[1.62] text-ink/80 transition-opacity duration-[240ms] ease-[cubic-bezier(0.16,1,0.3,1)] md:max-xl:group-last:max-w-[32ch]"
                     style={{ opacity: active ? 1 : 0.92 }}
                   >
                     {stage.description}
