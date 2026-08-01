@@ -88,17 +88,26 @@
      * with no background here the body's paper propagated to it — so pulling
      * past the dark footer showed a band of white beneath it.
      *
-     * Every page on this site opens on paper and closes on the ink footer, so
-     * the canvas is a hard two-stop gradient: paper for the top half, ink for
-     * the bottom. Overscrolling at either end now meets the colour the page
-     * already has there. The body's own background paints over all of this,
-     * so nothing between the two ends is affected.
+     * The colour, not an image, is what matters: a background-image is sized
+     * to the root element's box, so it stops at the end of the document and
+     * never reaches the overscroll region. Only background-color extends into
+     * it. A gradient alone therefore left the white exactly where it was —
+     * which is what happened on the first attempt at this fix.
      *
-     * Deliberately not background-attachment: fixed — sized to the document
-     * box the split lands mid-page, which puts the right colour at both ends
-     * without inheriting Safari's fixed-attachment quirks.
+     * So the canvas colour is ink. Every page closes on the ink footer, so
+     * pulling past the bottom now meets the colour already there. The trade
+     * is the other end: pulling down above the header shows ink rather than
+     * paper. That is a transient gesture usually covered by the pull-to-
+     * refresh affordance, whereas the bottom gap sits in plain view whenever
+     * someone reaches the end of a page — so the bottom wins.
+     *
+     * The gradient stays for the document box itself, so the canvas behind
+     * the page still reads paper at the top if anything ever shows through
+     * mid-page. The body paints its own paper over all of it, so no page
+     * content is affected.
      */
-    background: linear-gradient(
+    background-color: var(--color-ink);
+    background-image: linear-gradient(
       to bottom,
       var(--color-paper) 50%,
       var(--color-ink) 50%
