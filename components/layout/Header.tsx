@@ -220,7 +220,13 @@ export function Header() {
               aria-label={`${site.name} — home`}
             >
               <LogoMark className="h-8 w-8" />
-              <Wordmark className="text-[1.125rem]" />
+              {/* The lockup's 0.39em tracking makes the name wide: at 18px it
+                  measures 246px, and a 390px phone leaves 245px between the
+                  mark and the menu button — so it wrapped to a second line by
+                  a single pixel. It steps down to 15px below sm (≈205px,
+                  clearing even a 360px screen), and nowrap guarantees one line
+                  rather than wrapping again at some width in between. */}
+              <Wordmark className="whitespace-nowrap text-[0.9375rem] sm:text-[1.125rem]" />
             </Link>
           </motion.div>
 
