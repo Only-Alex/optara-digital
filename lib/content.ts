@@ -117,8 +117,11 @@ export const serviceNav: NavChild[] = [
   {
     label: "App Development",
     href: "/services/app-development",
+    // "Web and mobile" corrected 2026-08-02: the App Development page states
+    // plainly that Optara does not offer native iOS or Android development,
+    // and the menu must not promise what the page then withdraws.
     blurb:
-      "Build scalable web and mobile applications on modern, maintainable foundations.",
+      "Build dependable web applications and internal platforms on modern foundations.",
     icon: "app",
   },
 ];
@@ -325,7 +328,9 @@ export const footer = {
     "A UK-based digital growth agency helping ambitious brands generate qualified demand through search, paid media and digital experiences built to convert.",
   // Where the work happens, without inventing an office. No street address,
   // no registered office, no second location — none of that is verified.
-  location: "UK-based, working with ambitious brands worldwide.",
+  // "Worldwide" dropped 2026-08-02: an international client base is a factual
+  // claim, and no client outside the UK is verified.
+  location: "UK-based, working with ambitious brands.",
   columns: [
     {
       title: "Services",

@@ -315,13 +315,13 @@ export default async function ArticlePage({ params }: Params) {
             <nav aria-label="Breadcrumb" className="mb-7">
               <ol className="t-mono flex flex-wrap items-center gap-2 text-[var(--muted)]">
                 <li>
-                  <Link href="/" className="transition-colors duration-200 hover:text-accent">
+                  <Link href="/" className="-mx-2 -my-2 inline-block px-2 py-2 transition-colors duration-200 hover:text-accent">
                     Home
                   </Link>
                 </li>
                 <li aria-hidden="true">/</li>
                 <li>
-                  <Link href="/blog" className="transition-colors duration-200 hover:text-accent">
+                  <Link href="/blog" className="-mx-2 -my-2 inline-block px-2 py-2 transition-colors duration-200 hover:text-accent">
                     Blog
                   </Link>
                 </li>

@@ -59,7 +59,7 @@ export function ServicesSticky() {
                 <CursorBubble label={`View ${service.name}`}>
                   <Link
                     href={service.href}
-                    className="group block rounded-[22px] border border-[var(--hairline)] bg-paper p-7 transition-colors duration-300 hover:border-accent/40 md:p-10"
+                    className="group block rounded-[22px] border border-[var(--hairline)] bg-paper p-7 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_24px_60px_rgba(18,19,26,0.08)] motion-reduce:transform-none md:p-10"
                   >
                     {/* An abstract brand panel where the reference shows client
                         screenshots — Optara shows no work it has not done, so
@@ -182,7 +182,7 @@ export function IntroSplit() {
  * right each card is itself sticky at a slightly deeper offset than the one
  * before, so scrolling slides every card up over the last like a settling
  * deck. Pure CSS `position: sticky` — no scroll listeners, no hijacking, and
- * on mobile (below lg) it degrades to a plain stacked list.
+ * on phones (below md) it degrades to a plain stacked list.
  *
  * The staggered offsets both create the deck's peeking edges and guarantee a
  * card never fully hides the one beneath it while they overlap. Cards are
@@ -223,11 +223,11 @@ export function DifferenceSticky() {
           </RevealText>
         </div>
 
-        <ol className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6 lg:gap-10 lg:pb-16">
+        <ol className="flex flex-col gap-6 md:gap-10 md:pb-16 lg:col-span-7 lg:col-start-6">
           {difference.items.map((item, i) => (
             <li
               key={item.title}
-              className="lg:sticky"
+              className="md:sticky"
               style={{ top: `calc(6.5rem + ${i * 3.5}rem)` }}
             >
               <article className="relative overflow-hidden rounded-[24px] border border-[var(--hairline)] bg-paper p-8 shadow-[0_28px_80px_rgba(18,19,26,0.12)] md:p-12">
