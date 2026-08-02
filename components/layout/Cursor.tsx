@@ -22,7 +22,10 @@ export function Cursor() {
     const onMove = (event: PointerEvent) => {
       x.set(event.clientX);
       y.set(event.clientY);
-      const target = event.target as HTMLElement | null;
+      // instanceof, not a cast: a pointermove's target can be the document
+      // itself (synthetic dispatch, odd embeddings), and Document has no
+      // .closest — the old cast hid a TypeError waiting for that case.
+      const target = event.target instanceof Element ? event.target : null;
       setActive(
         Boolean(target?.closest("a, button, input, select, textarea, [data-cursor]")),
       );

@@ -1,10 +1,13 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
-import { Hero } from "@/components/sections/Hero";
-import { GrowthSystem } from "@/components/sections/GrowthSystem";
-import { ConnectedSystem } from "@/components/sections/ConnectedSystem";
-import { Capabilities } from "@/components/sections/Capabilities";
+import { Hero3D } from "@/components/sections/Hero3D";
+import {
+  DifferenceSticky,
+  IntroSplit,
+  ServicesSticky,
+} from "@/components/sections/ServicesSticky";
+import { ProcessPhases } from "@/components/sections/ProcessPhases";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
 import { SpeakBubble } from "@/components/ui/SpeakBubble";
@@ -57,15 +60,22 @@ const structuredData = {
   ],
 };
 
-// Deliberately short. On 2026-07-28 the homepage was cut from eleven sections
-// to seven: Work, Difference, Process, Sectors and Testimonials came off. The
-// components stay on disk — Work's concept projects live on /case-studies, the
-// Difference commitments live on /about and in the FAQ answers, and Process
-// belongs to /about. Results stays unrendered until real figures exist, and
-// Testimonials returns only with verified, nameable quotes.
-//
-// Grounds: paper · paper · ink · paper · ink · bone · ink. ConnectedSystem is
-// the mid-page dark moment; FAQ holds the late one.
+/**
+ * Rebuilt 2026-08-02 to the approved reference direction
+ * (cbwebsitedesign.co.uk): an interactive three.js hero, a floating-panel
+ * intro, the sticky services chapters with the cursor bubble, the sticky
+ * differentiators, and the process staged as full-height phases — all in the
+ * logo's blue→violet→purple palette.
+ *
+ * The previous sections (Hero with the fluid smoke, GrowthSystem,
+ * ConnectedSystem, Capabilities) stay on disk untouched, so this composition
+ * is one revert away from the old homepage. Faq and Contact carry over: the
+ * reference closes the same way, and both are approved as they stand.
+ *
+ * Grounds: paper · paper · bone · paper · ink · bone · ink. ProcessPhases is
+ * the mid-page dark moment; FAQ holds the late one. Hero3D keeps id="top",
+ * which the floating SpeakBubble watches, and Contact keeps id="contact".
+ */
 export default function Home() {
   return (
     <>
@@ -76,10 +86,11 @@ export default function Home() {
       <Cursor />
       <Header />
       <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
-        <Hero />
-        <GrowthSystem />
-        <ConnectedSystem />
-        <Capabilities />
+        <Hero3D />
+        <IntroSplit />
+        <ServicesSticky />
+        <DifferenceSticky />
+        <ProcessPhases />
         <Faq />
         <Contact />
       </main>
