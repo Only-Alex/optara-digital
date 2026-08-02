@@ -153,7 +153,9 @@ export function Contact() {
             </p>
             <h2 className="t-display-lg mt-7 max-w-[20ch] text-paper">
               {contact.title.lead}{" "}
-              <span className="text-[var(--accent-fg)]">
+              {/* Lightened brand ramp for dark grounds — same tints and
+                  reasoning as the ProcessPhases heading. */}
+              <span className="bg-[linear-gradient(92deg,#6FA8FF,#8E7BFF_55%,#B07BFF)] bg-clip-text text-transparent">
                 {contact.title.accent}
               </span>
             </h2>
@@ -169,7 +171,9 @@ export function Contact() {
           >
             {contact.reassurances.map((item) => (
               <RevealItem key={item} as="li" className="flex items-center gap-3">
-                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border border-[rgba(255,255,255,0.35)] text-[var(--accent-fg)]">
+                {/* Filled gradient chips, matching the hero ticker's badges so
+                    the commitments read as the same objects site-wide. */}
+                <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[linear-gradient(135deg,#2B7FFF,#5B3DF5_55%,#7B2FF7)] text-paper">
                   <CheckIcon className="h-3 w-3" />
                 </span>
                 <span className="t-body text-[rgba(255,255,255,0.88)]">
@@ -194,7 +198,7 @@ export function Contact() {
             >
               <span
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(91,61,245,0.55),rgba(43,127,255,0.45),transparent)]"
+                className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(43,127,255,0.55)_20%,rgba(91,61,245,0.55)_50%,rgba(123,47,247,0.55)_80%,transparent)]"
               />
 
               {/* Both the field-level prompt and the could-not-send message

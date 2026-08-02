@@ -569,7 +569,7 @@ export default function SocialMediaPage() {
                     aria-hidden="true"
                     className="absolute left-0 top-0 block h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent"
                   />
-                  <span className="t-mono text-accent">{outcome.number}</span>
+                  <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">{outcome.number}</span>
                   <h3 className="mt-3.5 text-[1.125rem] font-medium leading-tight">
                     {outcome.title}
                   </h3>
@@ -616,7 +616,7 @@ export default function SocialMediaPage() {
                   key={item.step}
                   className="grid items-baseline gap-2 border-t border-[var(--hairline)] py-5 md:grid-cols-[auto_minmax(0,20rem)_1fr] md:gap-6"
                 >
-                  <span className="t-mono text-accent">
+                  <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-[1.0625rem] font-medium leading-tight">{item.step}</h3>
@@ -646,7 +646,7 @@ export default function SocialMediaPage() {
                   className="grid gap-6 border-t border-[var(--hairline)] py-10 md:grid-cols-12 md:gap-x-[clamp(2rem,4vw,4rem)] md:py-12"
                 >
                   <div className="md:col-span-5">
-                    <span className="t-mono text-accent">
+                    <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <h3 className="t-display-md mt-3.5 text-[clamp(1.375rem,2vw,1.75rem)]">
@@ -711,7 +711,7 @@ export default function SocialMediaPage() {
                   key={row.layer}
                   className="grid items-center gap-4 border-t border-[var(--hairline)] py-6 md:grid-cols-[auto_minmax(0,12rem)_1fr] md:gap-6"
                 >
-                  <span className="t-mono text-accent">
+                  <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="text-[1.0625rem] font-medium leading-tight">{row.layer}</h3>
@@ -768,7 +768,7 @@ export default function SocialMediaPage() {
                     className="absolute left-0 top-0 block h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent"
                   />
                   <div className="flex items-baseline gap-3">
-                    <span className="t-mono text-accent">{step.number}</span>
+                    <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">{step.number}</span>
                     <h3 className="text-[1.0625rem] font-medium">{step.stage}</h3>
                   </div>
                   <p className="mt-3.5 max-w-[28ch] text-[1rem] font-medium leading-[1.4]">

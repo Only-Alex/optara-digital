@@ -44,7 +44,7 @@ export function ServicesSticky() {
               {/* The sticky chapter title. `self-start` is what lets sticky
                   work inside a grid track; top-28 clears the compact header. */}
               <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-                <p className="t-mono bg-[linear-gradient(92deg,#2B7FFF,#7B2FF7)] bg-clip-text text-transparent">
+                <p className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
                   {service.number}
                 </p>
                 <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.75rem)]">
@@ -223,7 +223,10 @@ export function DifferenceSticky() {
           </RevealText>
         </div>
 
-        <ol className="flex flex-col gap-6 md:gap-10 md:pb-16 lg:col-span-7 lg:col-start-6">
+        {/* .deck powers the scroll-driven settle in globals.css: in browsers
+            with animation-timeline support, covered cards ease back and dim
+            as the next one slides over. Everywhere else the class is inert. */}
+        <ol className="deck flex flex-col gap-6 md:gap-10 md:pb-16 lg:col-span-7 lg:col-start-6">
           {difference.items.map((item, i) => (
             <li
               key={item.title}
@@ -241,7 +244,7 @@ export function DifferenceSticky() {
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <p className="t-mono bg-[linear-gradient(92deg,#2B7FFF,#7B2FF7)] bg-clip-text text-transparent">
+                <p className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
                   {String(i + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
                 </p>
                 <h3 className="t-display-md mt-5 max-w-[20ch]">{item.title}</h3>

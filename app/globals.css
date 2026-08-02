@@ -256,6 +256,72 @@
   }
 }
 
+/* Route entrance, applied by app/template.tsx on every navigation. Opacity
+ * only — a transform would break position: fixed descendants (see the
+ * template's comment). Slightly longer than a hover transition so the page
+ * reads as arriving rather than flickering. */
+.page-enter {
+  animation: page-enter 0.5s var(--ease) both;
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scroll-driven depth for the differentiator deck (DifferenceSticky).
+ *
+ * The deck's cards pin with position: sticky, and a pinned element's own
+ * view timeline freezes — so each card cannot watch itself being covered.
+ * Instead the ol carries a named view timeline, and each card keys its
+ * settle animation to a slice of the ol's travel that roughly corresponds
+ * to the next card's arrival. The effect is deliberately slight — a small
+ * ease back and dim — so an imprecise slice can never look broken.
+ *
+ * Progressive enhancement only: inside @supports, so Safari/Firefox keep
+ * the plain stack. The last card never settles; nothing covers it.
+ * Reduced motion switches it off explicitly, because the global duration
+ * override cannot be relied on for timeline-driven animations. */
+@supports (animation-timeline: view()) {
+  .deck {
+    view-timeline-name: --deck;
+    view-timeline-axis: block;
+  }
+  .deck > li > article {
+    animation: deck-settle linear both;
+    animation-timeline: --deck;
+  }
+  .deck > li:nth-child(1) > article {
+    animation-range: 30% 50%;
+  }
+  .deck > li:nth-child(2) > article {
+    animation-range: 50% 70%;
+  }
+  .deck > li:nth-child(3) > article {
+    animation-range: 70% 90%;
+  }
+  .deck > li:last-child > article {
+    animation: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .deck > li > article {
+      animation: none;
+    }
+  }
+}
+
+@keyframes deck-settle {
+  to {
+    transform: translateY(-6px) scale(0.975);
+    opacity: 0.82;
+    filter: brightness(0.97);
+  }
+}
+
 /* The hero commitments ticker: the track holds two identical runs, so
  * sliding exactly half its width loops seamlessly. New keyframe — the
  * protected hero tokens above are untouched. */

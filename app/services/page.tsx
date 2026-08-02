@@ -232,7 +232,7 @@ export default function ServicesPage() {
                     >
                       <RevealItem className={flip ? "lg:order-2" : undefined}>
                         <div className="flex items-baseline gap-4">
-                          <span className="t-mono text-accent">{service.number}</span>
+                          <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">{service.number}</span>
                           <h2 className="t-display-md">{service.name}</h2>
                         </div>
                         <p className="t-body-lg mt-5 max-w-[42ch] font-medium">
@@ -378,7 +378,7 @@ export default function ServicesPage() {
                   key={principle.number}
                   className="border-t border-[var(--hairline)] pt-7"
                 >
-                  <span className="t-mono text-accent">{principle.number}</span>
+                  <span className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">{principle.number}</span>
                   <h3 className="t-display-md mt-4 text-[clamp(1.25rem,1.7vw,1.5rem)]">
                     {principle.title}
                   </h3>
