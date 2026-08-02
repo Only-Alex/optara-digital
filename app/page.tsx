@@ -1,7 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
-import { Hero3D } from "@/components/sections/Hero3D";
+import { Hero } from "@/components/sections/Hero";
 import {
   DifferenceSticky,
   IntroSplit,
@@ -61,19 +61,18 @@ const structuredData = {
 };
 
 /**
- * Rebuilt 2026-08-02 to the approved reference direction
- * (cbwebsitedesign.co.uk): an interactive three.js hero, a floating-panel
- * intro, the sticky services chapters with the cursor bubble, the sticky
- * differentiators, and the process staged as full-height phases — all in the
- * logo's blue→violet→purple palette.
+ * Composition settled 2026-08-02 after review of the 3D rebuild: the original
+ * fluid-cursor hero returned by request — now wearing the logo's full
+ * blue→violet→purple ramp on the headline and the commitments ticker on its
+ * bottom edge — followed by the reference-direction sections that were kept:
+ * floating-panel intro, sticky services chapters with the cursor bubble, the
+ * stacked differentiator deck, and the process staged as full-height phases.
  *
- * The previous sections (Hero with the fluid smoke, GrowthSystem,
- * ConnectedSystem, Capabilities) stay on disk untouched, so this composition
- * is one revert away from the old homepage. Faq and Contact carry over: the
- * reference closes the same way, and both are approved as they stand.
+ * Hero3D and the three.js field stay on disk unused, one import swap away if
+ * ever wanted again. GrowthSystem, ConnectedSystem and Capabilities likewise.
  *
  * Grounds: paper · paper · bone · paper · ink · bone · ink. ProcessPhases is
- * the mid-page dark moment; FAQ holds the late one. Hero3D keeps id="top",
+ * the mid-page dark moment; FAQ holds the late one. Hero keeps id="top",
  * which the floating SpeakBubble watches, and Contact keeps id="contact".
  */
 export default function Home() {
@@ -86,7 +85,7 @@ export default function Home() {
       <Cursor />
       <Header />
       <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
-        <Hero3D />
+        <Hero />
         <IntroSplit />
         <ServicesSticky />
         <DifferenceSticky />

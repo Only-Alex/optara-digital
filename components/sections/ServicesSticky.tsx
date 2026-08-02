@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { difference, servicesPage } from "@/lib/content";
-import { RevealGroup, RevealItem, RevealText } from "@/components/ui/RevealText";
+import { RevealText } from "@/components/ui/RevealText";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { CursorBubble } from "@/components/ui/CursorBubble";
 import { ArrowIcon } from "@/components/ui/Icons";
@@ -44,7 +44,9 @@ export function ServicesSticky() {
               {/* The sticky chapter title. `self-start` is what lets sticky
                   work inside a grid track; top-28 clears the compact header. */}
               <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-                <p className="t-mono text-accent">{service.number}</p>
+                <p className="t-mono bg-[linear-gradient(92deg,#2B7FFF,#7B2FF7)] bg-clip-text text-transparent">
+                  {service.number}
+                </p>
                 <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.75rem)]">
                   {service.name}
                 </h3>
@@ -64,7 +66,7 @@ export function ServicesSticky() {
                         the visual is the service's own gradient and icon. */}
                     <div
                       aria-hidden="true"
-                      className="relative flex h-44 items-center justify-center overflow-hidden rounded-[14px] bg-[linear-gradient(120deg,rgba(43,127,255,0.10),rgba(91,61,245,0.14)_50%,rgba(123,47,247,0.10))] md:h-56"
+                      className="relative flex h-44 items-center justify-center overflow-hidden rounded-[14px] bg-[linear-gradient(120deg,rgba(43,127,255,0.10),rgba(91,61,245,0.14)_50%,rgba(123,47,247,0.10))] before:absolute before:inset-y-0 before:left-0 before:w-1/2 before:-translate-x-[150%] before:skew-x-[-18deg] before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent)] before:transition-transform before:duration-700 before:ease-out group-hover:before:translate-x-[320%] motion-reduce:before:hidden md:h-56"
                     >
                       <span className="pointer-events-none absolute inset-0 opacity-[0.5] [background-image:linear-gradient(rgba(18,19,26,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(18,19,26,0.04)_1px,transparent_1px)] [background-size:34px_34px]" />
                       <span className="grid h-20 w-20 place-items-center rounded-full bg-paper/80 text-accent shadow-[0_16px_44px_rgba(91,61,245,0.18)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
@@ -110,6 +112,11 @@ export function ServicesSticky() {
  * panels left, copy right, one link out. Server component — the tilt is
  * static CSS transforms, and the panels are abstract brand shapes because no
  * client screenshots exist to float.
+ *
+ * The panels levitate on the shared panel-float keyframe, each on its own
+ * period and phase so the drift never synchronises. Each restates its tilt
+ * through --tilt (the keyframe's transform would otherwise flatten it), and
+ * reduced motion switches the animation off, leaving the static tilts.
  */
 export function IntroSplit() {
   return (
@@ -119,16 +126,20 @@ export function IntroSplit() {
           aria-hidden="true"
           className="relative mx-auto hidden h-[26rem] w-full max-w-[24rem] lg:col-span-5 lg:block"
         >
-          <div className="absolute left-0 top-6 h-56 w-44 -rotate-6 rounded-[18px] bg-[linear-gradient(160deg,rgba(43,127,255,0.13),rgba(91,61,245,0.20))] shadow-[0_24px_60px_rgba(43,127,255,0.18)]" />
-          <div className="absolute right-2 top-0 h-64 w-48 rotate-3 rounded-[18px] bg-[linear-gradient(200deg,rgba(91,61,245,0.18),rgba(123,47,247,0.13))] shadow-[0_24px_60px_rgba(123,47,247,0.16)]" />
-          <div className="absolute bottom-0 left-1/2 h-52 w-56 -translate-x-1/2 rotate-1 rounded-[18px] border border-[var(--hairline)] bg-paper p-5 shadow-[0_30px_70px_rgba(18,19,26,0.10)]">
-            <span className="block h-2.5 w-2/3 rounded-full bg-[linear-gradient(90deg,#2B7FFF,#5B3DF5)]" />
-            <span className="mt-3 block h-1.5 w-full rounded-full bg-ink/10" />
-            <span className="mt-2 block h-1.5 w-4/5 rounded-full bg-ink/10" />
-            <span className="mt-2 block h-1.5 w-5/6 rounded-full bg-ink/10" />
-            <span className="mt-6 inline-block rounded-full bg-accent px-4 py-2 text-[0.6875rem] font-medium text-paper">
-              Qualified enquiry
-            </span>
+          <div className="absolute left-0 top-6 h-56 w-44 -rotate-6 rounded-[18px] bg-[linear-gradient(160deg,rgba(43,127,255,0.13),rgba(91,61,245,0.20))] shadow-[0_24px_60px_rgba(43,127,255,0.18)] [--tilt:-6deg] [animation:panel-float_10s_ease-in-out_infinite] motion-reduce:[animation:none]" />
+          <div className="absolute right-2 top-0 h-64 w-48 rotate-3 rounded-[18px] bg-[linear-gradient(200deg,rgba(91,61,245,0.18),rgba(123,47,247,0.13))] shadow-[0_24px_60px_rgba(123,47,247,0.16)] [--tilt:3deg] [animation:panel-float_12s_ease-in-out_-4s_infinite] motion-reduce:[animation:none]" />
+          {/* Centring lives on this wrapper so the float animation on the
+              card cannot overwrite the -translate-x-1/2. */}
+          <div className="absolute bottom-0 left-1/2 w-56 -translate-x-1/2">
+            <div className="h-52 rotate-1 rounded-[18px] border border-[var(--hairline)] bg-paper p-5 shadow-[0_30px_70px_rgba(18,19,26,0.10)] [--tilt:1deg] [animation:panel-float_11s_ease-in-out_-7s_infinite] motion-reduce:[animation:none]">
+              <span className="block h-2.5 w-2/3 rounded-full bg-[linear-gradient(90deg,#2B7FFF,#5B3DF5)]" />
+              <span className="mt-3 block h-1.5 w-full rounded-full bg-ink/10" />
+              <span className="mt-2 block h-1.5 w-4/5 rounded-full bg-ink/10" />
+              <span className="mt-2 block h-1.5 w-5/6 rounded-full bg-ink/10" />
+              <span className="mt-6 inline-block rounded-full bg-accent px-4 py-2 text-[0.6875rem] font-medium text-paper">
+                Qualified enquiry
+              </span>
+            </div>
           </div>
         </div>
 
@@ -166,14 +177,24 @@ export function IntroSplit() {
 }
 
 /**
- * "What makes us different", reference-style: the heading holds sticky on the
- * left while the four approved differentiators stack past it as substantial
- * cards. Pure CSS sticky, no observers, all content in the server render.
+ * "What makes us different" as a stacked deck: the heading holds sticky on
+ * the left with a numbered index of the four differentiators, and on the
+ * right each card is itself sticky at a slightly deeper offset than the one
+ * before, so scrolling slides every card up over the last like a settling
+ * deck. Pure CSS `position: sticky` — no scroll listeners, no hijacking, and
+ * on mobile (below lg) it degrades to a plain stacked list.
+ *
+ * The staggered offsets both create the deck's peeking edges and guarantee a
+ * card never fully hides the one beneath it while they overlap. Cards are
+ * opaque paper with a brand-gradient top rail, so the layered rails read as
+ * the deck's spine while covered.
  */
 export function DifferenceSticky() {
+  const count = difference.items.length;
+
   return (
     <section data-theme="paper" className="section bg-[var(--bg)]">
-      <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-x-[clamp(3rem,5vw,6rem)]">
+      <div className="shell grid gap-12 lg:grid-cols-12 lg:gap-x-[clamp(3rem,5vw,6rem)]">
         <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
           <RevealText>
             <p className="t-mono text-[var(--muted)]">{difference.eyebrow}</p>
@@ -182,32 +203,55 @@ export function DifferenceSticky() {
               <span className="text-accent">{difference.title.accent}</span>
             </h2>
           </RevealText>
+          <RevealText delay={0.08}>
+            {/* The deck's table of contents. Repeats the card titles, so it is
+                decorative for a screen reader — hidden from AT and from
+                mobile, where the cards sit right below anyway. */}
+            <ol aria-hidden="true" className="mt-10 hidden border-l border-[var(--hairline)] lg:block">
+              {difference.items.map((item, i) => (
+                <li
+                  key={item.title}
+                  className="flex items-baseline gap-3 py-2 pl-6 text-[0.9375rem] text-ink/60"
+                >
+                  <span className="t-mono text-accent">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  {item.title}
+                </li>
+              ))}
+            </ol>
+          </RevealText>
         </div>
 
-        <RevealGroup
-          as="ol"
-          className="flex flex-col gap-5 lg:col-span-7 lg:col-start-6"
-          stagger={0.07}
-          soft
-        >
+        <ol className="flex flex-col gap-6 lg:col-span-7 lg:col-start-6 lg:gap-10 lg:pb-16">
           {difference.items.map((item, i) => (
-            <RevealItem
-              as="li"
+            <li
               key={item.title}
-              className="rounded-[22px] border border-[var(--hairline)] bg-bone p-8 md:p-10"
+              className="lg:sticky"
+              style={{ top: `calc(6.5rem + ${i * 3.5}rem)` }}
             >
-              <p className="t-mono text-accent">
-                {String(i + 1).padStart(2, "0")}
-              </p>
-              <h3 className="t-display-md mt-4 text-[clamp(1.375rem,2vw,1.75rem)]">
-                {item.title}
-              </h3>
-              <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-[1.7] text-ink/75">
-                {item.body}
-              </p>
-            </RevealItem>
+              <article className="relative overflow-hidden rounded-[24px] border border-[var(--hairline)] bg-paper p-8 shadow-[0_28px_80px_rgba(18,19,26,0.12)] md:p-12">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-0 h-[3px] bg-[linear-gradient(90deg,#2B7FFF,#5B3DF5_50%,#7B2FF7)]"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -right-4 -top-8 select-none text-[10rem] font-medium leading-none tracking-[-0.04em] text-ink/[0.04]"
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p className="t-mono bg-[linear-gradient(92deg,#2B7FFF,#7B2FF7)] bg-clip-text text-transparent">
+                  {String(i + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
+                </p>
+                <h3 className="t-display-md mt-5 max-w-[20ch]">{item.title}</h3>
+                <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-[1.7] text-ink/75">
+                  {item.body}
+                </p>
+              </article>
+            </li>
           ))}
-        </RevealGroup>
+        </ol>
       </div>
     </section>
   );

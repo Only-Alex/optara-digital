@@ -256,13 +256,28 @@
   }
 }
 
-@keyframes hue-drift {
+/* The hero commitments ticker: the track holds two identical runs, so
+ * sliding exactly half its width loops seamlessly. New keyframe — the
+ * protected hero tokens above are untouched. */
+@keyframes hero-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Gentle levitation for the intro's floating panels. Each panel restates its
+ * static rotation through --tilt, because an animation's transform replaces
+ * the utility-class transform rather than composing with it. */
+@keyframes panel-float {
   0%,
   100% {
-    background-position: 0% 50%;
+    transform: translateY(0) rotate(var(--tilt, 0deg));
   }
   50% {
-    background-position: 100% 50%;
+    transform: translateY(-12px) rotate(var(--tilt, 0deg));
   }
 }
 
