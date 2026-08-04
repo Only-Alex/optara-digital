@@ -146,18 +146,22 @@ export function IntroSplit() {
         <div className="lg:col-span-6 lg:col-start-7">
           <RevealText>
             <p className="t-mono text-[var(--muted)]">Optara Digital</p>
-            <h2 className="t-display-lg mt-6 max-w-[18ch]">
-              Built for businesses that need{" "}
-              <span className="text-accent">enquiries, not exposure.</span>
+            {/* Reworded 2026-08-04 on instruction: the old line dismissed
+                exposure, and Optara sells both. Two balanced sentences —
+                exposure first, enquiries as the pay-off the accent lands on. */}
+            <h2 className="t-display-lg mt-6 max-w-[20ch]">
+              The exposure you want.{" "}
+              <span className="text-accent">The enquiries you need.</span>
             </h2>
           </RevealText>
           <RevealText delay={0.08}>
             <p className="t-body-lg mt-7 max-w-[52ch] text-ink/75">
-              We break growth into manageable phases and connect the
-              disciplines — brand, search, paid media, social, websites and
-              apps — so every channel reinforces the others instead of pulling
-              apart. Each engagement is measured against cost per qualified
-              lead, and when a channel cannot earn its keep, we say so.
+              We build visibility and demand together: brand, search, paid
+              media, social, websites and apps working as one connected
+              system, every channel amplifying the others. Growth moves in
+              clear, deliberate phases, every engagement is measured against
+              cost per qualified lead — and if a channel is not earning its
+              keep, we are the first to tell you.
             </p>
             <Link
               href="/about"
