@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { difference, servicesPage } from "@/lib/content";
+import { IntroSpatial } from "@/components/ui/IntroSpatial";
 import { RevealText } from "@/components/ui/RevealText";
 import { ServiceIcon } from "@/components/ui/ServiceIcon";
 import { CursorBubble } from "@/components/ui/CursorBubble";
@@ -108,39 +109,19 @@ export function ServicesSticky() {
 }
 
 /**
- * The split intro that follows the hero in the reference: floating tilted
- * panels left, copy right, one link out. Server component — the tilt is
- * static CSS transforms, and the panels are abstract brand shapes because no
- * client screenshots exist to float.
- *
- * The panels levitate on the shared panel-float keyframe, each on its own
- * period and phase so the drift never synchronises. Each restates its tilt
- * through --tilt (the keyframe's transform would otherwise flatten it), and
- * reduced motion switches the animation off, leaving the static tilts.
+ * The split intro that follows the hero in the reference: the 3D panel
+ * cluster left (IntroSpatial — pointer-tracked tilt, depth separation on
+ * hover, glare and ground shadow), copy right, one link out. The panels
+ * remain abstract brand shapes because no client screenshots exist to show.
  */
 export function IntroSplit() {
   return (
     <section data-theme="paper" className="section bg-[var(--bg)]">
       <div className="shell grid items-center gap-14 lg:grid-cols-12 lg:gap-x-[clamp(3rem,5vw,6rem)]">
-        <div
-          aria-hidden="true"
-          className="relative mx-auto hidden h-[26rem] w-full max-w-[24rem] lg:col-span-5 lg:block"
-        >
-          <div className="absolute left-0 top-6 h-56 w-44 -rotate-6 rounded-[18px] bg-[linear-gradient(160deg,rgba(43,127,255,0.13),rgba(91,61,245,0.20))] shadow-[0_24px_60px_rgba(43,127,255,0.18)] [--tilt:-6deg] [animation:panel-float_10s_ease-in-out_infinite] motion-reduce:[animation:none]" />
-          <div className="absolute right-2 top-0 h-64 w-48 rotate-3 rounded-[18px] bg-[linear-gradient(200deg,rgba(91,61,245,0.18),rgba(123,47,247,0.13))] shadow-[0_24px_60px_rgba(123,47,247,0.16)] [--tilt:3deg] [animation:panel-float_12s_ease-in-out_-4s_infinite] motion-reduce:[animation:none]" />
-          {/* Centring lives on this wrapper so the float animation on the
-              card cannot overwrite the -translate-x-1/2. */}
-          <div className="absolute bottom-0 left-1/2 w-56 -translate-x-1/2">
-            <div className="h-52 rotate-1 rounded-[18px] border border-[var(--hairline)] bg-paper p-5 shadow-[0_30px_70px_rgba(18,19,26,0.10)] [--tilt:1deg] [animation:panel-float_11s_ease-in-out_-7s_infinite] motion-reduce:[animation:none]">
-              <span className="block h-2.5 w-2/3 rounded-full bg-[linear-gradient(90deg,#2B7FFF,#5B3DF5)]" />
-              <span className="mt-3 block h-1.5 w-full rounded-full bg-ink/10" />
-              <span className="mt-2 block h-1.5 w-4/5 rounded-full bg-ink/10" />
-              <span className="mt-2 block h-1.5 w-5/6 rounded-full bg-ink/10" />
-              <span className="mt-6 inline-block rounded-full bg-accent px-4 py-2 text-[0.6875rem] font-medium text-paper">
-                Qualified enquiry
-              </span>
-            </div>
-          </div>
+        {/* Hidden below lg here as well as inside the component, so the
+            empty grid child cannot add a phantom row and double gap. */}
+        <div className="hidden lg:col-span-5 lg:block">
+          <IntroSpatial />
         </div>
 
         <div className="lg:col-span-6 lg:col-start-7">
