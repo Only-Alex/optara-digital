@@ -2,11 +2,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
 import { Hero } from "@/components/sections/Hero";
-import {
-  DifferenceSticky,
-  IntroSplit,
-  ServicesSticky,
-} from "@/components/sections/ServicesSticky";
+import { IntroSplit } from "@/components/sections/IntroSplit";
+import { ServicesSticky } from "@/components/sections/ServicesSticky";
+import { DifferenceSticky } from "@/components/sections/DifferenceSticky";
 import { ProcessPhases } from "@/components/sections/ProcessPhases";
 import { Faq } from "@/components/sections/Faq";
 import { Contact } from "@/components/sections/Contact";
