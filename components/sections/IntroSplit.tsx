@@ -11,15 +11,21 @@ import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 /**
  * The post-hero intro as an L2 spatial transition (Stage 2A).
  *
- * On a tall-enough desktop the section deepens to 130vh and its content
+ * On a tall-enough desktop the section deepens to 160vh and its content
  * pins on a sticky full-viewport stage while scroll drives two transforms:
- * the 3D panel cluster enters slightly lower and smaller, settles into its
- * normal plane through the pinned dwell, then drifts gently past as the
- * section exits; the copy translates a few pixels on the same curve. A flat
- * accent hairline draws downward late in the scene as the cue toward the
+ * the 3D panel cluster enters lower and smaller, settles into its normal
+ * plane, holds through the pinned dwell, then drifts gently past as the
+ * section exits; the copy translates on the same curve. A flat accent
+ * hairline draws downward during the settled phase as the cue toward the
  * services section. Transform-only per frame — opacity never gates the
  * copy, so everything is readable at every scroll position and without
  * JavaScript (the initial server render is the plain flow layout).
+ *
+ * Pacing (Stage 2A.1): with the 160vh stage the section traverses 260vh of
+ * scroll, so the sticky dwell occupies progress ≈0.385–0.615. The stops are
+ * placed so settling completes just before the pin begins and the exit
+ * starts just after it releases — the whole dwell is the breathing phase,
+ * with the cue drawing inside it and finishing before the exit.
  *
  * Scene gate: `(min-width: 1024px) and (min-height: 800px)` and motion not
  * reduced. Everything else — phones, tablets, short desktop viewports
@@ -67,10 +73,10 @@ export function IntroSplit() {
     offset: ["start end", "end start"],
   });
 
-  const clusterY = useTransform(scrollYProgress, [0, 0.35, 0.75, 1], [70, 0, 0, -44]);
-  const clusterScale = useTransform(scrollYProgress, [0, 0.35, 0.75, 1], [0.92, 1, 1, 1]);
-  const copyY = useTransform(scrollYProgress, [0, 0.35, 0.75, 1], [40, 0, 0, -20]);
-  const cueScale = useTransform(scrollYProgress, [0.55, 0.85], [0, 1]);
+  const clusterY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [95, 0, 0, -60]);
+  const clusterScale = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [0.9, 1, 1, 1.01]);
+  const copyY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [50, 0, 0, -26]);
+  const cueScale = useTransform(scrollYProgress, [0.44, 0.66], [0, 1]);
 
   /* The gate swaps whole style objects rather than gating each value: motion
      values bound directly in `style` is the documented, reliably-subscribed
@@ -85,7 +91,7 @@ export function IntroSplit() {
       data-theme="paper"
       className={
         enabled
-          ? "relative h-[130vh] bg-[var(--bg)] text-[var(--fg)]"
+          ? "relative h-[160vh] bg-[var(--bg)] text-[var(--fg)]"
           : "section bg-[var(--bg)]"
       }
     >
@@ -100,7 +106,14 @@ export function IntroSplit() {
           {/* Hidden below lg here as well as inside the component, so the
               empty grid child cannot add a phantom row and double gap. */}
           <motion.div className="hidden lg:col-span-5 lg:block" style={clusterStyle}>
-            <IntroSpatial />
+            {/* +12% presence on desktop (Stage 2A.1): a static wrapper scale,
+                separate from the motion wrapper so the scene's scale curve
+                composes with it instead of fighting it. Purely visual —
+                layout box unchanged, and the growth stays well inside the
+                column gap. */}
+            <div className="lg:scale-[1.12]">
+              <IntroSpatial />
+            </div>
           </motion.div>
 
           <motion.div className="lg:col-span-6 lg:col-start-7" style={copyStyle}>
