@@ -55,8 +55,18 @@ export function ServicesSticky() {
 
       <div className="shell relative pt-[var(--section-y)]">
         <StoryProvider>
-          <div className="[@media(min-width:1100px)_and_(min-height:680px)]:grid [@media(min-width:1100px)_and_(min-height:680px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:680px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
-            <div className="[@media(min-width:1100px)_and_(min-height:680px)]:col-span-4">
+          {/* The persistent visual layer (2C.3A): a full-viewport sticky
+              host spanning the ENTIRE experience — no right-hand media
+              column, no contained stage. Breaks out of the shell on both
+              sides; the negative bottom margin returns its layout height,
+              so the copy grid scrolls over the canvas. pointer-events-none
+              keeps every link above it live. */}
+          <div className="pointer-events-none sticky top-0 z-0 hidden h-svh [@media(min-width:1100px)_and_(min-height:680px)]:mb-[-100svh] [@media(min-width:1100px)_and_(min-height:680px)]:ml-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:block">
+            <ServiceStage names={services.map((s) => s.name)} />
+          </div>
+
+          <div className="relative z-10 [@media(min-width:1100px)_and_(min-height:680px)]:grid [@media(min-width:1100px)_and_(min-height:680px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:680px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
+            <div className="[@media(min-width:1100px)_and_(min-height:680px)]:col-span-5">
               <StoryCopy />
 
               <ol data-service-chapters className="flex flex-col">
@@ -130,11 +140,6 @@ export function ServicesSticky() {
               </ol>
             </div>
 
-            {/* The one persistent stage, breaking out of the shell to the
-                viewport's right edge for the whole run. */}
-            <div className="hidden [@media(min-width:1100px)_and_(min-height:680px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:680px)]:block [@media(min-width:1100px)_and_(min-height:680px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))]">
-              <ServiceStage names={services.map((s) => s.name)} />
-            </div>
           </div>
         </StoryProvider>
       </div>

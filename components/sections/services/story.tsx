@@ -66,6 +66,28 @@ export function useStoryProgress() {
   });
 }
 
+/**
+ * The 2C.3A prototype clock: 0..1 across Intro → Branding → SEO entry.
+ * 0 at the top of the experience, 0.5 as Branding's chapter centres
+ * (stateFloat 1 — the resolved lattice), 1 at the SEO chapter's centre
+ * (stateFloat 2 — pathways established). Derived from the same combined
+ * progress and measured bands as everything else: one canonical clock,
+ * every consumer, both scroll directions.
+ */
+export function useProtoProgress() {
+  const { combined, bands } = useStory();
+  const bandsRef = useRef(bands);
+  bandsRef.current = bands;
+  return useTransform(() => {
+    const b = bandsRef.current;
+    const p = combined ? combined.get() : 0;
+    if (!b) return 0;
+    const end = b.firstCenterP + b.chapterFrac;
+    if (end <= 0) return 0;
+    return Math.min(1, Math.max(0, p / end));
+  });
+}
+
 function useImmersiveGate() {
   const reduced = useReducedMotion();
   const [roomy, setRoomy] = useState(false);

@@ -2,35 +2,34 @@
 
 import { useRef, useState } from "react";
 import { motion, useMotionValueEvent, useTransform } from "motion/react";
-import { SERVICE_SCENES } from "@/components/sections/services/scenes";
-import { ServiceMedia } from "@/components/sections/services/ServiceMedia";
-import { useStory, useStoryProgress } from "@/components/sections/services/story";
+import { OptaraSystem3D } from "@/components/sections/services/OptaraSystem3D";
+import { BrandingScene } from "@/components/sections/services/scenes";
+import {
+  useProtoProgress,
+  useStory,
+} from "@/components/sections/services/story";
 
 /**
- * The one persistent visual stage for the continuous Intro → Branding →
- * Services experience (Stage 2C.2).
+ * The visual layer of the continuous experience (Stage 2C.3A): a
+ * full-viewport sticky host for the persistent Three.js protagonist, no
+ * longer a right-hand media column. The canvas is transparent over the
+ * page's own tonal story (paper ramping into bone), carries no border,
+ * radius, card or frame, and sits beneath the typography layer — the
+ * object system is the centre of the experience and the copy orbits it.
  *
- * There is exactly one stage for the whole run. It pins at the top of the
- * experience and stays anchored while its CONTENT evolves through three
- * states, all derived from the StoryProvider's single combined progress:
+ * This layer keeps only one piece of HTML UI: the 01–06 progress rail,
+ * fading in as Branding resolves (the transitional chapter identity in
+ * StoryCopy is the single visible heading during the handoff, so the old
+ * top-right text label is gone — one chapter identity at a time).
  *
- * 1. STORY FIELD (intro established → system deepens): a deliberately
- *    simple placeholder of depth planes, identity fragments and the
- *    recurring signal line — infrastructure for the future art-directed
- *    Higgsfield intro media, not final art. A camera-push (differential
- *    scale per depth) makes the page feel like it travels into the scene;
- *    fragments converge toward the point where Branding resolves.
- * 2. REVEAL (discipline reveal → Branding resolution): the field dissolves
- *    while the chapter stack — Branding media on top — fades up in place.
- *    Same stage, same geometry; content transforms, nothing swaps boxes.
- * 3. CHAPTERS (Branding established → SEO and beyond): the existing
- *    scene-crossfade system continues exactly as approved in 2B/2C.1,
- *    driven by measured chapter bands from the same combined progress.
+ * Active-chapter tracking is unchanged from the approved architecture:
+ * the provider's combined progress against measured chapter bands.
  *
- * Reversibility: every state is a pure function of scroll position (ramps
- * clamp and hold), so scrolling backwards replays the sequence exactly.
- * The reveal ramp sits on an outer layer; the chapter crossfade on inner
- * layers — they compose without fighting.
+ * Under reduced motion (or below the gate on a window that still matches
+ * the CSS variant) the Three system never mounts; a static resolved
+ * scene stands in so the layer is never an empty void. The provisional
+ * Branding MP4 is disabled from this desktop prototype — the files stay
+ * in /public for later use.
  */
 export function ServiceStage({ names }: { names: string[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -53,157 +52,46 @@ export function ServiceStage({ names }: { names: string[] }) {
     }
   });
 
-  /* The shared story progress — same hook, same value as StoryCopy. */
-  const storyP = useStoryProgress();
-
-  /* 2C.2A phase timings. Imagery may overlap modestly (field out
-     0.54–0.64, media in 0.58–0.70); large typography must not — chapter
-     UI waits until Branding has mostly resolved (0.68–0.76). Every ramp
-     clamps and holds, so reverse replays the exact sequence. */
-  const revealOpacity = useTransform(storyP, [0.58, 0.7], [0, 1]);
-  const fieldOpacity = useTransform(storyP, [0, 0.54, 0.64], [1, 1, 0]);
-  const uiOpacity = useTransform(storyP, [0.68, 0.76], [0, 1]);
-
-  /* Camera push: depth planes scale at different rates so the page reads
-     as moving through the scene; during the handoff the whole field also
-     draws toward the media's focal centre instead of fading in place. */
-  const zoomBack = useTransform(storyP, [0, 0.64], [1, 1.18]);
-  const zoomMid = useTransform(storyP, [0, 0.64], [1, 1.34]);
-  const zoomNear = useTransform(storyP, [0, 0.64], [1, 1.75]);
-  const convergeX = useTransform(storyP, [0.42, 0.62], [0, -60]);
-  const convergeY = useTransform(storyP, [0.42, 0.62], [0, 34]);
-  const fieldScale = useTransform(storyP, [0.42, 0.64], [1, 1.1]);
-  const fieldX = useTransform(storyP, [0.42, 0.64], [0, -20]);
-  const fieldDriftY = useTransform(storyP, [0.42, 0.64], [0, 10]);
-  /* Peripheral fragments retire first, leaving the plate and signal to
-     carry the final moment of the field. */
-  const fragOpacity = useTransform(storyP, [0.44, 0.58], [1, 0]);
-  /* Hoisted (never conditional): hooks must not live inside the
-     enabled-gated JSX branch. */
-  const convergeXInv = useTransform(convergeX, (v) => -v);
-  const convergeYInv = useTransform(convergeY, (v) => -v);
-
-  /* Chapter-run depth: token scale/lift. Never above 1 — the stage's right
-     edge sits on the viewport edge, so any overscale leaks scrollWidth. */
-  const depthScale = useTransform(combined!, [0, 0.5, 1], [0.985, 1, 1]);
-  const depthY = useTransform(combined!, [0, 0.5, 1], [10, 0, -8]);
+  const protoP = useProtoProgress();
+  /* Rail emerges once Branding has essentially resolved (stateFloat ≈1 is
+     protoP 0.5) and stays for the chapter run. */
+  const railOpacity = useTransform(protoP, [0.46, 0.56], [0, 1]);
 
   return (
-    <div ref={rootRef} aria-hidden="true" className="h-full">
-      <div data-service-stage className="sticky top-[6.5rem]">
-        <motion.div
-          style={enabled ? { scale: depthScale, y: depthY } : undefined}
-          className="relative h-[calc(100svh-7.5rem)] overflow-hidden"
-        >
-          {/* Directional masks: strongest dissolve on the left where the
-              typography sits; the right edge stays solid so the world
-              continues past the viewport. */}
-          <div className="absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_14%)]">
-            <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_6%,black_94%,transparent)]">
-              {/* STATE 3 — the chapter stack, revealed once Branding
-                  resolves and persistent from then on. */}
-              <motion.div
-                className="absolute inset-0"
-                style={enabled ? { opacity: revealOpacity } : undefined}
-              >
-                {SERVICE_SCENES.map((Scene, i) => (
-                  <div
-                    key={i}
-                    className={`absolute inset-0 transition-[opacity,transform] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
-                      i === active
-                        ? "translate-y-0 scale-100 opacity-100"
-                        : i < active
-                          ? "-translate-y-4 scale-[1.015] opacity-0"
-                          : "translate-y-5 scale-[0.985] opacity-0"
-                    }`}
-                  >
-                    {i === 0 && enabled ? (
-                      <ServiceMedia
-                        src="/media/services/branding.mp4"
-                        poster="/media/services/branding-poster.jpg"
-                      />
-                    ) : (
-                      <Scene />
-                    )}
-                  </div>
-                ))}
-              </motion.div>
-
-              {/* STATES 1–2 — the story field. Placeholder infrastructure
-                  for the future intro media: depth planes, fragments, the
-                  recurring signal. Dissolves into the reveal. */}
-              {enabled ? (
-                <motion.div
-                  className="absolute inset-0"
-                  style={{ opacity: fieldOpacity, scale: fieldScale, x: fieldX, y: fieldDriftY }}
-                >
-                  <motion.div
-                    className="absolute left-[6%] top-[10%] h-[64%] w-[58%] rounded-[20px] border border-[var(--hairline)] bg-paper/60 shadow-[0_28px_80px_rgba(18,19,26,0.06)]"
-                    style={{ scale: zoomBack }}
-                  />
-                  <motion.svg
-                    viewBox="0 0 900 640"
-                    className="absolute inset-0 h-full w-full"
-                    style={{ scale: zoomMid }}
-                  >
-                    <line x1="60" y1="520" x2="840" y2="520" stroke="rgba(18,19,26,0.14)" />
-                    <g className="text-accent">
-                      <path
-                        d="M40 330 C 240 330 420 290 560 300 S 780 330 800 330"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        opacity="0.7"
-                      />
-                      <circle cx="800" cy="330" r="18" fill="none" stroke="currentColor" opacity="0.4" />
-                      <circle cx="800" cy="330" r="5.5" fill="currentColor" />
-                    </g>
-                  </motion.svg>
-                  <motion.div
-                    className="absolute right-[16%] top-[18%] h-16 w-16 rounded-full border border-accent/50"
-                    style={{ scale: zoomNear, x: convergeX, y: convergeY, opacity: fragOpacity }}
-                  />
-                  <motion.div
-                    className="absolute left-[24%] bottom-[18%] h-3 w-3 bg-accent"
-                    style={{ scale: zoomNear, x: convergeXInv, y: convergeYInv, opacity: fragOpacity }}
-                  />
-                  <motion.div
-                    className="absolute left-[46%] top-[6%] h-16 w-px bg-[var(--hairline)]"
-                    style={{ scale: zoomMid, opacity: fragOpacity }}
-                  />
-                </motion.div>
-              ) : null}
-            </div>
+    <div ref={rootRef} aria-hidden="true" className="relative h-svh w-full">
+      {/* The protagonist. Transparent canvas, no frame. */}
+      <div className="absolute inset-0">
+        {enabled ? (
+          <OptaraSystem3D />
+        ) : (
+          /* Static resolved representation for reduced-motion desktops
+             whose window still matches the immersive CSS variant. */
+          <div className="mx-auto h-full w-full max-w-[64rem] pt-24 text-accent">
+            <BrandingScene />
           </div>
+        )}
+      </div>
 
-          {/* Chapter UI: waits until Branding has mostly resolved, so the
-              stage reads story-world → chapter-world, never both. */}
-          <motion.div style={enabled ? { opacity: uiOpacity } : undefined}>
-            <motion.p
-              key={active}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="t-mono absolute right-6 top-3 text-ink/55"
-            >
-              {String(active + 1).padStart(2, "0")} — {names[active]}
-            </motion.p>
-            <div className="absolute bottom-2 left-2 flex items-center gap-4">
-              <p className="t-mono text-ink/60">
-                {String(active + 1).padStart(2, "0")} / {String(names.length).padStart(2, "0")}
-              </p>
-              <div className="flex items-center gap-1.5">
-                {names.map((name, i) => (
-                  <span
-                    key={name}
-                    className={`h-1 rounded-full transition-all duration-300 motion-reduce:transition-none ${
-                      i === active ? "w-6 bg-accent" : "w-2.5 bg-ink/15"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </motion.div>
+      {/* Progress rail, aligned to the shell so it sits under the copy
+          column, clear of the floating Speak bubble bottom-right. */}
+      <div className="shell relative h-full">
+        <motion.div
+          className="absolute bottom-8 left-[var(--gutter)] flex items-center gap-4"
+          style={enabled ? { opacity: railOpacity } : undefined}
+        >
+          <p className="t-mono text-ink/60">
+            {String(active + 1).padStart(2, "0")} / {String(names.length).padStart(2, "0")}
+          </p>
+          <div className="flex items-center gap-1.5">
+            {names.map((name, i) => (
+              <span
+                key={name}
+                className={`h-1 rounded-full transition-all duration-300 motion-reduce:transition-none ${
+                  i === active ? "w-6 bg-accent" : "w-2.5 bg-ink/15"
+                }`}
+              />
+            ))}
+          </div>
         </motion.div>
       </div>
     </div>
