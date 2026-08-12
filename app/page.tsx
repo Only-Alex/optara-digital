@@ -2,7 +2,6 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Cursor } from "@/components/layout/Cursor";
 import { Hero } from "@/components/sections/Hero";
-import { IntroSplit } from "@/components/sections/IntroSplit";
 import { ServicesSticky } from "@/components/sections/ServicesSticky";
 import { DifferenceSticky } from "@/components/sections/DifferenceSticky";
 import { ProcessPhases } from "@/components/sections/ProcessPhases";
@@ -84,7 +83,9 @@ export default function Home() {
       <Header />
       <main id="main" tabIndex={-1} className="scroll-mt-24 outline-none">
         <Hero />
-        <IntroSplit />
+        {/* Stage 2C.2: the intro is no longer a separate section — the
+            continuous Intro → Branding → Services experience lives inside
+            ServicesSticky (IntroSplit.tsx stays on disk, unused). */}
         <ServicesSticky />
         <DifferenceSticky />
         <ProcessPhases />
