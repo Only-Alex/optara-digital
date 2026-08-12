@@ -7,6 +7,7 @@ import { BrandingScene } from "@/components/sections/services/scenes";
 import {
   useProtoProgress,
   useStory,
+  useTonalColors,
 } from "@/components/sections/services/story";
 
 /**
@@ -56,9 +57,16 @@ export function ServiceStage({ names }: { names: string[] }) {
   /* Rail emerges once Branding has essentially resolved (stateFloat ≈1 is
      protoP 0.5) and stays for the chapter run. */
   const railOpacity = useTransform(protoP, [0.46, 0.56], [0, 1]);
+  const { bg, fg, accentFg } = useTonalColors();
 
   return (
-    <div ref={rootRef} aria-hidden="true" className="relative h-svh w-full">
+    <div ref={rootRef} data-service-stage aria-hidden="true" className="relative h-svh w-full">
+      {/* The tonal ground: one flat cinematic passage (paper → graphite
+          at Branding → bone toward SEO) on the same canonical clock. */}
+      {enabled ? (
+        <motion.div className="absolute inset-0" style={{ backgroundColor: bg }} />
+      ) : null}
+
       {/* The protagonist. Transparent canvas, no frame. */}
       <div className="absolute inset-0">
         {enabled ? (
@@ -77,20 +85,26 @@ export function ServiceStage({ names }: { names: string[] }) {
       <div className="shell relative h-full">
         <motion.div
           className="absolute bottom-8 left-[var(--gutter)] flex items-center gap-4"
-          style={enabled ? { opacity: railOpacity } : undefined}
+          style={enabled ? { opacity: railOpacity, color: fg } : undefined}
         >
-          <p className="t-mono text-ink/60">
+          <p className="t-mono text-current opacity-70">
             {String(active + 1).padStart(2, "0")} / {String(names.length).padStart(2, "0")}
           </p>
           <div className="flex items-center gap-1.5">
-            {names.map((name, i) => (
-              <span
-                key={name}
-                className={`h-1 rounded-full transition-all duration-300 motion-reduce:transition-none ${
-                  i === active ? "w-6 bg-accent" : "w-2.5 bg-ink/15"
-                }`}
-              />
-            ))}
+            {names.map((name, i) =>
+              i === active ? (
+                <motion.span
+                  key={name}
+                  className="h-1 w-6 rounded-full bg-accent"
+                  style={enabled ? { backgroundColor: accentFg } : undefined}
+                />
+              ) : (
+                <span
+                  key={name}
+                  className="h-1 w-2.5 rounded-full bg-current opacity-25"
+                />
+              ),
+            )}
           </div>
         </motion.div>
       </div>

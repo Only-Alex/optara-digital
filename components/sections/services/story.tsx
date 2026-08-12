@@ -88,6 +88,35 @@ export function useProtoProgress() {
   });
 }
 
+/**
+ * The tonal story (2C.3B): one deliberate cinematic passage on the same
+ * canonical clock. Paper through the intro, deepening to near-black
+ * graphite as Branding resolves (the object's hero still sits on the
+ * dark ground), opening back to bone as the system unfolds toward SEO —
+ * where the section's own bone ground takes over, so the sticky release
+ * is seamless. Flat colours only; foreground and accent flip in lockstep
+ * so typography stays legible at every progress value, both directions.
+ */
+export function useTonalColors() {
+  const p = useProtoProgress();
+  const bg = useTransform(
+    p,
+    [0, 0.34, 0.44, 0.56, 0.68, 1],
+    ["#F6F4EF", "#F6F4EF", "#191B21", "#191B21", "#EFECE4", "#EFECE4"],
+  );
+  const fg = useTransform(
+    p,
+    [0, 0.36, 0.44, 0.58, 0.66, 1],
+    ["#12131A", "#12131A", "#F7F6F2", "#F7F6F2", "#12131A", "#12131A"],
+  );
+  const accentFg = useTransform(
+    p,
+    [0, 0.36, 0.44, 0.58, 0.66, 1],
+    ["#5B3DF5", "#5B3DF5", "#8E7BFF", "#8E7BFF", "#5B3DF5", "#5B3DF5"],
+  );
+  return { bg, fg, accentFg };
+}
+
 function useImmersiveGate() {
   const reduced = useReducedMotion();
   const [roomy, setRoomy] = useState(false);
@@ -168,6 +197,7 @@ const INTRO_COPY =
 export function StoryCopy() {
   const { enabled } = useStory();
   const regionRef = useRef<HTMLDivElement>(null);
+  const { fg, accentFg } = useTonalColors();
 
   /* Shared story progress from the provider — the same value the stage
      consumes. Four phases (2C.2A): A intro 0–0.42 · B departure
@@ -191,9 +221,12 @@ export function StoryCopy() {
   const markWordOpacity = useTransform(p, [0.62, 0.68, 0.84, 0.92], [0, 1, 1, 0]);
   const chapterMarkY = useTransform(p, [0.58, 0.7], [24, 0]);
 
+  /* Colours ride the tonal story (text-current inherits the motion fg on
+     the root; accent pieces take the AA-safe accent for the current
+     ground). The flow fallback renders the same markup with static ink. */
   const copyBlock = (
     <>
-      <p className="t-mono flex items-center gap-3 text-[var(--muted)]">
+      <p className="t-mono flex items-center gap-3 text-current opacity-60">
         <span aria-hidden="true" className="h-px w-10 bg-accent" />
         Optara Digital
       </p>
@@ -203,34 +236,41 @@ export function StoryCopy() {
         style={enabled ? { y: headlineY, opacity: headlineOpacity } : undefined}
       >
         The exposure you want.{" "}
-        <span className="text-accent">The enquiries you need.</span>
+        <motion.span style={enabled ? { color: accentFg } : undefined} className="text-accent">
+          The enquiries you need.
+        </motion.span>
       </motion.h2>
       <motion.div
         style={enabled ? { y: supportY, opacity: supportOpacity } : undefined}
       >
-        <p className="mt-7 max-w-[36ch] text-[0.9375rem] leading-[1.8] text-ink/60">
+        <p className="mt-7 max-w-[36ch] text-[0.9375rem] leading-[1.8] text-current opacity-70">
           {INTRO_COPY}
         </p>
         <Link
           href="/about"
           className="group mt-7 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent"
         >
-          How we work
-          <ArrowIcon
-            aria-hidden="true"
-            className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
-          />
+          <motion.span
+            style={enabled ? { color: accentFg } : undefined}
+            className="inline-flex items-center gap-2"
+          >
+            How we work
+            <ArrowIcon
+              aria-hidden="true"
+              className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
+            />
+          </motion.span>
         </Link>
       </motion.div>
 
       {/* The six-disciplines statement, reduced to a transitional cue —
           the real section heading, no longer a full-screen stop. */}
       <motion.div
-        className="mt-10 border-l border-[var(--hairline)] pl-5"
+        className="mt-10 border-l border-current/20 pl-5"
         style={enabled ? { opacity: cueOpacity } : undefined}
       >
-        <h2 className="t-mono text-[var(--muted)]">The six disciplines</h2>
-        <p className="mt-2 text-[0.9375rem] text-ink/60">
+        <h2 className="t-mono text-current opacity-60">The six disciplines</h2>
+        <p className="mt-2 text-[0.9375rem] text-current opacity-70">
           One connected system for growth.
         </p>
       </motion.div>
@@ -246,8 +286,11 @@ export function StoryCopy() {
   }
 
   return (
-    <div ref={regionRef} data-story-region className="relative h-[230vh]">
-      <div className="sticky top-0 flex h-svh flex-col justify-center">
+    <div ref={regionRef} data-story-region className="relative h-[200vh]">
+      <motion.div
+        className="sticky top-0 flex h-svh flex-col justify-center"
+        style={{ color: fg }}
+      >
         {copyBlock}
 
         {/* The transitional chapter identity: decorative overlap typography
@@ -259,7 +302,10 @@ export function StoryCopy() {
           className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
           style={{ y: chapterMarkY }}
         >
-          <motion.p className="t-mono text-accent" style={{ opacity: markIndexOpacity }}>
+          <motion.p
+            className="t-mono"
+            style={{ opacity: markIndexOpacity, color: accentFg }}
+          >
             01 / 06
           </motion.p>
           <motion.p
@@ -269,7 +315,7 @@ export function StoryCopy() {
             Branding
           </motion.p>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }

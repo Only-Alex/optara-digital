@@ -1,34 +1,43 @@
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 
 /**
- * The Optara object system (Stage 2C.3A prototype) — one persistent
- * modular 3D protagonist that transforms between three story states:
+ * THE OPTARA CORE (Stage 2C.3B) — one persistent, art-directed 3D
+ * protagonist. Not scaffolding, not a diagram: a compact sculptural
+ * object with mass, a centre of gravity and a recognisable silhouette,
+ * built from a small manufactured vocabulary:
  *
- *   STATE 0 — INTRO: pieces of one system, not yet aligned. Real depth,
- *   deliberate near/far placement, small rotations, unresolved spacing.
- *   STATE 1 — BRANDING: the same modules resolve into a disciplined
- *   modular lattice with one aperture motif and one clean signal route —
- *   coherent identity, no letters, no logo.
- *   STATE 2 — SEO ENTRY: the lattice remains the source while outer
- *   modules branch outward into structured discovery pathways with
- *   destination nodes.
+ *   · four large rounded ceramic plates (the mass)
+ *   · one thick graphite aperture ring (the core — structural focus,
+ *     framed off-axis against a plate so it never reads as an eye)
+ *   · one ceramic hub plate behind the ring
+ *   · two graphite mid plates, two translucent optical slabs
+ *   · three short capsule rails, two rounded connectors
+ *   · one cobalt signal capsule with a violet terminal
  *
- * Deterministic by construction: every module stores target transforms
- * per state; the single normalized progress maps to stateFloat = p * 2,
- * and each frame lerps position/rotation/scale between the two
- * neighbouring states with an eased local fraction. Same progress ⇒ same
- * geometry ⇒ same frame, forwards or backwards. Nothing animates after
- * scroll stops except the sub-degree pointer-parallax settle.
+ * 16 primary modules. Every module stores deterministic transforms for
+ * three states around the same centre-right anchor (world x ≈ +1.6, so
+ * the projected object stays clear of the left text column):
  *
- * Module vocabulary (32 modules — no generic cube protagonist): bone
- * ceramic slabs, graphite precision bars, plates, near-black connectors,
- * translucent optical rails, two aperture rings, cobalt signal bars and
- * one violet terminal. Shared geometries, six flat materials, no
- * textures, no shadow maps, no postprocessing — prototype economics.
+ *   INTRO — the same object, not yet aligned: modest separations, small
+ *   rotations, ring slightly off-axis, signal short. One system before
+ *   alignment — never debris.
+ *   BRANDING — the hero still: plates lock into an equal-rhythm 2×2
+ *   composition around the framed core, optical slabs come parallel,
+ *   rails bind the edges, the signal completes through the aperture.
+ *   SEO — the resolved object OPENS: two plates translate outward, the
+ *   optical rails extend into two structured branches, destination
+ *   forms appear, the signal travels to the far terminal. The core
+ *   remains the source.
  *
- * The renderer is transparent and renders on demand (progress or
- * parallax deltas) while running; setRunning(false) parks the loop.
- * destroy() disposes geometries, materials, renderer and listeners.
+ * stateFloat = progress × 2, eased local fraction, pure lerp — same
+ * progress, same geometry, both directions, nothing animates after
+ * scroll stops. Camera is three product-film poses on the same clock.
+ *
+ * Materials: five disciplined PBR surfaces lit by a hemisphere + key +
+ * rim and Three's self-contained RoomEnvironment via PMREMGenerator
+ * (generated at runtime — no HDR download, no textures). No bloom, no
+ * postprocessing, no shadow maps, DPR ≤ 1.75.
  */
 
 export type OptaraSystemHandle = {
@@ -38,226 +47,225 @@ export type OptaraSystemHandle = {
   destroy(): void;
 };
 
-/* Deterministic PRNG so the "scattered" intro is the same scatter on
-   every load, every machine. */
-function mulberry32(seed: number) {
-  let a = seed >>> 0;
-  return () => {
-    a |= 0;
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-type StateTransform = {
-  p: [number, number, number];
-  r: [number, number, number];
-  s: number;
-};
-type ModuleSpec = {
-  geo: "slab" | "bar" | "plate" | "connector" | "rail" | "ring" | "signal";
-  mat: "bone" | "graphite" | "black" | "optical" | "cobalt" | "violet";
-  states: [StateTransform, StateTransform, StateTransform];
+type S = { p: [number, number, number]; r: [number, number, number]; s: number };
+type Mod = {
+  geo: "plateL" | "plateM" | "hub" | "ring" | "optic" | "rail" | "conn" | "signal" | "terminal";
+  mat: "ceramic" | "graphite" | "black" | "optical" | "cobalt" | "violet";
+  states: [S, S, S];
 };
 
-/** Build the 32-module choreography table. */
-function buildModules(): ModuleSpec[] {
-  const rand = mulberry32(20260812);
-  const scatter = (bias: number): [number, number, number] => [
-    -3.2 + rand() * 7.4 + bias,
-    -1.9 + rand() * 4.0,
-    -3.4 + rand() * 4.6,
-  ];
-  const rot = (a: number): [number, number, number] => [
-    (rand() - 0.5) * a,
-    (rand() - 0.5) * a,
-    (rand() - 0.5) * a,
-  ];
-  const mods: ModuleSpec[] = [];
+/* The anchor the whole object lives around — right of the text column. */
+const AX = 1.6;
 
-  /* 10 slabs → the lattice's two columns of five. */
-  for (let i = 0; i < 10; i++) {
-    const col = i % 2 === 0 ? -1.05 : 1.05;
-    const row = -1.2 + Math.floor(i / 2) * 0.6;
-    const branchA = i % 3 === 0;
-    mods.push({
-      geo: "slab",
-      mat: "bone",
-      states: [
-        { p: scatter(0.6), r: rot(0.8), s: 1 },
-        { p: [col + 0.45, row, 0], r: [0, 0, 0], s: 1 },
-        branchA
-          ? { p: [col * 0.75 + 0.45, row, 0], r: [0, 0, 0], s: 1 }
-          : { p: [col + 0.45, row, 0], r: [0, 0, 0], s: 0.92 },
-      ],
-    });
-  }
+function buildModules(): Mod[] {
+  const m: Mod[] = [];
 
-  /* 6 bars → lattice rails, then radiating pathways. */
-  const branchAngles = [0.32, 0.85, -0.28, 2.6, 3.5, -0.75];
-  for (let i = 0; i < 6; i++) {
-    const horizontal = i < 3;
-    const latticeP: [number, number, number] = horizontal
-      ? [0.45, -1.55 + i * 1.55, 0.1]
-      : [-2.0 + (i - 3) * 2.45 + 0.45, 0, 0.1];
-    const latticeR: [number, number, number] = horizontal
-      ? [0, 0, 0]
-      : [0, 0, Math.PI / 2];
-    const a = branchAngles[i];
-    mods.push({
-      geo: "bar",
-      mat: "graphite",
-      states: [
-        { p: scatter(0.4), r: rot(1.0), s: 1 },
-        { p: latticeP, r: latticeR, s: 1 },
-        {
-          p: [0.45 + Math.cos(a) * 2.9, Math.sin(a) * 1.8, 0.1],
-          r: [0, 0, Math.atan2(Math.sin(a) * 1.8, Math.cos(a) * 2.9)],
-          s: 1.08,
-        },
-      ],
-    });
-  }
-
-  /* 4 plates → lattice corner accents, then destination nodes. */
-  const plateCorners: [number, number, number][] = [
-    [-1.9, 1.45, 0.3],
-    [2.8, 1.45, 0.3],
-    [-1.9, -1.45, 0.3],
-    [2.8, -1.45, 0.3],
+  /* Four large ceramic plates: Branding = equal-rhythm 2×2 around the
+     core; Intro = modestly separated/tilted; SEO = right pair opens. */
+  const platesB: [number, number, number][] = [
+    [AX - 1.25, 0.95, -0.25],
+    [AX + 1.25, 0.95, -0.25],
+    [AX - 1.25, -0.95, -0.25],
+    [AX + 1.25, -0.95, -0.25],
   ];
-  const dest = [
-    [4.2, 1.35, 0.2],
-    [4.5, -0.6, 0.1],
-    [-3.1, 1.7, -0.2],
-    [-3.4, -1.5, 0],
-  ] as [number, number, number][];
+  const platesI: S[] = [
+    { p: [AX - 1.7, 1.35, -1.3], r: [0.16, -0.22, -0.1], s: 1 },
+    { p: [AX + 1.5, 1.15, 0.6], r: [-0.12, 0.18, 0.08], s: 1 },
+    { p: [AX - 1.45, -1.3, 0.45], r: [0.1, 0.14, 0.12], s: 1 },
+    { p: [AX + 1.75, -1.15, -1.05], r: [-0.14, -0.12, -0.06], s: 1 },
+  ];
+  const platesSeo: S[] = [
+    { p: [AX - 1.25, 0.95, -0.25], r: [0, 0, 0], s: 1 },
+    { p: [AX + 2.35, 1.35, -0.15], r: [0, 0.12, 0], s: 0.92 },
+    { p: [AX - 1.25, -0.95, -0.25], r: [0, 0, 0], s: 1 },
+    { p: [AX + 2.55, -1.25, -0.2], r: [0, 0.14, 0], s: 0.92 },
+  ];
   for (let i = 0; i < 4; i++) {
-    mods.push({
-      geo: "plate",
-      mat: "bone",
-      states: [
-        { p: scatter(0.2), r: rot(0.9), s: 1 },
-        { p: plateCorners[i], r: [Math.PI / 2, 0, 0], s: 1 },
-        { p: dest[i], r: [Math.PI / 2, 0, 0], s: 0.72 },
-      ],
+    m.push({
+      geo: "plateL",
+      mat: "ceramic",
+      states: [platesI[i], { p: platesB[i], r: [0, 0, 0], s: 1 }, platesSeo[i]],
     });
   }
 
-  /* 4 connectors → lattice joints, then mid-path nodes. */
-  const joints: [number, number, number][] = [
-    [-2.0, 1.55, 0.1],
-    [2.9, 1.55, 0.1],
-    [-2.0, -1.55, 0.1],
-    [2.9, -1.55, 0.1],
-  ];
-  const mid = [
-    [2.6, 0.85, 0.15],
-    [3.4, -0.35, 0.1],
-    [-2.2, 1.05, -0.1],
-    [-2.5, -0.95, 0],
-  ] as [number, number, number][];
-  for (let i = 0; i < 4; i++) {
-    mods.push({
-      geo: "connector",
-      mat: "black",
-      states: [
-        { p: scatter(0), r: rot(1.2), s: 1 },
-        { p: joints[i], r: [0, 0, 0], s: 1 },
-        { p: mid[i], r: [0, Math.PI / 4, 0], s: 1.15 },
-      ],
-    });
-  }
-
-  /* 4 optical rails → front verticals, then aligned along two branches. */
-  for (let i = 0; i < 4; i++) {
-    mods.push({
-      geo: "rail",
-      mat: "optical",
-      states: [
-        { p: scatter(0.8), r: rot(0.7), s: 1 },
-        { p: [-1.3 + i * 1.15, 0.15, 0.55], r: [0, 0, Math.PI / 2], s: 1 },
-        i < 2
-          ? { p: [1.9 + i * 1.0, 0.62 + i * 0.3, 0.35], r: [0, 0, 0.32], s: 1 }
-          : { p: [-1.7 - (i - 2) * 0.9, 0.9, 0.2], r: [0, 0, 2.6], s: 0.9 },
-      ],
-    });
-  }
-
-  /* 2 aperture rings: graphite source ring stays central; the accent ring
-     travels to the strongest destination. */
-  mods.push({
+  /* The core: thick graphite aperture ring, framed off-axis. */
+  m.push({
     geo: "ring",
     mat: "graphite",
     states: [
-      { p: [2.6, 1.6, -1.2], r: [0.4, 0.5, 0], s: 0.9 },
-      { p: [0.45, 0, 0.6], r: [0, 0, 0], s: 1.6 },
-      { p: [0.45, 0, 0.4], r: [0, 0, 0], s: 1.25 },
-    ],
-  });
-  mods.push({
-    geo: "ring",
-    mat: "cobalt",
-    states: [
-      { p: [-2.4, -1.3, 0.8], r: [0.7, 0.2, 0.3], s: 0.5 },
-      { p: [1.95, 1.7, 0.4], r: [0, 0, 0], s: 0.55 },
-      { p: [4.35, 1.4, 0.25], r: [0, 0, 0], s: 0.7 },
+      { p: [AX + 0.15, 0.1, 0.55], r: [0.24, -0.3, 0.1], s: 1 },
+      { p: [AX, 0, 0.45], r: [0, 0, 0], s: 1 },
+      { p: [AX, 0, 0.45], r: [0, 0.16, 0], s: 1 },
     ],
   });
 
-  /* 2 cobalt signal bars resolve into one route through the aperture,
-     then extend along the primary branch. */
-  mods.push({
-    geo: "signal",
-    mat: "cobalt",
+  /* Hub plate behind the ring — the ring frames a corner of it, so the
+     centre never reads as a pupil. */
+  m.push({
+    geo: "hub",
+    mat: "ceramic",
     states: [
-      { p: [-1.6, 0.9, 1.0], r: [0, 0, 0.5], s: 1 },
-      { p: [-0.35, 0, 0.62], r: [0, 0, 0], s: 1 },
-      { p: [1.35, 0.42, 0.35], r: [0, 0, 0.32], s: 1.1 },
-    ],
-  });
-  mods.push({
-    geo: "signal",
-    mat: "cobalt",
-    states: [
-      { p: [1.4, -1.4, -0.6], r: [0, 0, -0.7], s: 1 },
-      { p: [1.25, 0, 0.62], r: [0, 0, 0], s: 1 },
-      { p: [2.95, 0.95, 0.35], r: [0, 0, 0.32], s: 1.1 },
+      { p: [AX + 0.55, 0.45, -0.1], r: [0.1, 0.18, 0.14], s: 1 },
+      { p: [AX + 0.42, 0.34, 0.1], r: [0, 0, 0.06], s: 1 },
+      { p: [AX + 0.42, 0.34, 0.1], r: [0, 0.1, 0.06], s: 1 },
     ],
   });
 
-  /* Violet terminal at the signal's end. */
-  mods.push({
-    geo: "connector",
+  /* Two graphite mid plates: depth shoulders. */
+  m.push({
+    geo: "plateM",
+    mat: "graphite",
+    states: [
+      { p: [AX - 1.55, 0.15, 0.7], r: [0.05, 0.3, 0.1], s: 1 },
+      { p: [AX - 1.2, 0.05, 0.35], r: [0, 0.1, 0], s: 1 },
+      { p: [AX - 1.2, 0.05, 0.35], r: [0, 0.1, 0], s: 1 },
+    ],
+  });
+  m.push({
+    geo: "plateM",
+    mat: "black",
+    states: [
+      { p: [AX + 1.9, -0.35, 0.95], r: [-0.1, -0.24, -0.06], s: 1 },
+      { p: [AX + 1.55, -0.3, 0.4], r: [0, -0.1, 0], s: 1 },
+      { p: [AX + 2.9, -0.15, 0.3], r: [0, -0.16, 0], s: 0.9 },
+    ],
+  });
+
+  /* Two optical slabs: verticals beside the core; SEO extends them into
+     the two branch directions. */
+  m.push({
+    geo: "optic",
+    mat: "optical",
+    states: [
+      { p: [AX - 0.75, 0.2, 0.9], r: [0, 0, 1.35], s: 1 },
+      { p: [AX - 0.62, 0, 0.7], r: [0, 0, Math.PI / 2], s: 1 },
+      { p: [AX + 0.9, 0.85, 0.55], r: [0, 0, 0.5], s: 1.35 },
+    ],
+  });
+  m.push({
+    geo: "optic",
+    mat: "optical",
+    states: [
+      { p: [AX + 0.8, -0.15, 1.0], r: [0, 0, 1.8], s: 1 },
+      { p: [AX + 0.62, 0, 0.7], r: [0, 0, Math.PI / 2], s: 1 },
+      { p: [AX + 1.15, -0.75, 0.5], r: [0, 0, -0.42], s: 1.35 },
+    ],
+  });
+
+  /* Three short capsule rails binding plate edges; SEO re-aims two of
+     them along the branches. */
+  m.push({
+    geo: "rail",
+    mat: "graphite",
+    states: [
+      { p: [AX - 0.1, 1.6, 0.15], r: [0, 0, 0.1], s: 1 },
+      { p: [AX, 1.7, 0], r: [0, 0, 0], s: 1 },
+      { p: [AX + 1.15, 1.72, -0.1], r: [0, 0, 0.16], s: 1.1 },
+    ],
+  });
+  m.push({
+    geo: "rail",
+    mat: "graphite",
+    states: [
+      { p: [AX + 0.2, -1.65, 0.35], r: [0, 0, -0.12], s: 1 },
+      { p: [AX, -1.7, 0], r: [0, 0, 0], s: 1 },
+      { p: [AX + 1.3, -1.72, -0.05], r: [0, 0, -0.14], s: 1.1 },
+    ],
+  });
+  /* Two rounded connectors at working joints. */
+  m.push({
+    geo: "conn",
+    mat: "black",
+    states: [
+      { p: [AX - 1.15, 1.55, 0.5], r: [0.3, 0.4, 0], s: 1 },
+      { p: [AX - 1.05, 1.6, 0.1], r: [0, 0, 0], s: 1 },
+      { p: [AX - 1.05, 1.6, 0.1], r: [0, 0, 0], s: 1 },
+    ],
+  });
+  m.push({
+    geo: "conn",
+    mat: "graphite",
+    states: [
+      { p: [AX + 1.3, -1.6, 0.75], r: [0.2, -0.3, 0.2], s: 1 },
+      { p: [AX + 1.05, -1.6, 0.1], r: [0, 0, 0], s: 1 },
+      { p: [AX + 2.3, -1.7, 0], r: [0, Math.PI / 4, 0], s: 1.15 },
+    ],
+  });
+
+  /* The signal: one cobalt capsule through the aperture; SEO carries it
+     outward along the upper branch to the violet terminal. */
+  m.push({
+    geo: "signal",
+    mat: "cobalt",
+    states: [
+      { p: [AX - 0.55, 0.35, 0.75], r: [0, 0, 0.35], s: 0.8 },
+      { p: [AX, 0, 0.62], r: [0, 0, 0], s: 1 },
+      { p: [AX + 1.3, 0.6, 0.5], r: [0, 0, 0.42], s: 1.45 },
+    ],
+  });
+  m.push({
+    geo: "terminal",
     mat: "violet",
     states: [
-      { p: [3.3, -0.4, 1.2], r: rot(1.0), s: 0.9 },
-      { p: [2.15, 0, 0.62], r: [0, 0, 0], s: 1.1 },
-      { p: [3.75, 1.2, 0.3], r: [0, Math.PI / 4, 0], s: 1.25 },
+      { p: [AX + 0.95, -0.55, 1.1], r: [0.4, 0.3, 0], s: 0.85 },
+      { p: [AX + 0.95, 0, 0.62], r: [0, 0, 0], s: 1 },
+      { p: [AX + 2.6, 1.15, 0.45], r: [0, Math.PI / 4, 0], s: 1.2 },
     ],
   });
 
-  return mods; // 10+6+4+4+4+2+2+1 = 33
+  return m; // 16 modules
 }
 
-/* Camera states: wider/deeper intro → controlled frontal Branding →
-   slight pull for the pathway expansion. Premium product-film movement
-   only — no orbit, no spin, no FOV drama. */
+/* Cameras: composed around the centre-right object with the left text
+   region protected. */
+/* The whole object is compacted and pushed right after construction:
+   root scale 0.72, root x +1.15 — so world centre sits ≈ x 2.3 and the
+   projected object clears the left text column. Cameras are posed for
+   that transformed centre. */
+const ROOT_SCALE = 0.72;
+const ROOT_X = 1.15;
+const CX = AX * ROOT_SCALE + ROOT_X; // ≈ 2.30
+
 const CAM_POS: [number, number, number][] = [
-  [0.2, 1.1, 10.2],
-  [0.45, 0.45, 7.7],
-  [0.25, 0.9, 9.0],
+  [CX - 0.7, 0.5, 9.7],
+  [CX - 0.5, 0.18, 7.4],
+  [CX - 0.65, 0.4, 8.9],
 ];
 const CAM_TGT: [number, number, number][] = [
-  [0.7, 0.1, 0],
-  [0.45, 0, 0.3],
-  [0.35, 0.2, 0],
+  [CX - 0.08, 0.08, 0],
+  [CX, 0, 0.15],
+  [CX + 0.18, 0.08, 0],
 ];
+
+/* ── Geometry builders: rounded, chamfered, physical ── */
+
+function roundedPlate(w: number, h: number, depth: number, r: number) {
+  const shape = new THREE.Shape();
+  const x = -w / 2;
+  const y = -h / 2;
+  shape.moveTo(x + r, y);
+  shape.lineTo(x + w - r, y);
+  shape.quadraticCurveTo(x + w, y, x + w, y + r);
+  shape.lineTo(x + w, y + h - r);
+  shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  shape.lineTo(x + r, y + h);
+  shape.quadraticCurveTo(x, y + h, x, y + h - r);
+  shape.lineTo(x, y + r);
+  shape.quadraticCurveTo(x, y, x + r, y);
+  const geo = new THREE.ExtrudeGeometry(shape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: 0.035,
+    bevelSize: 0.035,
+    bevelSegments: 3,
+    curveSegments: 10,
+  });
+  geo.center();
+  return geo;
+}
 
 export function createOptaraSystem(
   container: HTMLElement,
@@ -281,50 +289,61 @@ export function createOptaraSystem(
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(
-    34,
+    33,
     container.clientWidth / Math.max(1, container.clientHeight),
     0.1,
     60,
   );
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.95));
-  const key = new THREE.DirectionalLight(0xffffff, 1.0);
-  key.position.set(3, 5, 6);
+  /* Self-contained environment lighting: RoomEnvironment through
+     PMREMGenerator — generated once at runtime, no downloads. */
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envTarget = pmrem.fromScene(new RoomEnvironment(), 0.04);
+  scene.environment = envTarget.texture;
+
+  scene.add(new THREE.HemisphereLight(0xfff6e9, 0x30323a, 0.5));
+  const key = new THREE.DirectionalLight(0xffffff, 1.05);
+  key.position.set(4, 6, 5);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xdfe4ff, 0.35);
-  fill.position.set(-4, 2, -3);
-  scene.add(fill);
+  const rim = new THREE.DirectionalLight(0xe8ecff, 0.45);
+  rim.position.set(-5, 2.5, -4);
+  scene.add(rim);
 
-  /* Shared geometries. */
-  const GEOS: Record<ModuleSpec["geo"], THREE.BufferGeometry> = {
-    slab: new THREE.BoxGeometry(2.0, 0.14, 1.15),
-    bar: new THREE.BoxGeometry(2.7, 0.09, 0.09),
-    plate: new THREE.BoxGeometry(1.05, 0.06, 1.05),
-    connector: new THREE.BoxGeometry(0.17, 0.17, 0.17),
-    rail: new THREE.BoxGeometry(1.8, 0.11, 0.11),
-    ring: new THREE.TorusGeometry(0.55, 0.035, 12, 48),
-    signal: new THREE.BoxGeometry(1.5, 0.07, 0.07),
+  const GEOS: Record<Mod["geo"], THREE.BufferGeometry> = {
+    plateL: roundedPlate(1.7, 1.15, 0.16, 0.16),
+    plateM: roundedPlate(1.05, 0.8, 0.13, 0.12),
+    hub: roundedPlate(0.85, 0.85, 0.12, 0.2),
+    ring: new THREE.TorusGeometry(0.88, 0.15, 22, 72),
+    optic: roundedPlate(1.25, 0.42, 0.1, 0.1),
+    rail: new THREE.CapsuleGeometry(0.085, 1.35, 6, 14),
+    conn: roundedPlate(0.24, 0.24, 0.22, 0.06),
+    signal: new THREE.CapsuleGeometry(0.05, 1.5, 6, 12),
+    terminal: roundedPlate(0.17, 0.17, 0.16, 0.05),
   };
+  /* Capsules stand on Y; lay the rails/signal horizontal by default. */
+  GEOS.rail.rotateZ(Math.PI / 2);
+  GEOS.signal.rotateZ(Math.PI / 2);
 
-  /* Six flat materials — bone/graphite/near-black structure, translucent
-     optics, flat cobalt and violet signal accents. No gradient wash. */
-  const MATS: Record<ModuleSpec["mat"], THREE.Material> = {
-    bone: new THREE.MeshStandardMaterial({ color: 0xefece4, roughness: 0.62, metalness: 0.04 }),
-    graphite: new THREE.MeshStandardMaterial({ color: 0x2c2e36, roughness: 0.42, metalness: 0.28 }),
-    black: new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.35, metalness: 0.3 }),
-    optical: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.12, metalness: 0, transparent: true, opacity: 0.32 }),
+  const MATS: Record<Mod["mat"], THREE.Material> = {
+    ceramic: new THREE.MeshStandardMaterial({ color: 0xede9df, roughness: 0.38, metalness: 0.03, envMapIntensity: 0.55 }),
+    graphite: new THREE.MeshStandardMaterial({ color: 0x2e3038, roughness: 0.32, metalness: 0.55, envMapIntensity: 0.7 }),
+    black: new THREE.MeshStandardMaterial({ color: 0x14151a, roughness: 0.26, metalness: 0.5, envMapIntensity: 0.6 }),
+    optical: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.08, metalness: 0, transparent: true, opacity: 0.3, envMapIntensity: 0.9 }),
     cobalt: new THREE.MeshBasicMaterial({ color: 0x2b7fff }),
     violet: new THREE.MeshBasicMaterial({ color: 0x5b3df5 }),
   };
 
   const specs = buildModules();
+  const root = new THREE.Group();
+  root.scale.setScalar(ROOT_SCALE);
+  root.position.x = ROOT_X;
+  scene.add(root);
   const meshes = specs.map((spec) => {
     const mesh = new THREE.Mesh(GEOS[spec.geo], MATS[spec.mat]);
-    scene.add(mesh);
+    root.add(mesh);
     return mesh;
   });
 
-  /* ── State ── */
   let progress = 0;
   let running = true;
   let dirty = true;
@@ -336,49 +355,71 @@ export function createOptaraSystem(
 
   const vA = new THREE.Vector3();
   const vB = new THREE.Vector3();
-  const eA = new THREE.Euler();
+  const box = new THREE.Box3();
+  const corner = new THREE.Vector3();
 
   const apply = () => {
     const stateFloat = Math.min(2, Math.max(0, progress * 2));
     const i = Math.min(1, Math.floor(stateFloat));
     const f = easeInOutCubic(Math.min(1, Math.max(0, stateFloat - i)));
 
-    for (let m = 0; m < specs.length; m++) {
-      const a = specs[m].states[i];
-      const b = specs[m].states[i + 1];
-      const mesh = meshes[m];
+    for (let k = 0; k < specs.length; k++) {
+      const a = specs[k].states[i];
+      const b = specs[k].states[i + 1];
+      const mesh = meshes[k];
       vA.set(...a.p);
       vB.set(...b.p);
       mesh.position.lerpVectors(vA, vB, f);
-      eA.set(
+      mesh.rotation.set(
         a.r[0] + (b.r[0] - a.r[0]) * f,
         a.r[1] + (b.r[1] - a.r[1]) * f,
         a.r[2] + (b.r[2] - a.r[2]) * f,
       );
-      mesh.rotation.copy(eA);
-      const s = a.s + (b.s - a.s) * f;
-      mesh.scale.setScalar(s);
+      mesh.scale.setScalar(a.s + (b.s - a.s) * f);
     }
 
     const cp = CAM_POS[i];
     const cq = CAM_POS[i + 1];
     const tp = CAM_TGT[i];
     const tq = CAM_TGT[i + 1];
+    /* Pointer influence clamped small so geometry can never drift into
+       the text column. */
     camera.position.set(
-      cp[0] + (cq[0] - cp[0]) * f + pointerLerped.x * 0.3,
-      cp[1] + (cq[1] - cp[1]) * f + pointerLerped.y * 0.2,
+      cp[0] + (cq[0] - cp[0]) * f + pointerLerped.x * 0.18,
+      cp[1] + (cq[1] - cp[1]) * f + pointerLerped.y * 0.12,
       cp[2] + (cq[2] - cp[2]) * f,
     );
     vA.set(tp[0] + (tq[0] - tp[0]) * f, tp[1] + (tq[1] - tp[1]) * f, tp[2] + (tq[2] - tp[2]) * f);
     camera.lookAt(vA);
 
     if (process.env.NODE_ENV !== "production") {
+      box.setFromObject(root);
+      let minX = 1, minY = 1, maxX = -1, maxY = -1;
+      for (let cx = 0; cx < 2; cx++)
+        for (let cy = 0; cy < 2; cy++)
+          for (let cz = 0; cz < 2; cz++) {
+            corner.set(
+              cx ? box.max.x : box.min.x,
+              cy ? box.max.y : box.min.y,
+              cz ? box.max.z : box.min.z,
+            );
+            corner.project(camera);
+            minX = Math.min(minX, corner.x);
+            maxX = Math.max(maxX, corner.x);
+            minY = Math.min(minY, corner.y);
+            maxY = Math.max(maxY, corner.y);
+          }
       (window as unknown as Record<string, unknown>).__optara3d = {
-        p: progress,
+        p: +progress.toFixed(4),
         cam: camera.position.toArray().map((n) => +n.toFixed(3)),
         target: vA.toArray().map((n) => +n.toFixed(3)),
         meshes: meshes.length,
-        m0: meshes[0].position.toArray().map((n) => +n.toFixed(3)),
+        bboxPct: {
+          left: +(((minX + 1) / 2) * 100).toFixed(1),
+          right: +(((maxX + 1) / 2) * 100).toFixed(1),
+          top: +(((1 - maxY) / 2) * 100).toFixed(1),
+          bottom: +(((1 - minY) / 2) * 100).toFixed(1),
+        },
       };
     }
   };
@@ -392,12 +433,12 @@ export function createOptaraSystem(
 
     const px = pointerLerped.x + (pointer.x - pointerLerped.x) * (1 - Math.exp(-dt * 5));
     const py = pointerLerped.y + (pointer.y - pointerLerped.y) * (1 - Math.exp(-dt * 5));
-    const parallaxMoving =
+    const moving =
       Math.abs(px - pointerLerped.x) > 0.0004 || Math.abs(py - pointerLerped.y) > 0.0004;
     pointerLerped.x = px;
     pointerLerped.y = py;
 
-    if (dirty || parallaxMoving) {
+    if (dirty || moving) {
       apply();
       renderer.render(scene, camera);
       dirty = false;
@@ -445,7 +486,9 @@ export function createOptaraSystem(
       ro.disconnect();
       renderer.domElement.removeEventListener("webglcontextlost", onContextLost);
       Object.values(GEOS).forEach((g) => g.dispose());
-      Object.values(MATS).forEach((m) => m.dispose());
+      Object.values(MATS).forEach((mt) => mt.dispose());
+      envTarget.dispose();
+      pmrem.dispose();
       renderer.dispose();
       renderer.domElement.remove();
     },
