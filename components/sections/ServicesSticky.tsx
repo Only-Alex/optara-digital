@@ -1,29 +1,47 @@
 import Link from "next/link";
 import { servicesPage } from "@/lib/content";
 import { RevealText } from "@/components/ui/RevealText";
-import { ServiceIcon } from "@/components/ui/ServiceIcon";
-import { CursorBubble } from "@/components/ui/CursorBubble";
 import { ArrowIcon } from "@/components/ui/Icons";
+import { ServiceStage } from "@/components/sections/services/ServiceStage";
+import { SERVICE_SCENES } from "@/components/sections/services/scenes";
 
 /**
- * The reference site's signature scroll pattern, rebuilt for Optara: each
- * service is a chapter whose name holds sticky on the left while its
- * substance — positioning, description, capabilities — scrolls past on the
- * right, under a cursor-following bubble naming the destination.
+ * The six services as the homepage's principal post-hero immersive
+ * experience (Stage 2B).
  *
- * A server component. The layout is CSS `position: sticky`: no scroll
- * listeners, no pinning, nothing hijacked — the whole section reads perfectly
- * as static content, and only CursorBubble and the reveals are client islands.
+ * Architecture, roomy desktop (immersive gate: min-width 1100px AND
+ * min-height 800px, expressed as one CSS media variant so the layout is
+ * settled at first paint with no hydration geometry shift):
  *
- * Content is the approved servicesPage.showcase data — the same six services,
- * numbers, positioning lines and capability lists the /services page renders,
- * so the two cannot drift apart.
+ * - the LEFT column is a semantic <ol> of six genuine service chapters in
+ *   normal document flow — real headings, real copy, real links, each
+ *   ~78vh tall so the whole run spans ~468vh of natural scrolling;
+ * - the RIGHT column is one persistent sticky visual stage (ServiceStage,
+ *   the only client island) whose scene transforms as the active chapter
+ *   changes. No scroll snap, no wheel interception, no pinned copy — the
+ *   document simply scrolls and DifferenceSticky follows service 06.
+ *
+ * Below the gate — phones, tablets, 1280×720, 1024×768, short laptops —
+ * the same chapters render as deliberate vertical flow sections, each
+ * carrying a compact static version of its own scene. Reduced motion gets
+ * this same complete content plus an instant (non-animated) stage where
+ * the layout is roomy enough to show it.
+ *
+ * Content is servicesPage.showcase, untouched: same six services, same
+ * order, same copy as /services, so the two cannot drift apart.
+ *
+ * The section opens on a hairline over the bone ground — the deliberate
+ * material seam after IntroSplit's paper scene, answering its accent cue
+ * without a gradient or overlap.
  */
 export function ServicesSticky() {
   const { services } = servicesPage.showcase;
 
   return (
-    <section data-theme="bone" className="section bg-[var(--bg)]">
+    <section
+      data-theme="bone"
+      className="section border-t border-[var(--hairline)] bg-[var(--bg)]"
+    >
       <div className="shell">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">
@@ -35,50 +53,42 @@ export function ServicesSticky() {
           </h2>
         </RevealText>
 
-        <ol className="mt-16 flex flex-col">
-          {services.map((service) => (
-            <li
-              key={service.href}
-              className="grid gap-8 border-t border-[var(--hairline)] py-14 lg:grid-cols-12 lg:gap-x-[clamp(2rem,4vw,5rem)] lg:py-20"
-            >
-              {/* The sticky chapter title. `self-start` is what lets sticky
-                  work inside a grid track; top-28 clears the compact header. */}
-              <div className="lg:sticky lg:top-28 lg:col-span-4 lg:self-start">
-                <p className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
-                  {service.number}
-                </p>
-                <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.75rem)]">
-                  {service.name}
-                </h3>
-                <p className="mt-5 max-w-[26ch] text-[1.0625rem] leading-[1.6] text-ink/70">
-                  {service.positioning}
-                </p>
-              </div>
+        <div className="mt-16 [@media(min-width:1100px)_and_(min-height:800px)]:grid [@media(min-width:1100px)_and_(min-height:800px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:800px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
+          <ol className="flex flex-col [@media(min-width:1100px)_and_(min-height:800px)]:col-span-4">
+            {services.map((service, i) => {
+              const Scene = SERVICE_SCENES[i];
+              return (
+                <li
+                  key={service.href}
+                  data-service-chapter={i}
+                  className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:800px)]:flex [@media(min-width:1100px)_and_(min-height:800px)]:min-h-[78vh] [@media(min-width:1100px)_and_(min-height:800px)]:items-center [@media(min-width:1100px)_and_(min-height:800px)]:py-0"
+                >
+                  <div className="w-full">
+                    <p className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
+                      {service.number}
+                    </p>
+                    <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.5rem)]">
+                      {service.name}
+                    </h3>
+                    <p className="mt-4 max-w-[30ch] text-[1.0625rem] leading-[1.6] text-ink/70">
+                      {service.positioning}
+                    </p>
 
-              <div className="lg:col-span-7 lg:col-start-6">
-                <CursorBubble label={`View ${service.name}`}>
-                  <Link
-                    href={service.href}
-                    className="group block rounded-[22px] border border-[var(--hairline)] bg-paper p-7 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-[0_24px_60px_rgba(18,19,26,0.08)] motion-reduce:transform-none md:p-10"
-                  >
-                    {/* An abstract brand panel where the reference shows client
-                        screenshots — Optara shows no work it has not done, so
-                        the visual is the service's own gradient and icon. */}
+                    {/* Compact static scene for the flow layout only — the
+                        immersive layout carries the same scene on the shared
+                        stage instead. */}
                     <div
                       aria-hidden="true"
-                      className="relative flex h-44 items-center justify-center overflow-hidden rounded-[14px] bg-[linear-gradient(120deg,rgba(43,127,255,0.10),rgba(91,61,245,0.14)_50%,rgba(123,47,247,0.10))] before:absolute before:inset-y-0 before:left-0 before:w-1/2 before:-translate-x-[150%] before:skew-x-[-18deg] before:bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent)] before:transition-transform before:duration-700 before:ease-out group-hover:before:translate-x-[320%] motion-reduce:before:hidden md:h-56"
+                      className="mt-8 h-44 text-accent md:h-52 [@media(min-width:1100px)_and_(min-height:800px)]:hidden"
                     >
-                      <span className="pointer-events-none absolute inset-0 opacity-[0.5] [background-image:linear-gradient(rgba(18,19,26,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(18,19,26,0.04)_1px,transparent_1px)] [background-size:34px_34px]" />
-                      <span className="grid h-20 w-20 place-items-center rounded-full bg-paper/80 text-accent shadow-[0_16px_44px_rgba(91,61,245,0.18)] backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
-                        <ServiceIcon name={service.icon} className="h-8 w-8" />
-                      </span>
+                      <Scene />
                     </div>
 
-                    <p className="mt-8 max-w-[58ch] text-[1.0625rem] leading-[1.7] text-ink/75">
+                    <p className="mt-8 max-w-[46ch] text-[1rem] leading-[1.7] text-ink/75">
                       {service.description}
                     </p>
 
-                    <ul className="mt-7 flex flex-wrap gap-2">
+                    <ul className="mt-6 flex max-w-[34rem] flex-wrap gap-2">
                       {service.capabilities.map((capability) => (
                         <li
                           key={capability}
@@ -89,19 +99,28 @@ export function ServicesSticky() {
                       ))}
                     </ul>
 
-                    <span className="mt-8 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent">
+                    <Link
+                      href={service.href}
+                      className="group mt-8 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent"
+                    >
                       Explore {service.name}
                       <ArrowIcon
                         aria-hidden="true"
                         className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1"
                       />
-                    </span>
-                  </Link>
-                </CursorBubble>
-              </div>
-            </li>
-          ))}
-        </ol>
+                    </Link>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* The persistent stage. CSS-gated with the exact same media
+              variant as the grid, so stage and layout can never disagree. */}
+          <div className="hidden [@media(min-width:1100px)_and_(min-height:800px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:800px)]:block">
+            <ServiceStage names={services.map((s) => s.name)} />
+          </div>
+        </div>
       </div>
     </section>
   );
