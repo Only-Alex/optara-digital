@@ -57,7 +57,7 @@ export function ServiceStage({ names }: { names: string[] }) {
      without dispatching change. */
   const [mediaOn, setMediaOn] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1100px) and (min-height: 800px)");
+    const mq = window.matchMedia("(min-width: 1100px) and (min-height: 680px)");
     const update = () => setMediaOn(mq.matches);
     update();
     mq.addEventListener("change", update);

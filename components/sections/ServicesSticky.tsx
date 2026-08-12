@@ -9,13 +9,17 @@ import { SERVICE_SCENES } from "@/components/sections/services/scenes";
  * The six services as the homepage's principal post-hero immersive
  * experience (Stage 2B).
  *
- * Architecture, roomy desktop (immersive gate: min-width 1100px AND
- * min-height 800px, expressed as one CSS media variant so the layout is
- * settled at first paint with no hydration geometry shift):
+ * Architecture, desktop (immersive gate: min-width 1100px AND min-height
+ * 680px, expressed as one CSS media variant so the layout is settled at
+ * first paint with no hydration geometry shift; 680 because a maximised
+ * laptop Chrome window loses ~120–150px to browser chrome, and a real
+ * recording showed 800 excluding an ordinary MacBook — see Stage 2C.1A):
  *
  * - the LEFT column is a semantic <ol> of six genuine service chapters in
  *   normal document flow — real headings, real copy, real links, each
- *   ~78vh tall so the whole run spans ~468vh of natural scrolling;
+ *   78vh tall on roomy viewports (≥800px high) and 88vh in the compact
+ *   680–799px band, so short laptops keep a deliberate cinematic dwell
+ *   per chapter instead of a rushed one;
  * - the RIGHT column is one persistent sticky visual stage (ServiceStage,
  *   the only client island) whose scene transforms as the active chapter
  *   changes. No scroll snap, no wheel interception, no pinned copy — the
@@ -53,15 +57,15 @@ export function ServicesSticky() {
           </h2>
         </RevealText>
 
-        <div className="mt-16 [@media(min-width:1100px)_and_(min-height:800px)]:grid [@media(min-width:1100px)_and_(min-height:800px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:800px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
-          <ol className="flex flex-col [@media(min-width:1100px)_and_(min-height:800px)]:col-span-4">
+        <div className="mt-16 [@media(min-width:1100px)_and_(min-height:680px)]:grid [@media(min-width:1100px)_and_(min-height:680px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:680px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
+          <ol className="flex flex-col [@media(min-width:1100px)_and_(min-height:680px)]:col-span-4">
             {services.map((service, i) => {
               const Scene = SERVICE_SCENES[i];
               return (
                 <li
                   key={service.href}
                   data-service-chapter={i}
-                  className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:800px)]:flex [@media(min-width:1100px)_and_(min-height:800px)]:min-h-[78vh] [@media(min-width:1100px)_and_(min-height:800px)]:items-center [@media(min-width:1100px)_and_(min-height:800px)]:py-0"
+                  className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:flex [@media(min-width:1100px)_and_(min-height:680px)]:items-center [@media(min-width:1100px)_and_(min-height:680px)]:py-0 [@media(min-width:1100px)_and_(min-height:800px)]:min-h-[78vh] [@media(min-width:1100px)_and_(min-height:680px)_and_(max-height:799px)]:min-h-[88vh]"
                 >
                   <div className="w-full">
                     {/* Flat accent (Stage 2C.1 review correction) — the old
@@ -79,7 +83,7 @@ export function ServicesSticky() {
                         stage instead. */}
                     <div
                       aria-hidden="true"
-                      className="mt-8 h-44 text-accent md:h-52 [@media(min-width:1100px)_and_(min-height:800px)]:hidden"
+                      className="mt-8 h-44 text-accent md:h-52 [@media(min-width:1100px)_and_(min-height:680px)]:hidden"
                     >
                       <Scene />
                     </div>
@@ -124,7 +128,7 @@ export function ServicesSticky() {
               of the composition and reads as continuing past the browser
               edge. body{overflow-x:hidden} absorbs the scrollbar-width
               difference between 100vw and the true viewport. */}
-          <div className="hidden [@media(min-width:1100px)_and_(min-height:800px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:800px)]:block [@media(min-width:1100px)_and_(min-height:800px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))]">
+          <div className="hidden [@media(min-width:1100px)_and_(min-height:680px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:680px)]:block [@media(min-width:1100px)_and_(min-height:680px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))]">
             <ServiceStage names={services.map((s) => s.name)} />
           </div>
         </div>
