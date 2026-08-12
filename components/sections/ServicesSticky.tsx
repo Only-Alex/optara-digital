@@ -64,9 +64,9 @@ export function ServicesSticky() {
                   className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:800px)]:flex [@media(min-width:1100px)_and_(min-height:800px)]:min-h-[78vh] [@media(min-width:1100px)_and_(min-height:800px)]:items-center [@media(min-width:1100px)_and_(min-height:800px)]:py-0"
                 >
                   <div className="w-full">
-                    <p className="t-mono bg-[linear-gradient(92deg,#175FD4,#4C2FD9_55%,#6B21D8)] bg-clip-text text-transparent">
-                      {service.number}
-                    </p>
+                    {/* Flat accent (Stage 2C.1 review correction) — the old
+                        gradient text treatment is retired here. */}
+                    <p className="t-mono text-accent">{service.number}</p>
                     <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.5rem)]">
                       {service.name}
                     </h3>
@@ -116,8 +116,15 @@ export function ServicesSticky() {
           </ol>
 
           {/* The persistent stage. CSS-gated with the exact same media
-              variant as the grid, so stage and layout can never disagree. */}
-          <div className="hidden [@media(min-width:1100px)_and_(min-height:800px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:800px)]:block">
+              variant as the grid, so stage and layout can never disagree.
+              The negative right margin (Stage 2C.1) breaks the stage out of
+              the shell to the viewport's right edge — (min(100vw,1360px) −
+              100vw)/2 recovers the shell's centering margin and −var(--gutter)
+              recovers its padding — so the cinematic plane commands ~66–70%
+              of the composition and reads as continuing past the browser
+              edge. body{overflow-x:hidden} absorbs the scrollbar-width
+              difference between 100vw and the true viewport. */}
+          <div className="hidden [@media(min-width:1100px)_and_(min-height:800px)]:col-span-8 [@media(min-width:1100px)_and_(min-height:800px)]:block [@media(min-width:1100px)_and_(min-height:800px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))]">
             <ServiceStage names={services.map((s) => s.name)} />
           </div>
         </div>

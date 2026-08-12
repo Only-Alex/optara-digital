@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValueEvent,
@@ -9,6 +9,7 @@ import {
 } from "motion/react";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { SERVICE_SCENES } from "@/components/sections/services/scenes";
+import { ServiceMedia } from "@/components/sections/services/ServiceMedia";
 
 /**
  * The persistent visual stage for the six-service immersive scroll
@@ -46,6 +47,27 @@ export function ServiceStage({ names }: { names: string[] }) {
   const activeRef = useRef(0);
   const reduced = useReducedMotion();
 
+  /* The stage column is display:none below the immersive gate, but a
+     hidden <video> still fetches — measured 2.3MB pulled on a 390px
+     viewport. So media only MOUNTS when the same gate the CSS uses
+     matches in JS. False on the server render too, which keeps video out
+     of the HTML entirely; the desktop swaps the Branding placeholder for
+     the poster-backed video at hydration. Both signals for the same
+     reason as IntroSplit: emulated viewports can update mq.matches
+     without dispatching change. */
+  const [mediaOn, setMediaOn] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1100px) and (min-height: 800px)");
+    const update = () => setMediaOn(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    window.addEventListener("resize", update);
+    return () => {
+      mq.removeEventListener("change", update);
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: rootRef,
     offset: ["start start", "end end"],
@@ -68,25 +90,41 @@ export function ServiceStage({ names }: { names: string[] }) {
       <div className="sticky top-[6.5rem]">
         <motion.div
           style={depthStyle}
-          className="relative h-[calc(100svh-8.5rem)] max-h-[46rem] overflow-hidden"
+          className="relative h-[calc(100svh-7.5rem)] overflow-hidden"
         >
-          {/* Soft edge mask so the stage sits IN the bone ground rather than
-              on it — no card chrome, no border, no fill. */}
-          <div className="absolute inset-0 [mask-image:radial-gradient(120%_100%_at_50%_50%,black_62%,transparent_96%)]">
-            {SERVICE_SCENES.map((Scene, i) => (
-              <div
-                key={i}
-                className={`absolute inset-0 transition-[opacity,transform] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
-                  i === active
-                    ? "translate-y-0 scale-100 opacity-100"
-                    : i < active
-                      ? "-translate-y-4 scale-[1.015] opacity-0"
-                      : "translate-y-5 scale-[0.985] opacity-0"
-                }`}
-              >
-                <Scene />
-              </div>
-            ))}
+          {/* Directional masks (Stage 2C.1), nested so they intersect without
+              mask-composite: the LEFT edge dissolves hardest because it meets
+              the chapter typography; top and bottom fade softly; the RIGHT
+              edge stays essentially solid so the cinematic environment reads
+              as continuing past the viewport. No border, card, shadow or
+              radius — real HTML beside an apparently borderless world. */}
+          <div className="absolute inset-0 [mask-image:linear-gradient(to_right,transparent,black_14%)]">
+            <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,transparent,black_6%,black_94%,transparent)]">
+              {SERVICE_SCENES.map((Scene, i) => (
+                <div
+                  key={i}
+                  className={`absolute inset-0 transition-[opacity,transform] duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+                    i === active
+                      ? "translate-y-0 scale-100 opacity-100"
+                      : i < active
+                        ? "-translate-y-4 scale-[1.015] opacity-0"
+                        : "translate-y-5 scale-[0.985] opacity-0"
+                  }`}
+                >
+                  {/* Stage 2C.1: Branding runs the real cinematic media;
+                      services 02–06 keep their placeholder scenes until
+                      their assets are produced and approved. */}
+                  {i === 0 && mediaOn ? (
+                    <ServiceMedia
+                      src="/media/services/branding.mp4"
+                      poster="/media/services/branding-poster.jpg"
+                    />
+                  ) : (
+                    <Scene />
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Progress: bottom-left, clear of the floating Speak bubble which
