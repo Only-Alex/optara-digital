@@ -3,53 +3,49 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "motion/react";
-import { IntroSpatial } from "@/components/ui/IntroSpatial";
+import { IdentityField } from "@/components/ui/IdentityField";
 import { RevealText } from "@/components/ui/RevealText";
 import { ArrowIcon } from "@/components/ui/Icons";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 
 /**
- * The post-hero intro as an L2 spatial transition (Stage 2A).
+ * The post-hero intro, redesigned as the opening move of one continuous
+ * spatial sequence that runs straight into the Branding chapter.
  *
- * On a tall-enough desktop the section deepens to 160vh and its content
- * pins on a sticky full-viewport stage while scroll drives two transforms:
- * the 3D panel cluster enters lower and smaller, settles into its normal
- * plane, holds through the pinned dwell, then drifts gently past as the
- * section exits; the copy translates on the same curve. A flat accent
- * hairline draws downward during the settled phase as the cue toward the
- * services section. Transform-only per frame — opacity never gates the
- * copy, so everything is readable at every scroll position and without
- * JavaScript (the initial server render is the plain flow layout).
+ * Composition: copy sits LEFT on the same column the service chapters use;
+ * the IdentityField visual sits RIGHT, breaking out of the shell to the
+ * viewport edge — the exact zone the services stage occupies. So the
+ * hand-off is spatial, not decorative: the assembling system deepens and
+ * recedes as the intro exits, the paper ground ramps into bone, and the
+ * cinematic stage arrives in the same place the system just occupied.
  *
- * Pacing (Stage 2A.1): with the 160vh stage the section traverses 260vh of
- * scroll, so the sticky dwell occupies progress ≈0.385–0.615. The stops are
- * placed so settling completes just before the pin begins and the exit
- * starts just after it releases — the whole dwell is the breathing phase,
- * with the cue drawing inside it and finishing before the exit.
+ * Scroll choreography (desktop scene, gate identical to the services gate —
+ * min-width 1100px AND min-height 680px, so on any machine the two
+ * sections agree about being immersive):
+ * - the section deepens to 170vh and pins its stage;
+ * - entry: copy and visual settle from below (transform only, opacity is
+ *   never used to gate the copy);
+ * - dwell: the field breathes on pointer parallax;
+ * - exit: the visual deepens in perspective (IdentityField spreads its
+ *   plane depths ~1.6× and pitches), lifts, and dissolves as the seam
+ *   into Services begins; the copy drifts up more gently.
  *
- * Scene gate: `(min-width: 1024px) and (min-height: 800px)` and motion not
- * reduced. Everything else — phones, tablets, short desktop viewports
- * (1280x720, 1024x768), reduced motion, no JS — gets the ordinary flow
- * section unchanged from before this stage: natural document height, no
- * pinning, no scroll transforms, IntroSpatial's own fallbacks intact.
- *
- * Scroll reading is Motion's useScroll/useTransform only: rAF-batched,
- * Lenis-compatible, no scroll listeners, no per-frame React state.
+ * Everything below the gate — phones, tablets, short viewports, reduced
+ * motion, no JS — is a plain flow section: copy, then nothing pinned,
+ * IdentityField only where it can be shown statically. The /about link and
+ * every word render in the server HTML regardless.
  */
 
-/** True only on viewports with room for the pinned stage, motion allowed. */
+/** True only on viewports with room for the pinned stage, motion allowed.
+ *  Same media condition as the services immersive gate on purpose. */
 function useSceneEnabled() {
   const reduced = useReducedMotion();
   const [roomy, setRoomy] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px) and (min-height: 800px)");
+    const mq = window.matchMedia("(min-width: 1100px) and (min-height: 680px)");
     const update = () => setRoomy(mq.matches);
     update();
-    /* Both signals on purpose: `change` is the canonical one, and `resize`
-       covers environments where an emulated viewport updates mq.matches
-       without dispatching the change event. update() only reads a cached
-       boolean, so the extra listener costs nothing meaningful. */
     mq.addEventListener("change", update);
     window.addEventListener("resize", update);
     return () => {
@@ -65,25 +61,21 @@ export function IntroSplit() {
   const sectionRef = useRef<HTMLElement>(null);
   const enabled = useSceneEnabled();
 
-  /* Progress 0→1 across the section's whole traversal of the viewport.
-     The pinned dwell occupies the middle stops; the flat entry/exit tails
-     keep the hand-off to normal scrolling seamless. */
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  const clusterY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [95, 0, 0, -60]);
-  const clusterScale = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [0.9, 1, 1, 1.01]);
-  const copyY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [50, 0, 0, -26]);
+  const copyY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [50, 0, 0, -28]);
+  const fieldY = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [90, 0, 0, -70]);
+  const fieldScale = useTransform(scrollYProgress, [0, 0.3, 0.68, 1], [0.94, 1, 1, 1.07]);
+  const fieldOpacity = useTransform(scrollYProgress, [0, 0.82, 1], [1, 1, 0]);
   const cueScale = useTransform(scrollYProgress, [0.44, 0.66], [0, 1]);
 
-  /* The gate swaps whole style objects rather than gating each value: motion
-     values bound directly in `style` is the documented, reliably-subscribed
-     path. When the scene is off — including the pre-hydration server render —
-     the styles are identity constants, so the flow layout carries no offsets. */
-  const clusterStyle = enabled ? { y: clusterY, scale: clusterScale } : { y: 0, scale: 1 };
   const copyStyle = enabled ? { y: copyY } : { y: 0 };
+  const fieldStyle = enabled
+    ? { y: fieldY, scale: fieldScale, opacity: fieldOpacity }
+    : { y: 0, scale: 1, opacity: 1 };
 
   return (
     <section
@@ -91,7 +83,7 @@ export function IntroSplit() {
       data-theme="paper"
       className={
         enabled
-          ? "relative h-[160vh] bg-[var(--bg)] text-[var(--fg)]"
+          ? "relative h-[170vh] bg-[var(--bg)] text-[var(--fg)]"
           : "section bg-[var(--bg)]"
       }
     >
@@ -102,43 +94,31 @@ export function IntroSplit() {
             : undefined
         }
       >
-        <div className="shell grid w-full items-center gap-14 lg:grid-cols-12 lg:gap-x-[clamp(3rem,5vw,6rem)]">
-          {/* Hidden below lg here as well as inside the component, so the
-              empty grid child cannot add a phantom row and double gap. */}
-          <motion.div className="hidden lg:col-span-5 lg:block" style={clusterStyle}>
-            {/* +12% presence on desktop (Stage 2A.1): a static wrapper scale,
-                separate from the motion wrapper so the scene's scale curve
-                composes with it instead of fighting it. Purely visual —
-                layout box unchanged, and the growth stays well inside the
-                column gap. */}
-            <div className="lg:scale-[1.12]">
-              <IntroSpatial />
-            </div>
-          </motion.div>
-
-          <motion.div className="lg:col-span-6 lg:col-start-7" style={copyStyle}>
+        <div className="shell grid w-full items-center gap-14 lg:grid-cols-12 lg:gap-x-[clamp(2.5rem,4vw,5rem)]">
+          <motion.div className="lg:col-span-5" style={copyStyle}>
             <RevealText>
-              <p className="t-mono text-[var(--muted)]">Optara Digital</p>
-              {/* Reworded 2026-08-04 on instruction: the old line dismissed
-                  exposure, and Optara sells both. Two balanced sentences —
-                  exposure first, enquiries as the pay-off the accent lands on. */}
-              <h2 className="t-display-lg mt-6 max-w-[20ch]">
+              <p className="t-mono flex items-center gap-3 text-[var(--muted)]">
+                <span aria-hidden="true" className="h-px w-10 bg-accent" />
+                Optara Digital
+              </p>
+              {/* Reworded 2026-08-04 on instruction: Optara sells both.
+                  Exposure first, enquiries as the pay-off. */}
+              <h2 className="t-display-lg mt-7 max-w-[14ch]">
                 The exposure you want.{" "}
                 <span className="text-accent">The enquiries you need.</span>
               </h2>
             </RevealText>
             <RevealText delay={0.08}>
-              <p className="t-body-lg mt-7 max-w-[52ch] text-ink/75">
-                We build visibility and demand together: brand, search, paid
-                media, social, websites and apps working as one connected
-                system, every channel amplifying the others. Growth moves in
-                clear, deliberate phases, every engagement is measured against
-                cost per qualified lead — and if a channel is not earning its
-                keep, we are the first to tell you.
+              <p className="mt-8 max-w-[40ch] text-[1.0625rem] leading-[1.75] text-ink/70">
+                We build visibility and demand as one connected system — brand,
+                search, paid media, social, websites and apps, every channel
+                amplifying the others. Each engagement is measured against cost
+                per qualified lead, and if a channel is not earning its keep, we
+                are the first to tell you.
               </p>
               <Link
                 href="/about"
-                className="group mt-8 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent"
+                className="group mt-9 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent"
               >
                 How we work
                 <ArrowIcon
@@ -148,11 +128,20 @@ export function IntroSplit() {
               </Link>
             </RevealText>
           </motion.div>
+
+          {/* The system, assembling in the zone the services stage will
+              occupy. Breaks out of the shell to the viewport's right edge
+              with the same margin recovery the stage uses. */}
+          <motion.div
+            className="hidden lg:col-span-7 lg:block lg:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] lg:pl-6"
+            style={fieldStyle}
+          >
+            <IdentityField progress={scrollYProgress} />
+          </motion.div>
         </div>
 
         {/* The cue toward Services: a flat accent hairline drawing downward
-            late in the scene. Decorative only, and only meaningful while the
-            stage is pinned, so it renders nothing when the scene is off. */}
+            during the settled phase. Decorative; scene-only. */}
         {enabled ? (
           <motion.span
             aria-hidden="true"

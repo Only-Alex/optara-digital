@@ -42,11 +42,17 @@ export function ServicesSticky() {
   const { services } = servicesPage.showcase;
 
   return (
-    <section
-      data-theme="bone"
-      className="section border-t border-[var(--hairline)] bg-[var(--bg)]"
-    >
-      <div className="shell">
+    <section data-theme="bone" className="section bg-[var(--bg)]">
+      {/* The seam from the intro: instead of a hairline cut, the paper
+          ground of the previous scene ramps softly into this section's bone
+          — a tonal shift, so the two sections read as one continuous space
+          rather than stacked blocks. Material colours only; not a brand
+          gradient. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-[linear-gradient(to_bottom,var(--color-paper),transparent)]"
+      />
+      <div className="shell relative">
         <RevealText>
           <p className="t-mono text-[var(--muted)]">
             {servicesPage.showcase.eyebrow}
@@ -68,10 +74,14 @@ export function ServicesSticky() {
                   className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:flex [@media(min-width:1100px)_and_(min-height:680px)]:items-center [@media(min-width:1100px)_and_(min-height:680px)]:py-0 [@media(min-width:1100px)_and_(min-height:800px)]:min-h-[78vh] [@media(min-width:1100px)_and_(min-height:680px)_and_(max-height:799px)]:min-h-[88vh]"
                 >
                   <div className="w-full">
-                    {/* Flat accent (Stage 2C.1 review correction) — the old
-                        gradient text treatment is retired here. */}
-                    <p className="t-mono text-accent">{service.number}</p>
-                    <h3 className="t-display-lg mt-4 text-[clamp(1.75rem,3.2vw,2.5rem)]">
+                    {/* Editorial chapter head: accent rule + flat accent
+                        number, then the name at a scale that matches the
+                        cinematic stage beside it. */}
+                    <div className="flex items-center gap-3">
+                      <span aria-hidden="true" className="h-px w-10 bg-accent" />
+                      <p className="t-mono text-accent">{service.number}</p>
+                    </div>
+                    <h3 className="t-display-lg mt-5 text-[clamp(1.875rem,3.4vw,2.75rem)]">
                       {service.name}
                     </h3>
                     <p className="mt-4 max-w-[30ch] text-[1.0625rem] leading-[1.6] text-ink/70">
@@ -92,12 +102,18 @@ export function ServicesSticky() {
                       {service.description}
                     </p>
 
-                    <ul className="mt-6 flex max-w-[34rem] flex-wrap gap-2">
+                    {/* Capabilities as a quiet editorial list — accent
+                        points instead of pill chrome. */}
+                    <ul className="mt-7 flex max-w-[34rem] flex-wrap gap-x-5 gap-y-2.5">
                       {service.capabilities.map((capability) => (
                         <li
                           key={capability}
-                          className="rounded-full border border-[var(--hairline)] px-3 py-1.5 text-[0.8125rem] text-ink/65"
+                          className="flex items-center gap-2 text-[0.8125rem] text-ink/65"
                         >
+                          <span
+                            aria-hidden="true"
+                            className="h-1 w-1 rounded-full bg-accent/70"
+                          />
                           {capability}
                         </li>
                       ))}

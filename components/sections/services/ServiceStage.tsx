@@ -127,6 +127,20 @@ export function ServiceStage({ names }: { names: string[] }) {
             </div>
           </div>
 
+          {/* Active-service label, top-right above the masks: ties the
+              cinematic stage to the chapter being read without duplicating
+              any copy. Re-keyed per change so it settles in on the shared
+              easing. Decorative — the stage is aria-hidden throughout. */}
+          <motion.p
+            key={active}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+            className="t-mono absolute right-6 top-3 text-ink/55"
+          >
+            {String(active + 1).padStart(2, "0")} — {names[active]}
+          </motion.p>
+
           {/* Progress: bottom-left, clear of the floating Speak bubble which
               lives bottom-right. Same active state as the scenes. */}
           <div className="absolute bottom-2 left-2 flex items-center gap-4">
