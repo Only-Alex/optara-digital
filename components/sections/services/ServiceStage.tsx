@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { motion, useMotionValueEvent, useTransform } from "motion/react";
 import { SERVICE_SCENES } from "@/components/sections/services/scenes";
 import { ServiceMedia } from "@/components/sections/services/ServiceMedia";
-import { useStory } from "@/components/sections/services/story";
+import { useStory, useStoryProgress } from "@/components/sections/services/story";
 
 /**
  * The one persistent visual stage for the continuous Intro → Branding →
@@ -53,27 +53,31 @@ export function ServiceStage({ names }: { names: string[] }) {
     }
   });
 
-  /* Story progress: 0..1 across the pinned story region, clamped so every
-     derived ramp holds its end state through the chapter run. */
-  const storyP = useTransform(() => {
-    const b = bandsRef.current;
-    const p = combined ? combined.get() : 0;
-    if (!b) return 0;
-    return Math.min(1, Math.max(0, p / b.storyEndP));
-  });
+  /* The shared story progress — same hook, same value as StoryCopy. */
+  const storyP = useStoryProgress();
 
-  /* The reveal: chapter stack (Branding media first) fades up as the story
-     field dissolves. Holds at 1 forever after — reversible by scrubbing. */
-  const revealOpacity = useTransform(storyP, [0.5, 0.68], [0, 1]);
-  const fieldOpacity = useTransform(storyP, [0, 0.52, 0.7], [1, 1, 0]);
+  /* 2C.2A phase timings. Imagery may overlap modestly (field out
+     0.54–0.64, media in 0.58–0.70); large typography must not — chapter
+     UI waits until Branding has mostly resolved (0.68–0.76). Every ramp
+     clamps and holds, so reverse replays the exact sequence. */
+  const revealOpacity = useTransform(storyP, [0.58, 0.7], [0, 1]);
+  const fieldOpacity = useTransform(storyP, [0, 0.54, 0.64], [1, 1, 0]);
+  const uiOpacity = useTransform(storyP, [0.68, 0.76], [0, 1]);
 
   /* Camera push: depth planes scale at different rates so the page reads
-     as moving through the scene rather than objects sliding on it. */
-  const zoomBack = useTransform(storyP, [0, 0.7], [1, 1.18]);
-  const zoomMid = useTransform(storyP, [0, 0.7], [1, 1.34]);
-  const zoomNear = useTransform(storyP, [0, 0.7], [1, 1.6]);
-  const convergeX = useTransform(storyP, [0.12, 0.6], [0, -60]);
-  const convergeY = useTransform(storyP, [0.12, 0.6], [0, 34]);
+     as moving through the scene; during the handoff the whole field also
+     draws toward the media's focal centre instead of fading in place. */
+  const zoomBack = useTransform(storyP, [0, 0.64], [1, 1.18]);
+  const zoomMid = useTransform(storyP, [0, 0.64], [1, 1.34]);
+  const zoomNear = useTransform(storyP, [0, 0.64], [1, 1.75]);
+  const convergeX = useTransform(storyP, [0.42, 0.62], [0, -60]);
+  const convergeY = useTransform(storyP, [0.42, 0.62], [0, 34]);
+  const fieldScale = useTransform(storyP, [0.42, 0.64], [1, 1.1]);
+  const fieldX = useTransform(storyP, [0.42, 0.64], [0, -20]);
+  const fieldDriftY = useTransform(storyP, [0.42, 0.64], [0, 10]);
+  /* Peripheral fragments retire first, leaving the plate and signal to
+     carry the final moment of the field. */
+  const fragOpacity = useTransform(storyP, [0.44, 0.58], [1, 0]);
   /* Hoisted (never conditional): hooks must not live inside the
      enabled-gated JSX branch. */
   const convergeXInv = useTransform(convergeX, (v) => -v);
@@ -131,7 +135,7 @@ export function ServiceStage({ names }: { names: string[] }) {
               {enabled ? (
                 <motion.div
                   className="absolute inset-0"
-                  style={{ opacity: fieldOpacity }}
+                  style={{ opacity: fieldOpacity, scale: fieldScale, x: fieldX, y: fieldDriftY }}
                 >
                   <motion.div
                     className="absolute left-[6%] top-[10%] h-[64%] w-[58%] rounded-[20px] border border-[var(--hairline)] bg-paper/60 shadow-[0_28px_80px_rgba(18,19,26,0.06)]"
@@ -157,24 +161,24 @@ export function ServiceStage({ names }: { names: string[] }) {
                   </motion.svg>
                   <motion.div
                     className="absolute right-[16%] top-[18%] h-16 w-16 rounded-full border border-accent/50"
-                    style={{ scale: zoomNear, x: convergeX, y: convergeY }}
+                    style={{ scale: zoomNear, x: convergeX, y: convergeY, opacity: fragOpacity }}
                   />
                   <motion.div
                     className="absolute left-[24%] bottom-[18%] h-3 w-3 bg-accent"
-                    style={{ scale: zoomNear, x: convergeXInv, y: convergeYInv }}
+                    style={{ scale: zoomNear, x: convergeXInv, y: convergeYInv, opacity: fragOpacity }}
                   />
                   <motion.div
                     className="absolute left-[46%] top-[6%] h-16 w-px bg-[var(--hairline)]"
-                    style={{ scale: zoomMid }}
+                    style={{ scale: zoomMid, opacity: fragOpacity }}
                   />
                 </motion.div>
               ) : null}
             </div>
           </div>
 
-          {/* Chapter UI, emerging with the reveal: active-service label and
-              the 01–06 progress rail. Same state as the scenes. */}
-          <motion.div style={enabled ? { opacity: revealOpacity } : undefined}>
+          {/* Chapter UI: waits until Branding has mostly resolved, so the
+              stage reads story-world → chapter-world, never both. */}
+          <motion.div style={enabled ? { opacity: uiOpacity } : undefined}>
             <motion.p
               key={active}
               initial={{ opacity: 0, y: 6 }}

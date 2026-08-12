@@ -47,7 +47,7 @@ export function ServicesSticky() {
           Immersive only — the flow fallback reads fine on bone alone. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 hidden h-[calc(240vh+14rem)] [@media(min-width:1100px)_and_(min-height:680px)]:block"
+        className="pointer-events-none absolute inset-x-0 top-0 hidden h-[calc(230vh+14rem)] [@media(min-width:1100px)_and_(min-height:680px)]:block"
       >
         <div className="absolute inset-0 bg-paper" />
         <div className="absolute inset-x-0 -bottom-56 h-56 bg-[linear-gradient(to_bottom,var(--color-paper),transparent)]" />

@@ -9,6 +9,8 @@ import {
 } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
+// (useScroll powers the provider's combined progress; StoryCopy now derives
+// from useStoryProgress instead of a second timeline.)
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { ArrowIcon } from "@/components/ui/Icons";
 
@@ -43,6 +45,26 @@ const StoryCtx = createContext<{
 }>({ combined: null, bands: null, enabled: false });
 
 export const useStory = () => useContext(StoryCtx);
+
+/**
+ * The ONE story progress (Stage 2C.2A): 0..1 across the pinned story
+ * region, derived from the provider's combined progress and the measured
+ * story band. StoryCopy and ServiceStage both consume THIS hook, so the
+ * typography and the stage share a single mathematical timeline and cannot
+ * drift — in either scroll direction. Clamped, so every derived ramp holds
+ * its end state through the chapter run.
+ */
+export function useStoryProgress() {
+  const { combined, bands } = useStory();
+  const bandsRef = useRef(bands);
+  bandsRef.current = bands;
+  return useTransform(() => {
+    const b = bandsRef.current;
+    const p = combined ? combined.get() : 0;
+    if (!b) return 0;
+    return Math.min(1, Math.max(0, p / b.storyEndP));
+  });
+}
 
 function useImmersiveGate() {
   const reduced = useReducedMotion();
@@ -125,20 +147,27 @@ export function StoryCopy() {
   const { enabled } = useStory();
   const regionRef = useRef<HTMLDivElement>(null);
 
-  /* Local progress across the pinned story region only: 0 at pin start,
-     1 as the region releases into chapter 01. */
-  const { scrollYProgress: p } = useScroll({
-    target: regionRef,
-    offset: ["start start", "end end"],
-  });
+  /* Shared story progress from the provider — the same value the stage
+     consumes. Four phases (2C.2A): A intro 0–0.42 · B departure
+     0.42–0.56 · C reveal 0.56–0.72 · D established 0.72–1. The outgoing
+     state is ≥90% gone before the incoming large typography becomes
+     prominent, so reverse scrolling replays a clean sequence — pure
+     position functions, no direction state. */
+  const p = useStoryProgress();
 
-  const headlineY = useTransform(p, [0, 0.7], [0, -46]);
-  const headlineOpacity = useTransform(p, [0, 0.48, 0.72], [1, 1, 0]);
-  const supportOpacity = useTransform(p, [0, 0.2, 0.5], [1, 1, 0.42]);
-  const supportY = useTransform(p, [0, 0.7], [0, -24]);
-  const cueOpacity = useTransform(p, [0.34, 0.5], [0, 1]);
-  const chapterMarkOpacity = useTransform(p, [0.5, 0.68, 0.92, 1], [0, 1, 1, 0]);
-  const chapterMarkY = useTransform(p, [0.5, 0.7], [28, 0]);
+  const headlineY = useTransform(p, [0, 0.56], [0, -56]);
+  const headlineOpacity = useTransform(p, [0, 0.42, 0.56], [1, 1, 0]);
+  const supportOpacity = useTransform(p, [0, 0.42, 0.58], [1, 1, 0.1]);
+  const supportY = useTransform(p, [0, 0.58], [0, -34]);
+  /* The disciplines cue carries the departure phase, then clears before
+     Branding establishes — nothing of the intro survives into phase D. */
+  const cueOpacity = useTransform(p, [0.4, 0.5, 0.64, 0.72], [0, 1, 1, 0]);
+  /* The transitional identity: index first, word follows (spec: the eye
+     reads one editorial state giving way), both gone before the real
+     chapter heading occupies this territory. */
+  const markIndexOpacity = useTransform(p, [0.58, 0.64, 0.84, 0.92], [0, 1, 1, 0]);
+  const markWordOpacity = useTransform(p, [0.62, 0.68, 0.84, 0.92], [0, 1, 1, 0]);
+  const chapterMarkY = useTransform(p, [0.58, 0.7], [24, 0]);
 
   const copyBlock = (
     <>
@@ -195,22 +224,28 @@ export function StoryCopy() {
   }
 
   return (
-    <div ref={regionRef} data-story-region className="relative h-[240vh]">
+    <div ref={regionRef} data-story-region className="relative h-[230vh]">
       <div className="sticky top-0 flex h-svh flex-col justify-center">
         {copyBlock}
 
-        {/* The emerging chapter identity: decorative overlap typography —
-            the REAL chapter 01 content follows in the ol immediately
-            after, so this carries no unique information. */}
+        {/* The transitional chapter identity: decorative overlap typography
+            near the headline's own editorial anchor — the REAL chapter 01
+            content follows in the ol immediately after, so this carries no
+            unique information and clears before that h3 arrives. */}
         <motion.div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-[16%] left-0"
-          style={{ opacity: chapterMarkOpacity, y: chapterMarkY }}
+          className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
+          style={{ y: chapterMarkY }}
         >
-          <p className="t-mono text-accent">01 / 06</p>
-          <p className="mt-3 text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.02em]">
+          <motion.p className="t-mono text-accent" style={{ opacity: markIndexOpacity }}>
+            01 / 06
+          </motion.p>
+          <motion.p
+            className="mt-3 text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.02em]"
+            style={{ opacity: markWordOpacity }}
+          >
             Branding
-          </p>
+          </motion.p>
         </motion.div>
       </div>
     </div>
