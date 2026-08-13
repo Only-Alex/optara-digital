@@ -82,7 +82,13 @@ export function useProtoProgress() {
     const b = bandsRef.current;
     const p = combined ? combined.get() : 0;
     if (!b) return 0;
-    const end = b.firstCenterP + b.chapterFrac;
+    /* Stage 2D.1: the proof runs Intro → Branding only. P reaches 1 just
+       past the Branding chapter's centre, then clamps — the second half
+       of the chapter is the resolved dwell before the zone releases. */
+    /* Clamped to the achievable range: with a single prototype chapter the
+       centre-plus-cushion can exceed combined progress 1.0, which would
+       strand P below 1 and skip the release lightening. */
+    const end = Math.min(1, b.firstCenterP + b.chapterFrac * 0.15);
     if (end <= 0) return 0;
     return Math.min(1, Math.max(0, p / end));
   });
@@ -99,22 +105,54 @@ export function useProtoProgress() {
  */
 export function useTonalColors() {
   const p = useProtoProgress();
+  /* Stage 2D.1: the Intelligence Engine is a dark world. The page dives
+     to deep graphite-black just after the hero exit (the "travelled into
+     a deeper layer" threshold), holds through the whole engine story and
+     the Branding dwell, and opens to bone only at the very edge of the
+     zone so the sticky release lands on the section's own ground. */
   const bg = useTransform(
     p,
-    [0, 0.34, 0.44, 0.56, 0.68, 1],
-    ["#F6F4EF", "#F6F4EF", "#191B21", "#191B21", "#EFECE4", "#EFECE4"],
+    [0, 0.05, 0.13, 0.955, 0.995, 1],
+    ["#F6F4EF", "#F6F4EF", "#0B0C10", "#0B0C10", "#EFECE4", "#EFECE4"],
   );
   const fg = useTransform(
     p,
-    [0, 0.36, 0.44, 0.58, 0.66, 1],
+    [0, 0.055, 0.125, 0.95, 0.99, 1],
     ["#12131A", "#12131A", "#F7F6F2", "#F7F6F2", "#12131A", "#12131A"],
   );
   const accentFg = useTransform(
     p,
-    [0, 0.36, 0.44, 0.58, 0.66, 1],
+    [0, 0.055, 0.125, 0.95, 0.99, 1],
     ["#5B3DF5", "#5B3DF5", "#8E7BFF", "#8E7BFF", "#5B3DF5", "#5B3DF5"],
   );
   return { bg, fg, accentFg };
+}
+
+/**
+ * Tone wrapper for server-rendered chapter content inside the engine's
+ * dark passage: drives `color` and the `--afg` accent variable from the
+ * tonal clock so ink copy flips to paper while the world is dark. Below
+ * the gate it renders a plain div and text falls back to the default ink
+ * and `--color-accent`.
+ */
+export function ToneText({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const { enabled } = useStory();
+  const { fg, accentFg } = useTonalColors();
+  if (!enabled) return <div className={className}>{children}</div>;
+  return (
+    <motion.div
+      className={className}
+      style={{ color: fg, "--afg": accentFg } as Record<string, unknown>}
+    >
+      {children}
+    </motion.div>
+  );
 }
 
 function useImmersiveGate() {

@@ -3,7 +3,7 @@ import { servicesPage } from "@/lib/content";
 import { ArrowIcon } from "@/components/ui/Icons";
 import { ServiceStage } from "@/components/sections/services/ServiceStage";
 import { SERVICE_SCENES } from "@/components/sections/services/scenes";
-import { StoryCopy, StoryProvider } from "@/components/sections/services/story";
+import { StoryCopy, StoryProvider, ToneText } from "@/components/sections/services/story";
 
 /**
  * The post-hero experience (Stage 2C.3B).
@@ -31,8 +31,8 @@ import { StoryCopy, StoryProvider } from "@/components/sections/services/story";
  */
 export function ServicesSticky() {
   const { services } = servicesPage.showcase;
-  const proto = services.slice(0, 2);
-  const rest = services.slice(2);
+  const proto = services.slice(0, 1);
+  const rest = services.slice(1);
   const total = String(services.length).padStart(2, "0");
 
   const flowChapter = (
@@ -118,18 +118,24 @@ export function ServicesSticky() {
                       data-service-chapter={i}
                       className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:flex [@media(min-width:1100px)_and_(min-height:680px)]:min-h-[72vh] [@media(min-width:1100px)_and_(min-height:680px)]:items-center [@media(min-width:1100px)_and_(min-height:680px)]:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:py-0"
                     >
-                      <div className="w-full">
+                      {/* ToneText rides the tonal clock: this chapter sits
+                          inside the engine's dark dwell, so its colours
+                          flip with the world. Flow fallback stays ink. */}
+                      <ToneText className="w-full">
                         <div className="flex items-center gap-3">
-                          <span aria-hidden="true" className="h-px w-10 bg-accent" />
-                          <p className="t-mono text-accent">
+                          <span
+                            aria-hidden="true"
+                            className="h-px w-10 bg-[var(--afg,var(--color-accent))]"
+                          />
+                          <p className="t-mono text-[var(--afg,var(--color-accent))]">
                             {service.number}
-                            <span className="text-ink/35"> / {total}</span>
+                            <span className="text-current opacity-40"> / {total}</span>
                           </p>
                         </div>
                         <h3 className="t-display-lg mt-5 text-[clamp(1.875rem,3.4vw,2.75rem)]">
                           {service.name}
                         </h3>
-                        <p className="mt-4 max-w-[26ch] text-[1.0625rem] leading-[1.6] text-ink/70">
+                        <p className="mt-4 max-w-[26ch] text-[1.0625rem] leading-[1.6] text-current opacity-75">
                           {service.positioning}
                         </p>
 
@@ -143,7 +149,7 @@ export function ServicesSticky() {
 
                         <Link
                           href={service.href}
-                          className="group mt-7 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-accent"
+                          className="group mt-7 inline-flex items-center gap-2 text-[0.9375rem] font-medium text-[var(--afg,var(--color-accent))]"
                         >
                           Explore {service.name}
                           <ArrowIcon
@@ -154,27 +160,27 @@ export function ServicesSticky() {
 
                         {/* Approved secondary copy: present and readable,
                             visually subordinate on the immersive desktop so
-                            the object keeps the stage. */}
+                            the engine keeps the stage. */}
                         <div className="mt-8 [@media(min-width:1100px)_and_(min-height:680px)]:mt-10 [@media(min-width:1100px)_and_(min-height:680px)]:max-w-[34ch] [@media(min-width:1100px)_and_(min-height:680px)]:opacity-75">
-                          <p className="max-w-[46ch] text-[0.9375rem] leading-[1.75] text-ink/65 [@media(min-width:1100px)_and_(min-height:680px)]:text-[0.875rem]">
+                          <p className="max-w-[46ch] text-[0.9375rem] leading-[1.75] text-current opacity-70 [@media(min-width:1100px)_and_(min-height:680px)]:text-[0.875rem]">
                             {service.description}
                           </p>
                           <ul className="mt-5 flex max-w-[34rem] flex-wrap gap-x-4 gap-y-2">
                             {service.capabilities.map((capability) => (
                               <li
                                 key={capability}
-                                className="flex items-center gap-2 text-[0.8125rem] text-ink/55"
+                                className="flex items-center gap-2 text-[0.8125rem] text-current opacity-60"
                               >
                                 <span
                                   aria-hidden="true"
-                                  className="h-1 w-1 rounded-full bg-accent/70"
+                                  className="h-1 w-1 rounded-full bg-[var(--afg,var(--color-accent))] opacity-70"
                                 />
                                 {capability}
                               </li>
                             ))}
                           </ul>
                         </div>
-                      </div>
+                      </ToneText>
                     </li>
                   );
                 })}
@@ -186,7 +192,7 @@ export function ServicesSticky() {
         {/* Services 03–06: clean natural flow with their existing static
             scenes until the 3D language is approved and extended. */}
         <ol className="mt-4 flex flex-col [@media(min-width:1100px)_and_(min-height:680px)]:mt-24">
-          {rest.map((service, i) => flowChapter(service, i + 2, false))}
+          {rest.map((service, i) => flowChapter(service, i + 1, false))}
         </ol>
       </div>
     </section>

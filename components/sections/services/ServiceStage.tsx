@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useMotionValueEvent, useTransform } from "motion/react";
-import { OptaraSystem3D } from "@/components/sections/services/OptaraSystem3D";
+import { EngineWorld3D } from "@/components/sections/services/EngineWorld3D";
 import { BrandingScene } from "@/components/sections/services/scenes";
 import {
   useProtoProgress,
@@ -56,7 +56,7 @@ export function ServiceStage({ names }: { names: string[] }) {
   const protoP = useProtoProgress();
   /* Rail emerges once Branding has essentially resolved (stateFloat ≈1 is
      protoP 0.5) and stays for the chapter run. */
-  const railOpacity = useTransform(protoP, [0.46, 0.56], [0, 1]);
+  const railOpacity = useTransform(protoP, [0.72, 0.82], [0, 1]);
   const { bg, fg, accentFg } = useTonalColors();
 
   return (
@@ -70,7 +70,7 @@ export function ServiceStage({ names }: { names: string[] }) {
       {/* The protagonist. Transparent canvas, no frame. */}
       <div className="absolute inset-0">
         {enabled ? (
-          <OptaraSystem3D />
+          <EngineWorld3D />
         ) : (
           /* Static resolved representation for reduced-motion desktops
              whose window still matches the immersive CSS variant. */
