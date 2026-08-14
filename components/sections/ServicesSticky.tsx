@@ -97,12 +97,27 @@ export function ServicesSticky() {
     <section data-theme="bone" className="section bg-[var(--bg)] !pt-0">
       <div className="shell relative pt-[var(--section-y)] [@media(min-width:1100px)_and_(min-height:680px)]:pt-0">
         <StoryProvider>
-          {/* The persistent visual layer: tonal ground + Optara Core.
-              Full-viewport sticky, breakout both edges, negative bottom
-              margin returns its height so the copy scrolls over it. It
-              lives only inside this prototype zone and releases with it. */}
-          <div className="pointer-events-none sticky top-0 z-0 hidden h-svh [@media(min-width:1100px)_and_(min-height:680px)]:mb-[-100svh] [@media(min-width:1100px)_and_(min-height:680px)]:ml-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:mr-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:block">
-            <ServiceStage names={services.map((s) => s.name)} />
+          {/* The persistent visual layer: tonal ground + the cinematic
+              engine. An absolute overlay spans the zone (no layout
+              height), with a full-viewport sticky inside it; breakout to
+              both screen edges via the overlay's offsets.
+
+              2E.1A: this replaces the old sticky-with-mb-[-100svh]
+              breakout. The negative bottom margin zeroed the sticky's
+              margin box, so its containment never engaged — the released
+              stage stayed pinned a full extra viewport and its opaque
+              ground painted over the following services, which is exactly
+              the giant beige void seen in review. The absolute wrapper
+              constrains the sticky to the zone box, so the stage releases
+              precisely with the Branding chapter and the next service is
+              visible immediately after. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-y-0 z-0 hidden [@media(min-width:1100px)_and_(min-height:680px)]:left-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:right-[calc((min(100vw,1360px)-100vw)/2-var(--gutter))] [@media(min-width:1100px)_and_(min-height:680px)]:block"
+          >
+            <div className="sticky top-0 h-svh">
+              <ServiceStage names={services.map((s) => s.name)} />
+            </div>
           </div>
 
           <div className="relative z-10 [@media(min-width:1100px)_and_(min-height:680px)]:grid [@media(min-width:1100px)_and_(min-height:680px)]:grid-cols-12 [@media(min-width:1100px)_and_(min-height:680px)]:gap-x-[clamp(2.5rem,4vw,5rem)]">
@@ -116,7 +131,13 @@ export function ServicesSticky() {
                     <li
                       key={service.href}
                       data-service-chapter={i}
-                      className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:flex [@media(min-width:1100px)_and_(min-height:680px)]:min-h-[72vh] [@media(min-width:1100px)_and_(min-height:680px)]:items-center [@media(min-width:1100px)_and_(min-height:680px)]:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:py-0"
+                      /* 2E.1A: the chapter fills a full viewport behind the
+                         gate — the resolved dwell is one centred
+                         composition, the released stage exits carrying this
+                         content instead of an empty beige tail (chapter
+                         height == stage height), and the measured bands
+                         land the chapter centre exactly at the zone end. */
+                      className="border-t border-[var(--hairline)] py-14 first:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:flex [@media(min-width:1100px)_and_(min-height:680px)]:min-h-[100svh] [@media(min-width:1100px)_and_(min-height:680px)]:items-center [@media(min-width:1100px)_and_(min-height:680px)]:border-t-0 [@media(min-width:1100px)_and_(min-height:680px)]:py-0"
                     >
                       {/* ToneText rides the tonal clock: this chapter sits
                           inside the engine's dark dwell, so its colours
@@ -190,8 +211,10 @@ export function ServicesSticky() {
         </StoryProvider>
 
         {/* Services 03–06: clean natural flow with their existing static
-            scenes until the 3D language is approved and extended. */}
-        <ol className="mt-4 flex flex-col [@media(min-width:1100px)_and_(min-height:680px)]:mt-24">
+            scenes until the 3D language is approved and extended. 2E.1A:
+            tighter top margin behind the gate so SEO & GEO enters within
+            ~15vh of the cinematic release instead of after a beige pause. */}
+        <ol className="mt-4 flex flex-col [@media(min-width:1100px)_and_(min-height:680px)]:mt-10">
           {rest.map((service, i) => flowChapter(service, i + 1, false))}
         </ol>
       </div>

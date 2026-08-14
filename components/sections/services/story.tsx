@@ -247,17 +247,14 @@ export function StoryCopy() {
 
   const headlineY = useTransform(p, [0, 0.56], [0, -56]);
   const headlineOpacity = useTransform(p, [0, 0.42, 0.56], [1, 1, 0]);
-  const supportOpacity = useTransform(p, [0, 0.42, 0.58], [1, 1, 0.1]);
+  /* Stage 2E.1A: the intro exits COMPLETELY (the 0.1 floor left a ghost
+     paragraph behind the Branding chapter). The /about link stays in the
+     document and regains visibility whenever the visitor scrolls back. */
+  const supportOpacity = useTransform(p, [0, 0.42, 0.6], [1, 1, 0]);
   const supportY = useTransform(p, [0, 0.58], [0, -34]);
   /* The disciplines cue carries the departure phase, then clears before
      Branding establishes — nothing of the intro survives into phase D. */
   const cueOpacity = useTransform(p, [0.4, 0.5, 0.64, 0.72], [0, 1, 1, 0]);
-  /* The transitional identity: index first, word follows (spec: the eye
-     reads one editorial state giving way), both gone before the real
-     chapter heading occupies this territory. */
-  const markIndexOpacity = useTransform(p, [0.58, 0.64, 0.84, 0.92], [0, 1, 1, 0]);
-  const markWordOpacity = useTransform(p, [0.62, 0.68, 0.84, 0.92], [0, 1, 1, 0]);
-  const chapterMarkY = useTransform(p, [0.58, 0.7], [24, 0]);
 
   /* Colours ride the tonal story (text-current inherits the motion fg on
      the root; accent pieces take the AA-safe accent for the current
@@ -325,34 +322,17 @@ export function StoryCopy() {
 
   return (
     <div ref={regionRef} data-story-region className="relative h-[200vh]">
+      {/* Stage 2E.1A: the decorative transitional "01 / 06 Branding" mark
+          is gone. It overlapped the REAL chapter block scrolling in from
+          below, so two Branding presentations were visible at once. The
+          chapter in the ol is now the single authoritative presentation:
+          intro exits → cue departs → the film carries a beat alone →
+          Branding rises and resolves once. */}
       <motion.div
         className="sticky top-0 flex h-svh flex-col justify-center"
         style={{ color: fg }}
       >
         {copyBlock}
-
-        {/* The transitional chapter identity: decorative overlap typography
-            near the headline's own editorial anchor — the REAL chapter 01
-            content follows in the ol immediately after, so this carries no
-            unique information and clears before that h3 arrives. */}
-        <motion.div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-1/2 left-0 -translate-y-1/2"
-          style={{ y: chapterMarkY }}
-        >
-          <motion.p
-            className="t-mono"
-            style={{ opacity: markIndexOpacity, color: accentFg }}
-          >
-            01 / 06
-          </motion.p>
-          <motion.p
-            className="mt-3 text-[clamp(2.25rem,4vw,3.5rem)] font-medium leading-none tracking-[-0.02em]"
-            style={{ opacity: markWordOpacity }}
-          >
-            Branding
-          </motion.p>
-        </motion.div>
       </motion.div>
     </div>
   );
