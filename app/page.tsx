@@ -85,7 +85,7 @@ export default function Home() {
         <Hero />
         {/* Stage 2C.2: the intro is no longer a separate section — the
             continuous Intro → Branding → Services experience lives inside
-            ServicesSticky (IntroSplit.tsx stays on disk, unused). */}
+            ServicesSticky. */}
         <ServicesSticky />
         <DifferenceSticky />
         <ProcessPhases />
